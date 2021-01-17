@@ -27,6 +27,7 @@
 #include "CivetServer.h"
 #include "vapi/vapiimage.hpp"
 #include "vapi/vapisystem.hpp"
+#include "vapi/vapicamlist.hpp"
 #include "vapi/vwsapi.hpp"
 #include "link/wslink.hpp"
 
@@ -46,32 +47,60 @@ public:
 			VEventServer &pEvent)
 		:pServer(new CivetServer(cpp_options)), server(*pServer), m_pFactory(pFactory), 
 		h_GetCamList(pFactory), h_GetImage(pFactory), h_vwsapi(pFactory), 
-		h_wslink(pFactory, pEvent),
+		h_wslink(pFactory, pEvent),h_System(pFactory),
 		h_wslinkStream(pFactory), h_GetStreamUrl(pFactory)
 	{
 		/* restful api */
-		server.addHandler("/vapi/GetCamList", h_GetCamList);
-		server.addHandler("/vapi/GetImage", h_GetImage);
-		server.addHandler("/vapi/GetStreamUrl", h_GetStreamUrl);
-
+		VEWebAPIGetImage();
+		VEWebAPIGetStream();
+		VEWebAPIGetCamList();
+		VEWebAPISystemV1();
 		/* websocket API */
-		server.addWebSocketHandler(LINK_PROTO_WS_PATH, h_wslink);
-		server.addWebSocketHandler(LINK_PROTO_WS_STREAM_PATH, h_wslinkStream);
-
+		VEAddWebSocket();
 		server.addAuthHandler(LINK_PROTO_WS_PATH, h_wslinkAuth);
-		server.addAuthHandler(LINK_PROTO_WS_STREAM_PATH, h_wslinkStreamAuth);
-
-		//Below is only for test
-		server.addWebSocketHandler("/vwsapi", h_vwsapi);
-		
+		server.addAuthHandler(LINK_PROTO_WS_STREAM_PATH, h_wslinkStreamAuth);		
 		
 	}
+
 	~VEWebServer(){}
-	
 private:
+
+	void VEAddWebSocket(){
+		server.addWebSocketHandler(LINK_PROTO_WS_PATH, h_wslink);
+		server.addWebSocketHandler(LINK_PROTO_WS_STREAM_PATH, h_wslinkStream);
+	    //Below is only for test
+		server.addWebSocketHandler("/vwsapi", h_vwsapi);
+	}
+	void 
+	VEWebAPISystemV1(){
+            server.addHandler(VAPI_LOGIN_SYSTEM, h_System);
+            server.addHandler(VAPI_KEEPALIVE_SYSTEM, h_System);
+            server.addHandler(VAPI_LOGOUT_SYSTEM, h_System);
+            server.addHandler(VAPI_GET_SYSTEM_INFO, h_System);
+            server.addHandler(VAPI_GET_CODEC_INFO, h_System);
+            server.addHandler(VAPI_GET_RUN_INFO, h_System);
+            server.addHandler(VAPI_GET_DEVICE_SUMMARY, h_System);
+            server.addHandler(VAPI_GET_VOLUMES_SYSTEM, h_System);
+	}
+	void
+	VEWebAPIGetCamList(){
+            server.addHandler("/vapi/GetCamList", h_GetCamList);
+	}
+	void
+	VEWebAPIGetStream(){
+           server.addHandler("/vapi/GetStreamUrl", h_GetStreamUrl);
+	}
+	void
+	VEWebAPIGetImage(){
+           server.addHandler("/vapi/GetImage", h_GetImage);
+	}
+private:
+	
 	WebAPIGetCamListHandler h_GetCamList;
 	WebAPIGetImageHandler h_GetImage;
 	WebAPIGetStreamUrlHandler h_GetStreamUrl;
+	WebAPISystemHandler h_System;
+	
 	VwsAPI h_vwsapi;
 	WSLink h_wslink;
 	WSLinkStream h_wslinkStream;
