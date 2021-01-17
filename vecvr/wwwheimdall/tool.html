@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>  
+<html>  
+<head>
+<title>H5STREAM</title>
+<script src="js/jquery-3.1.1.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/jQuery.md5.js"></script>
+
+
+
+<link rel = "stylesheet" type = "text/css" href = "css/h5splayer.css" />
+
+</head>
+
+<body> 
+
+<div >
+	<div class="row">
+	<label >MD5</label>
+	</div>
+	<div class="row">
+	 <input type="input" size="38" id="password" placeholder="Password" value="12345" type="text"><label >Password</label>
+	 <input type="input" size="38" id="md5password" placeholder="MD5 Password" value="" type="text"><label >MD5 Password</label>
+	</div>
+	<button type="button" onclick="PasswordMd5()">MD5</button>
+	
+	<div class="row">
+	<label >URL ENCODE</label>
+	</div>
+	<div class="row">
+	 <input type="input" size="100" id="url" placeholder="Url" value="rtsp://192.168.0.23:554/Streaming/Channels/101
+?transportmode=unicast&profile=Profile_1" type="text"><label >Url</label>
+	</div>
+	<div class="row">
+	 <input type="input" size="100" id="encodedurl" placeholder="Encoded Url" value="" type="text"><label >Encoded Url</label>
+	</div>
+	<button type="button" onclick="UrlEncode()">URL ENCODE</button>
+</div>
+
+</body>
+
+<script>
+
+
+function PasswordMd5()
+{
+	var password = $('#password').get(0).value;
+	$('#md5password').get(0).value = $.md5(password);
+	
+	
+}
+
+function UrlEncode()
+{
+	var url = $('#url').get(0).value;
+	$('#encodedurl').get(0).value = encodeURIComponent(url);
+	
+	
+}
+
+</script>
+
+</html> 

@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>  
+<html>  
+<head>
+<title>H5STREAM VIDEO</title>
+<script src="js/jquery-3.1.1.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/adapter.js"></script>
+<script src="js/platform.js"></script>
+<script src="js/h5splayer.js"></script>
+<script src="js/h5splayerhelper.js"></script>
+
+<link rel = "stylesheet" type = "text/css" href = "css/h5splayer.css" />
+
+</head>
+
+<body> 
+
+<div >
+	<div class="row">
+    <video class="h5video" id="h5sVideo1"  >
+
+    </video>
+	</div>
+	<div class="row">
+	 <input type="input" size="38" id="speed1" placeholder="speed" value="1.0" type="text"></button> <label >Speed</label> 
+	</div>
+	<div class="row">
+	<input type="input" size="38" id="seek1" placeholder="seek" value="0" type="text"></button>  <label >Time</label> 
+	</div>
+	<div class="row">
+	 <input type="input" size="38" id="playingtime1" placeholder="playing time" value="2019-03-23T120101+08" type="text"></button> <label >Playing Time</label>
+	</div>
+	<div class="row">
+	 <input type="input" size="38" id="pbsession" placeholder="session" value="00000000-0000-0000-0000-000000000000" type="text"></button> <label >Playback Session</label>
+	</div>
+
+	<button type="button" onclick="Connect()">Connect</button>
+	<button type="button" onclick="Start()">Start</button>
+	<button type="button" onclick="Stop()">Stop</button>
+	<button type="button" onclick="Pause()">Pause</button>
+	<button type="button" onclick="Resume()">Resume</button>
+	<button type="button" onclick="Speed()">Speed</button>
+	<button type="button" onclick="Seek()">Seek</button>
+	<button type="button" onclick="PbSnapshot()">PbSnapshot</button>
+	<button type="button" onclick="Snapshot()">Snapshot</button>
+</div>
+
+</body>
+
+<script>
+
+/*
+(event(string), userdata(object)) 
+*/
+var strSession = 'c1782caf-b670-42d8-ba90-2244d0b0ee83';
+var strPbSession;
+var strToken = 'device1--33';
+function PlaybackCB(event, userdata)
+{
+	console.log("Playback callback ", event);
+	
+	var msgevent = JSON.parse(event);
+	if (msgevent.type === 'H5S_EVENT_PB_TIME')
+	{
+		userdata.value = msgevent.pbTime.strTime;
+	}
+	
+	if (msgevent.type === 'H5S_EVENT_PB_POS')
+	{
+		userdata.value = msgevent.pbPos.nPos;
+	}
+	if (msgevent.type === 'H5S_EVENT_PB_SESSION_ID')
+	{
+		$('#pbsession').get(0).value = msgevent.pbSessionId.strSession;
+		strPbSession = msgevent.pbSessionId.strSession;
+	}
+}
+
+var pbconf1 = {
+	begintime: '2019-08-14T101001+08',
+	endtime: '2019-08-14T131001+08',
+	autoplay: 'true', // 'true' or 'false' for playback autoplay
+	showposter: 'true', //'true' or 'false' show poster
+	callback: PlaybackCB, 
+	userdata:  $('#playingtime1').get(0) // user data
+};
+
+var conf1 = {
+	videoid:'h5sVideo1',
+	protocol: window.location.protocol, //http: or https:
+	host: window.location.host, //localhost:8080
+	rootpath:'/', // '/'
+	token:strToken,
+	pbconf: pbconf1, //This is optional, if no pbconf, this will be live.
+	hlsver:'v1', //v1 is for ts, v2 is for fmp4
+	session: strSession //session got from login
+};
+
+var v1;
+
+function Connect()
+{
+	console.log(conf1);
+	//v1 = new H5sPlayerWS(conf1);
+	v1 = new H5sPlayerRTC(conf1);
+	v1.connect();
+	
+}
+
+function Start()
+{
+	v1.start();
+	
+}
+
+function Stop()
+{
+	v1.disconnect();
+
+	delete v1;
+	v1 = null;
+}
+
+function Pause()
+{
+	v1.pause();
+}
+
+function Resume()
+{
+	
+	v1.resume();
+}
+
+function Speed()
+{
+	console.log("Speed", $('#speed1').val());
+	v1.speed($('#speed1').val());
+}
+
+function Seek()
+{
+	console.log("Seek", $('#seek1').val());
+	v1.seek($('#seek1').val());
+}
+
+function PbSnapshot()
+{
+	var url = '/api/v1/PbSnapshot?token=' + strToken + '&pbsession=' + strPbSession + '&session=' + strSession;
+	$.get(url,function(data,status){
+	console.log("Status: " + status);
+  });
+}
+
+function Snapshot()
+{
+	const date = new Date();
+	var fileName = strToken + '_' + date.getFullYear() + '-' + (date.getMonth() + 1)
+				 + '-' + date.getDate() + '-' + date.getHours() + '-' + date.getMinutes() + '-' + date.getSeconds();
+	H5sSnapshot($('#h5sVideo1').get(0), fileName);
+}
+
+</script>
+
+</html> 

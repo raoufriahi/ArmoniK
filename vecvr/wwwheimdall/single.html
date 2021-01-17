@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel = "stylesheet" type = "text/css" href="single/css/single.css"/>
+		<script src="js/jquery-3.1.1.js"></script>
+		<script src="js/bootstrap.js"></script>
+	    <script src="js/adapter.js"></script>
+		<script src="js/platform.js"></script>
+		<script src="js/h5splayer.js"></script>
+		<script src="js/h5splayerhelper.js"></script>
+		<!-- <script src="single/js/single.js"></script> -->
+	</head>
+	<body>
+		<div class="styletit">
+			<div class="title">
+				<img src="single/img/h5soconsole.png" />
+			</div>
+			<div class="content">
+				<video class="h5video1" id="h5svideo" autoplay webkit-playsinline playsinline></video>
+				<div class="content_suspend"></div>
+				<div class="content_start"></div>
+				<div class="content_stop"></div>
+				<div class="screenshot"></div>
+				<div class="being" id="beings" style="display: none;"></div>
+			</div>
+			<div class="enging">
+				<div id="" class="enging_button">
+					<div class="enging_button1">
+						<div class="quality">画质</div>
+						<div class="sliderleft"></div>
+						<div class="slider">
+							<label><span id='slider-value'>0.5x</span></label>
+							<input type="range" orient="vertical" class="ne-range" name="slider" min="0" max="1" step="0.1" id="slider" value="0.5" oninput="change()" onchange="change()"/>
+						</div>
+						<div class="sliderright"></div>
+					</div>
+					
+					<div class="enging_button2">
+						<div class="enging_button_shang">
+						</div>
+						<div class="enging_button_zy">
+							<div class="enging_button_zuo">
+							</div>
+							<div class="enging_button_you">
+							</div>
+							<!-- <img src="single/img/zuo.png" class="enging_button_zuo"/>
+							<img src="single/img/you.png" class="enging_button_you"/> -->
+						</div>
+						<div class="enging_button_xia">
+						</div>
+					</div>
+					<div class="enging_button3">
+						<div id="enging_button_jia"></div>
+						<div id="enging_button_jian"></div>
+					</div>
+				</div>
+				<!-- <div class="yun" style="color: #f00;">语音</div>  -->
+				<div id="" class="enging_function">
+					<div id="Screenshots">抓图</div>
+					<div id="Start">开始</div>
+					<div id="videotape">停止</div>
+					
+				</div>
+			</div>
+			<div>
+			</div>
+        </div>
+	</body>
+	<script type="text/javascript">
+		var strSession = 'c1782caf-b670-42d8-ba90-2244d0b0ee83';
+		var slider = document.getElementById('slider');
+		var sliderValue = document.getElementById('slider-value');
+		var sliderinputvalue=sliderValue.innerHTML
+		var inputvalue=''
+		console.log(sliderinputvalue)
+		console.log(sliderValue.innerHTML)  
+		console.log(slider.value)   
+	    // window.onload = function (){
+        //        slider.addEventListener('input', function(e) {
+		// 	   sliderValue.textContent = e.target.value +'x';
+		// 	  }); 
+		// 	 }
+		function change(){
+		  var inputvalue = document.getElementById('slider').value;
+		  console.log(inputvalue )
+		  window.inputvalue=inputvalue
+		  document.getElementById('slider-value').innerHTML = inputvalue+'x';
+		}
+		change()
+		 
+		 
+     if (H5siOS() === true|| H5sSafariBrowser() === true)
+		{
+			$('#h5svideo').prop("controls", true);
+		}
+		
+		var strToken= GetURLParameter("token");
+		if (strToken === undefined)
+		{
+			strToken = 'token1';
+		}
+		var strStream= GetURLParameter("stream");
+		if (strStream === undefined)
+		{
+			strStream = 'main';
+		}
+		$(function(){
+			
+			var conf1 = {
+				videoid:'h5svideo',
+				protocol: window.location.protocol, //'http:' or 'https:'
+				host: window.location.host, //'localhost:8080'
+				rootpath:'/', // '/'
+				token:strToken,
+				streamprofile: strStream, // {string} - stream profile, main/sub or other predefine transcoding profile
+				hlsver:'v1', //v1 is for ts, v2 is for fmp4
+				session:'c1782caf-b670-42d8-ba90-2244d0b0ee83', //session got from login
+				consolelog: 'true' // 'true' or 'false' enable/disable console.log
+			};
+			var rtcws= GetURLParameter("h5splayer");
+			var v1;
+			if(rtcws=="rtc"){
+				console.log("12",rtcws);
+				v1 = new H5sPlayerRTC(conf1);
+			}else if(rtcws=="ws"){
+				console.log("12",rtcws);
+                v1 = new H5sPlayerWS(conf1);
+			}
+			if (GetURLParameter("autoplay") != undefined)
+			{
+				v1.connect();
+				$(".content_suspend").show();
+			}
+			$(".content_suspend").parent().click(function(){
+			  if($(this).children(".h5video1").get(0).paused||v1==null){
+				$(".content_suspend").hide();
+					if(v1 != null)
+					{
+						v1.disconnect();
+						delete v1;
+						v1 = null;
+					}
+					if(rtcws=="rtc"){
+						v1 = new H5sPlayerRTC(conf1);
+					}else if(rtcws=="ws"){
+						v1 = new H5sPlayerWS(conf1);
+					}
+					v1.connect();
+				}else{
+					v1.disconnect();
+					delete v1;
+					v1 = null;
+					$(this).children(".h5video1").get(0).paused;
+					$(".content_suspend").show();
+				}
+			})
+		 
+			//淡入效果(含淡入到指定透明度)
+			function fadeIn(element, speed){
+				for(var i=0;i<element.length;i++){
+					if(element[0].style.opacity !=1){
+					var speed = speed || 30 ;
+					var num = 0;
+					var st = setInterval(function(){
+							num++;
+							element[0].style.opacity = num/10;
+							if(num>=10)  {  clearInterval(st); }
+							},speed);
+						}
+			   }
+		     }
+			
+			//淡出效果(含淡出到指定透明度)
+			function fadeOut(element,speed){
+				var speed = speed || 30 ;
+				var num = 10;
+				var st = setInterval(function(){
+				num--;
+				element[0].style.opacity = num / 10 ;
+				if(num<=0)  {   clearInterval(st);  }
+				},speed);
+		      }
+			    var timer=null;
+		  //对讲 抓图 录像
+			$("#Start").on("click",function(){
+				var el=document.getElementsByClassName('content_start')
+				var be=document.getElementById('beings')
+		        fadeIn(el,100)
+				  setTimeout(function(){
+					  fadeOut(el,100) 
+				  },2000)
+				var record = "token=" +strToken+ "&duration=300";
+				var url =  "/api/v1/ManualRecordStart?" + record  + "&session="+strSession;
+				$.get(url,function(data){
+				   if(data.bStatus==true){
+					clearInterval(timer);
+				        var i=0 
+						timer=setInterval(function(){ 
+					     be.style.display=i++%2?'none':'';    
+						 i>10000&&clearInterval(timer); 
+					},800); 
+					}
+				})
+			})
+			$("#videotape").on("click",function(){
+			   var ele=document.getElementsByClassName('content_stop')
+			   var be=document.getElementById('beings')
+			       clearInterval(timer);
+				   be.style.display='none'
+				   fadeIn(ele,100)
+				   setTimeout(function(){
+						fadeOut(ele,100) 
+					},2000)
+				var record = "token=" +strToken+ "&duration=300";
+				var url =  "/api/v1/ManualRecordStop?" + record  + "&session="+strSession;
+				$.get(url,function(data,status){
+					console.log("Status: " + status);
+				})
+			})
+			$("#Screenshots").on("click",function(){
+				var Screen=document.getElementsByClassName('screenshot')
+				fadeIn(Screen,100)
+				   setTimeout(function(){
+						fadeOut(Screen,100) 
+					},2000)
+                var record = "token=" +strToken+ "&duration=300";
+				var url =  "/api/v1/Snapshot?" + record  + "&session="+strSession;
+				console.log("抓图");
+				$.get(url,function(data){
+					console.log("Status: " + status);
+				})
+			 })
+			
+			// 阻止额外默认事件
+			$(".enging_button2").on("touchstart",function(){
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			}) 
+			$(".enging_button2").on("touchend",function(){
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			}) 
+			// 阻止额外默认事件
+			$(".enging_button1 .sliderleft").on("touchstart",function(){
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			}) 
+			$(".enging_button1 .sliderleft").on("touchend",function(){
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			}) 
+			$(".enging_button1 .sliderright").on("touchstart",function(){
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			}) 
+			$(".enging_button1 .sliderright").on("touchend",function(){
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			}) 
+		   //  上
+			$(".enging_button_shang").on("touchstart",function(){
+                PtzAction('up');
+				console.log("touchstart")
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			})
+			$(".enging_button_shang").on("touchend",function(){
+				PtzAction('stop');
+				console.log("touchend")
+		        event.stopPropagation();
+				event.preventDefault()
+                return false;
+			})
+		
+			// 右
+			$(".enging_button_you").on("touchstart",function(){
+				console.log("右")
+				PtzAction('right');
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			})
+			$(".enging_button_you").on("touchend",function(){
+				PtzAction('stop');
+				console.log("touchend")
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			})
+		    
+			var x,y,a_x,b_y
+			// 下
+		   document.querySelector('.enging_button_xia').addEventListener("touchstart",function(evt){
+				var touch=evt.touches[0];
+				x=parseInt(touch.pageX),
+				y=parseInt(touch.pageY);
+				a_x=x,
+				b_y=y;
+				PtzAction('down');		
+				},false)
+		    document.querySelector('.enging_button_xia').addEventListener("touchmove",function(evt){
+				evt.preventDefault();
+				evt.stopPropagation();
+				var touch=evt.touches[0];
+				a_x=parseInt(touch.pageX),
+                b_y=parseInt(touch.pageY);
+			},false)
+		    document.querySelector('.enging_button_xia').addEventListener("touchend",function(evt){
+				PtzAction('stop');
+				var x_x=a_x-x;
+                var y_y=b_y-y;
+				if(y_y>0||y_y<0){
+					PtzAction('stop');
+				}
+				if(X_X>0||X_X<0){
+					PtzAction('stop');
+				}
+				// PtzAction('stop');	
+		    },false)
+			// 左
+			$(".enging_button_zuo").on("touchstart",function(){
+				console.log("左")
+				PtzAction('left');
+				event.stopPropagation();
+				event.preventDefault()
+                return false
+			})
+			$(".enging_button_zuo").on("touchend",function(){
+				PtzAction('stop');
+				console.log("touchend")
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			})
+		
+			// 拉近 拉远
+			$("#enging_button_jia").on("touchstart",function(){
+				console.log("zoomin")
+				PtzAction('zoomin');
+				event.stopPropagation();
+				event.preventDefault()
+                return false
+			})
+			$("#enging_button_jia").on("touchend",function(){
+				PtzAction('stop');
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			})
+		
+			// 拉远
+			$("#enging_button_jian").on("touchstart",function(){
+				console.log("zoomout")
+				PtzAction('zoomout');
+				event.stopPropagation();
+				event.preventDefault()
+                return false;
+			})
+			$("#enging_button_jian").on("touchend",function(){
+				PtzAction('stop');
+				event.stopPropagation();
+                return false;
+			})
+		})
+	  
+		function PtzAction(action)
+		 {  
+		    var ptzcmd = "token=" + strToken + "&action=" + action + "&speed="+inputvalue+'';
+			console.log("ptzcmd", ptzcmd);
+            var url =  "/api/v1/Ptz?" + ptzcmd  + "&session="+strSession;
+			$.get(url,function(data,status){
+				console.log("Status: " + status);
+			});
+		}
+	</script>
+</html>

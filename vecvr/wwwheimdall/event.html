@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>  
+<html>  
+<head>
+<title>H5STREAM EVENT</title>
+<script src="js/jquery-3.1.1.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/adapter.js"></script>
+<script src="js/platform.js"></script>
+<script src="js/h5splayer.js"></script>
+<script src="js/h5sevent.js"></script>
+<script src="js/h5splayerhelper.js"></script>
+
+<link rel = "stylesheet" type = "text/css" href = "css/h5splayer.css" />
+
+</head>
+
+<body> 
+
+	<div class="row">
+	 <textarea style="margin: 0px; width: 800px; height: 400px;" id="event1"  ></textarea> 
+	</div>
+
+</div>
+
+</body>
+
+<script>
+/*
+{
+ "type": "H5S_EVENT_REC_ARCHIVE_FINISHED",
+ "strDevToken": "device1--35",
+ "strUUID": "",
+ "strTime": "",
+ "archvieFinished": {
+  "strFilename": "device1--35-2be30370-44f6-4857-a093-e56879c610f5.mp4"
+ }
+}
+*/
+$(document).ready(function(){
+	var strSession = 'c1782caf-b670-42d8-ba90-2244d0b0ee83';
+
+	function EventCB(event, userdata)
+	{
+		console.log("Event callback ", event);
+		$('#event1').get(0).value = event + $('#event1').get(0).value;
+		
+		var msgevent = JSON.parse(event);
+		if (msgevent.type === 'H5S_EVENT_REC_ARCHIVE_FINISHED')
+		{
+
+		}
+	}
+
+	var conf1 = {
+		protocol: window.location.protocol, //http: or https:
+		host: window.location.host, //localhost:8080
+		rootpath:'/', // '/'
+		callback: EventCB, 
+		userdata: null, // user data
+		session: strSession, //session got from login
+		consolelog: 'true' // 'true' or 'false' enable/disable console.log
+	};
+
+	var e1 = new H5sEvent(conf1);
+	e1.connect();
+});
+
+</script>
+
+</html> 
