@@ -192,6 +192,9 @@ VE_LIBRARY_API extern LinkRegNotifyReqDefaultTypeInternal _LinkRegNotifyReq_defa
 class LinkRegNotifyResp;
 class LinkRegNotifyRespDefaultTypeInternal;
 VE_LIBRARY_API extern LinkRegNotifyRespDefaultTypeInternal _LinkRegNotifyResp_default_instance_;
+class LinkRestLogin;
+class LinkRestLoginDefaultTypeInternal;
+VE_LIBRARY_API extern LinkRestLoginDefaultTypeInternal _LinkRestLogin_default_instance_;
 class LinkSearchRecordReq;
 class LinkSearchRecordReqDefaultTypeInternal;
 VE_LIBRARY_API extern LinkSearchRecordReqDefaultTypeInternal _LinkSearchRecordReq_default_instance_;
@@ -337,6 +340,111 @@ void VE_LIBRARY_API InitDefaults();
 }  // namespace protobuf_linksystem_2eproto
 
 // ===================================================================
+
+class VE_LIBRARY_API LinkRestLogin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:LinkRestLogin) */ {
+ public:
+  LinkRestLogin();
+  virtual ~LinkRestLogin();
+
+  LinkRestLogin(const LinkRestLogin& from);
+
+  inline LinkRestLogin& operator=(const LinkRestLogin& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const LinkRestLogin& default_instance();
+
+  static inline const LinkRestLogin* internal_default_instance() {
+    return reinterpret_cast<const LinkRestLogin*>(
+               &_LinkRestLogin_default_instance_);
+  }
+
+  void Swap(LinkRestLogin* other);
+
+  // implements Message ----------------------------------------------
+
+  inline LinkRestLogin* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  LinkRestLogin* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const LinkRestLogin& from);
+  void MergeFrom(const LinkRestLogin& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output)
+      const PROTOBUF_FINAL {
+    return InternalSerializeWithCachedSizesToArray(
+        ::google::protobuf::io::CodedOutputStream::IsDefaultSerializationDeterministic(), output);
+  }
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(LinkRestLogin* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string strSession = 2;
+  void clear_strsession();
+  static const int kStrSessionFieldNumber = 2;
+  const ::std::string& strsession() const;
+  void set_strsession(const ::std::string& value);
+  #if LANG_CXX11
+  void set_strsession(::std::string&& value);
+  #endif
+  void set_strsession(const char* value);
+  void set_strsession(const char* value, size_t size);
+  ::std::string* mutable_strsession();
+  ::std::string* release_strsession();
+  void set_allocated_strsession(::std::string* strsession);
+
+  // bool bStatus = 1;
+  void clear_bstatus();
+  static const int kBStatusFieldNumber = 1;
+  bool bstatus() const;
+  void set_bstatus(bool value);
+
+  // int32 nTimeout = 3;
+  void clear_ntimeout();
+  static const int kNTimeoutFieldNumber = 3;
+  ::google::protobuf::int32 ntimeout() const;
+  void set_ntimeout(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:LinkRestLogin)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr strsession_;
+  bool bstatus_;
+  ::google::protobuf::int32 ntimeout_;
+  mutable int _cached_size_;
+  friend struct VE_LIBRARY_API protobuf_linksystem_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
 
 class VE_LIBRARY_API LinkLoginReq : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:LinkLoginReq) */ {
  public:
@@ -6619,6 +6727,90 @@ class VE_LIBRARY_API LinkEventNotify : public ::google::protobuf::Message /* @@p
 // ===================================================================
 
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
+// LinkRestLogin
+
+// bool bStatus = 1;
+inline void LinkRestLogin::clear_bstatus() {
+  bstatus_ = false;
+}
+inline bool LinkRestLogin::bstatus() const {
+  // @@protoc_insertion_point(field_get:LinkRestLogin.bStatus)
+  return bstatus_;
+}
+inline void LinkRestLogin::set_bstatus(bool value) {
+  
+  bstatus_ = value;
+  // @@protoc_insertion_point(field_set:LinkRestLogin.bStatus)
+}
+
+// string strSession = 2;
+inline void LinkRestLogin::clear_strsession() {
+  strsession_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& LinkRestLogin::strsession() const {
+  // @@protoc_insertion_point(field_get:LinkRestLogin.strSession)
+  return strsession_.GetNoArena();
+}
+inline void LinkRestLogin::set_strsession(const ::std::string& value) {
+  
+  strsession_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:LinkRestLogin.strSession)
+}
+#if LANG_CXX11
+inline void LinkRestLogin::set_strsession(::std::string&& value) {
+  
+  strsession_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:LinkRestLogin.strSession)
+}
+#endif
+inline void LinkRestLogin::set_strsession(const char* value) {
+  
+  strsession_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:LinkRestLogin.strSession)
+}
+inline void LinkRestLogin::set_strsession(const char* value, size_t size) {
+  
+  strsession_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:LinkRestLogin.strSession)
+}
+inline ::std::string* LinkRestLogin::mutable_strsession() {
+  
+  // @@protoc_insertion_point(field_mutable:LinkRestLogin.strSession)
+  return strsession_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* LinkRestLogin::release_strsession() {
+  // @@protoc_insertion_point(field_release:LinkRestLogin.strSession)
+  
+  return strsession_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LinkRestLogin::set_allocated_strsession(::std::string* strsession) {
+  if (strsession != NULL) {
+    
+  } else {
+    
+  }
+  strsession_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), strsession);
+  // @@protoc_insertion_point(field_set_allocated:LinkRestLogin.strSession)
+}
+
+// int32 nTimeout = 3;
+inline void LinkRestLogin::clear_ntimeout() {
+  ntimeout_ = 0;
+}
+inline ::google::protobuf::int32 LinkRestLogin::ntimeout() const {
+  // @@protoc_insertion_point(field_get:LinkRestLogin.nTimeout)
+  return ntimeout_;
+}
+inline void LinkRestLogin::set_ntimeout(::google::protobuf::int32 value) {
+  
+  ntimeout_ = value;
+  // @@protoc_insertion_point(field_set:LinkRestLogin.nTimeout)
+}
+
+// -------------------------------------------------------------------
+
 // LinkLoginReq
 
 // string strUserName = 1;
@@ -10309,6 +10501,8 @@ inline void LinkEventNotify::set_allocated_cevent(::VidEvent* cevent) {
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

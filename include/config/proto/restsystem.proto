@@ -30,7 +30,7 @@ message RestGetDeviceSummary {
     string nONVIFTotal = 17;
     string nONVIFOnline = 18;
     string nRTMPPushTotal = 19;
-    string nRTMPPushOnline" = 20;
+    string nRTMPPushOnline = 20;
 }
 
 message RestGetRunInfo {
