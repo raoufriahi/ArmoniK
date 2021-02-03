@@ -102,3 +102,4 @@ include(../prj_linux/veuilib.pri)
 SOURCES += ../../include/config/linksystem.pb.cc
 SOURCES += ../../include/config/linkproto.pb.cc
 SOURCES += ../../include/config/vidconf.pb.cc
+SOURCES += ../../include/config/restsystem.pb.cc
