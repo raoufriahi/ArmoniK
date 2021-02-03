@@ -13,6 +13,7 @@
 #include "config/linkproto.pb.h"
 #include "config/linksystem.pb.h"
 #include "config/vidconf.pb.h"
+#include "config/restsystem.pb.h"
 #include "simplecrypt.hpp"
 #include "server/factory.hpp"
 #include "XSDK/XHash.h"

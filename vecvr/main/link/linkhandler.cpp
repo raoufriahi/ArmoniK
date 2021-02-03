@@ -1,5 +1,6 @@
 #include "link/linkhandler.hpp"
 #include "config/vidconf.pb.h"
+#include "config/restsystem.pb.h"
 #include <QtCore/QStorageInfo>
 #include <QtCore/QFileInfoList>
 #include <QtCore/QDir>
@@ -9,29 +10,6 @@
 #include "pbwrapper.hpp"
 #include <QTimer>
 
-/*
-Loop list for protobuf
-	VidCameraList cameraList;
-	GetCameraListConf(cameraList);
-	int cameraSize = cameraList.cvidcamera_size();
-
-	for (s32 i = 0; i < cameraList.cvidcamera_size(); i ++)
-	{
-		const VidCamera &cam = cameraList.cvidcamera(i);
-		if (cam.strid() == strCameraId)
-		{
-			pCam = cam;
-			return true;
-		}
-	}
-
-*/
-
-/*
-Add for protobuf
-	VidCamera *pCam = cameraListNew.add_cvidcamera();
-
-*/
 
 LinkHandler::LinkHandler(Factory &pFactory, VEventServer &pEvent)
 :m_pFactory(pFactory), m_bLogin(false), m_bRegNotify(false), m_server(NULL), 
