@@ -17,8 +17,8 @@
 #include "vplay/vplay.hpp"
 
 /**
- * @class velibdemo
- * @brief A demonstration class for the VeLib application.
+ * \class velibdemo
+ * \brief A demonstration class for the VeLib application.
  *
  * This class inherits from QMainWindow and QThread, and provides functionality for running the VeLib demo.
  */
@@ -28,19 +28,19 @@ class velibdemo : public QMainWindow, public QThread
 
 public:
     /**
-     * @brief Constructs a velibdemo object.
-     * @param parent The parent widget (default = nullptr).
+     * \brief Constructs a velibdemo object.
+     * \param parent The parent widget (default = nullptr).
      */
     velibdemo(QWidget *parent = nullptr);
 
     /**
-     * @brief Destroys the velibdemo object.
+     * \brief Destroys the velibdemo object.
      */
     ~velibdemo();
 
 public:
     /**
-     * @brief The entry point for the thread.
+     * \brief The entry point for the thread.
      *
      * This function is called when the thread starts running and performs the main functionality of the demo.
      */

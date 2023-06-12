@@ -30,14 +30,14 @@ using namespace cppkit;
 using namespace ffkit;
 
 /**
- * @brief A fast mutex used to synchronize access to gRenderNoVideoPic.
+ * \brief A fast mutex used to synchronize access to gRenderNoVideoPic.
  *
  * This mutex ensures that concurrent access to gRenderNoVideoPic is properly synchronized
  * to prevent race conditions and data corruption.
  */
 fast_mutex gRenderNoVideoLock;
 /**
- * @brief Pointer to an av_packet used for rendering video without an actual video source.
+ * \brief Pointer to an av_packet used for rendering video without an actual video source.
  *
  * This pointer holds the av_packet structure used for rendering video frames when there
  * is no actual video available. It can be set to NULL when there is no video frame to render.
@@ -45,27 +45,27 @@ fast_mutex gRenderNoVideoLock;
 av_packet *gRenderNoVideoPic = NULL;
 
 /**
- * @brief Defines the state representing a video frame.
+ * \brief Defines the state representing a video frame.
  *
  * This constant defines the value representing the state of a video frame.
  */
 #define STATE_FRAME 1
 
 /**
- * @brief Defines the state representing the main header.
+ * \brief Defines the state representing the main header.
  *
  * This constant defines the value representing the state of the main header.
  */
 #define STATE_MAIN_HEADER 2
 
 /**
- * @brief Defines the state representing a frame header.
+ * \brief Defines the state representing a frame header.
  *
  * This constant defines the value representing the state of a frame header.
  */
 #define STATE_FRAME_HEADER 3
 /**
- * @brief The size of the HTTP JPEG header.
+ * \brief The size of the HTTP JPEG header.
  *
  * This constant defines the size of the HTTP JPEG header, which is set to 1024 bytes.
  */
@@ -211,13 +211,13 @@ static RenderType UpdateRenderType(bool bHWAccel, RenderType current)
 	
 }
 /**
- * @brief Runs the VPlayData object with the specified parameters.
+ * \brief Runs the VPlayData object with the specified parameters.
  *
  * This function executes the main logic of the VPlayData object, performing the necessary operations
  * based on the given parameters. It should be called in a separate thread to avoid blocking the main
  * program execution.
  *
- * @param pParam A pointer to additional parameters required for the execution of the VPlayData object.
+ * \param pParam A pointer to additional parameters required for the execution of the VPlayData object.
  *               The exact type and format of the parameters should be documented separately.
  */
  void VPlayData::Run(void * pParam)
@@ -229,16 +229,16 @@ static RenderType UpdateRenderType(bool bHWAccel, RenderType current)
 }
 
 /**
- * @brief Executes the Run1 operation.
+ * \brief Executes the Run1 operation.
  *
  * This function performs the Run1 operation on the VPlayData object.
  * The Run1 operation is responsible for executing a specific task or operation
  * related to the VPlayData class.
  *
- * @note This function assumes that the necessary data and resources are available
+ * \note This function assumes that the necessary data and resources are available
  *       for performing the Run1 operation.
  *
- * @see VPlayData
+ * \see VPlayData
  */
 void VPlayData::Run1()
 {
@@ -368,13 +368,13 @@ void VPlayData::Run1()
 	
 }
 /**
- * @brief Handles the header line of the VPlayData object.
+ * \brief Handles the header line of the VPlayData object.
  *
  * This function is called when a header line is encountered during data processing.
  * It processes the provided buffer containing the header information and performs
  * any necessary operations.
  *
- * @param buf A pointer to a character buffer containing the header line.
+ * \param buf A pointer to a character buffer containing the header line.
  */
 inline void VPlayData::on_headerline(char *buf) 
 {
@@ -386,14 +386,14 @@ inline void VPlayData::on_headerline(char *buf)
 }
 
 /**
- * @brief Processes a frame of data.
+ * \brief Processes a frame of data.
  *
  * This function is responsible for processing a frame of data.
  * It takes a pointer to the frame data and its length as input
  * parameters.
  *
- * @param ptr Pointer to the frame data.
- * @param len Length of the frame data.
+ * \param ptr Pointer to the frame data.
+ * \param len Length of the frame data.
  *
  */
 inline void VPlayData::on_frame(unsigned char *ptr, int len) 
@@ -439,18 +439,18 @@ inline void VPlayData::on_frame(unsigned char *ptr, int len)
 }
 
 /**
- * @brief Writes data to an MJPEG stream.
+ * \brief Writes data to an MJPEG stream.
  *
  * This function is a callback that is called by an MJPEG streaming library to write data to a stream.
  *
- * @param ptr A pointer to the data buffer containing the data to be written.
- * @param size The size of each element to be written, in bytes.
- * @param nmemb The number of elements to be written.
- * @param userdata A pointer to user-defined data that can be passed to the callback function.
+ * \param ptr A pointer to the data buffer containing the data to be written.
+ * \param size The size of each element to be written, in bytes.
+ * \param nmemb The number of elements to be written.
+ * \param userdata A pointer to user-defined data that can be passed to the callback function.
  *
- * @return The total number of bytes successfully written.
+ * \return The total number of bytes successfully written.
  *
- * @note This function is intended to be used as a callback and should not be called directly.
+ * \note This function is intended to be used as a callback and should not be called directly.
  */
 size_t VPlayData::MJPEGWriteData(void *ptr, size_t size, size_t nmemb, void *userdata) 
 {
@@ -467,11 +467,11 @@ size_t VPlayData::MJPEGWriteData(void *ptr, size_t size, size_t nmemb, void *use
  * This function is called by libcurl to handle the received data from the MJPEG stream. It writes the data
  * to the appropriate location or performs any necessary processing.
  *
- * @param ptr Pointer to the received data.
- * @param size Size of each data element.
- * @param nmemb Number of data elements.
+ * \param ptr Pointer to the received data.
+ * \param size Size of each data element.
+ * \param nmemb Number of data elements.
  *
- * @return The total number of bytes written.
+ * \return The total number of bytes written.
  */
 size_t VPlayData::MJPEGWriteData1(void *ptr, size_t size, size_t nmemb) 
 {
@@ -562,19 +562,19 @@ size_t VPlayData::MJPEGWriteData1(void *ptr, size_t size, size_t nmemb)
 }
 
 /**
- * @brief Callback function used by libcurl to receive transfer information.
+ * \brief Callback function used by libcurl to receive transfer information.
  *
  * This function is called by libcurl to provide transfer progress information
  * during a file transfer operation. It is intended to be used as a callback
  * function when setting up a libcurl transfer.
  *
- * @param p A pointer to a user-defined data structure.
- * @param dltotal The total number of bytes expected to be downloaded.
- * @param dlnow The number of bytes downloaded so far.
- * @param ultotal The total number of bytes expected to be uploaded.
- * @param ulnow The number of bytes uploaded so far.
+ * \param p A pointer to a user-defined data structure.
+ * \param dltotal The total number of bytes expected to be downloaded.
+ * \param dlnow The number of bytes downloaded so far.
+ * \param ultotal The total number of bytes expected to be uploaded.
+ * \param ulnow The number of bytes uploaded so far.
  *
- * @return An integer value indicating the success or failure of the callback function.
+ * \return An integer value indicating the success or failure of the callback function.
  *         Return 0 to continue the transfer or a non-zero value to abort the transfer.
  */
 int VPlayData::CurlXferinfo(void *p, curl_off_t dltotal, curl_off_t dlnow,
@@ -587,18 +587,18 @@ int VPlayData::CurlXferinfo(void *p, curl_off_t dltotal, curl_off_t dlnow,
 	return 1;
 }
 /**
- * @brief Callback function for tracking the progress of a libcurl transfer.
+ * \brief Callback function for tracking the progress of a libcurl transfer.
  *
  * This function is used as a callback for the CURLOPT_XFERINFOFUNCTION option
  * in a libcurl request. It is called by libcurl to provide information about
  * the progress of the transfer.
  *
- * @param dltotal Total number of bytes expected to be downloaded.
- * @param dlnow   Number of bytes downloaded so far.
- * @param ultotal Total number of bytes expected to be uploaded.
- * @param ulnow   Number of bytes uploaded so far.
+ * \param dltotal Total number of bytes expected to be downloaded.
+ * \param dlnow   Number of bytes downloaded so far.
+ * \param ultotal Total number of bytes expected to be uploaded.
+ * \param ulnow   Number of bytes uploaded so far.
  *
- * @return An integer indicating whether the transfer should continue or not.
+ * \return An integer indicating whether the transfer should continue or not.
  *         Return 0 to continue the transfer, or a non-zero value to abort.
  */
 int VPlayData::CurlXferinfo1(curl_off_t dltotal, curl_off_t dlnow,
@@ -612,12 +612,12 @@ int VPlayData::CurlXferinfo1(curl_off_t dltotal, curl_off_t dlnow,
 }
 
 /**
- * @brief Executes the MJPEG process.
+ * \brief Executes the MJPEG process.
  *
  * This function runs the MJPEG process with the provided parameter.
  * It performs the necessary operations to handle the MJPEG data.
  *
- * @param pParam A pointer to the parameter required for the MJPEG process.
+ * \param pParam A pointer to the parameter required for the MJPEG process.
  *               The type and content of the parameter depend on the implementation.
  *               It is the responsibility of the caller to ensure the validity of the parameter.
  */
@@ -630,18 +630,18 @@ void VPlayData::RunMJPEG(void * pParam)
 }
 
  /**
- * @brief Runs the MJPEG1 algorithm on the VPlayData object.
+ * \brief Runs the MJPEG1 algorithm on the VPlayData object.
  *
  * This function applies the MJPEG1 algorithm to the VPlayData object,
  * producing a video stream with Motion-JPEG compression. The compressed
  * stream is stored internally within the object and can be accessed
  * using the appropriate getter methods.
  *
- * @note This function assumes that the VPlayData object contains a valid
+ * \note This function assumes that the VPlayData object contains a valid
  *       video stream. If the object is not initialized or the video stream
  *       is empty, the behavior is undefined.
  *
- * @return void
+ * \return void
  */
 void VPlayData::RunMJPEG1()
 {
@@ -695,16 +695,16 @@ void VPlayData::RunMJPEG1()
 }
 
 /**
- * @brief Handles the RM data for video playback.
+ * \brief Handles the RM data for video playback.
  *
  * This function is responsible for processing the RM (RealMedia) data and handling it during video playback.
  *
- * @param pContext A pointer to the context associated with the data handler.
- * @param packet The video frame packet to be processed.
- * @return Returns a boolean value indicating the success of the data handling operation.
+ * \param pContext A pointer to the context associated with the data handler.
+ * \param packet The video frame packet to be processed.
+ * \return Returns a boolean value indicating the success of the data handling operation.
  *
- * @note This function assumes that the `VideoFrame` structure is properly defined.
- * @warning This function should be used only for RM data handling.
+ * \note This function assumes that the `VideoFrame` structure is properly defined.
+ * \warning This function should be used only for RM data handling.
  */
 static BOOL VplayRMDataHandler(void* pContext, VideoFrame& packet)
 {
@@ -716,7 +716,7 @@ static BOOL VplayRMDataHandler(void* pContext, VideoFrame& packet)
 }
 
 /**
- * @brief Constructs a new VPlay object.
+ * \brief Constructs a new VPlay object.
  *
  * This constructor initializes a new instance of the VPlay class.
  */
@@ -726,7 +726,7 @@ VPlay::VPlay()
 }
 
 /**
- * @brief Destructor for the VPlay class.
+ * \brief Destructor for the VPlay class.
  *
  * This destructor is responsible for freeing the memory allocated by the VPlay object.
  * If the internal data member `m_data` is not null, it is deleted to prevent memory leaks.
@@ -739,17 +739,17 @@ VPlay::~VPlay()
 }
 
 /**
- * @brief Initializes the VPlay object with the specified parameters.
+ * \brief Initializes the VPlay object with the specified parameters.
  *
  * This function initializes the VPlay object and sets up the necessary configurations for video playback.
  *
- * @param strFile The path to the video file to be played.
- * @param bMJPEG Set to true if the video file is in MJPEG format, false otherwise.
- * @param strUser The username for authentication (if required).
- * @param strPass The password for authentication (if required).
- * @param bHWAccel Set to true to enable hardware acceleration, false otherwise.
+ * \param strFile The path to the video file to be played.
+ * \param bMJPEG Set to true if the video file is in MJPEG format, false otherwise.
+ * \param strUser The username for authentication (if required).
+ * \param strPass The password for authentication (if required).
+ * \param bHWAccel Set to true to enable hardware acceleration, false otherwise.
  *
- * @return Returns a boolean value indicating the success of the initialization.
+ * \return Returns a boolean value indicating the success of the initialization.
  *
  */
 BOOL VPlay::Init(string strFile, bool bMJPEG, string strUser, 
@@ -827,16 +827,16 @@ BOOL VPlay::GetStreamInfo(VideoStreamInfo &pInfo)
 	return TRUE;
 }
 /**
- * @brief Attaches a widget to the VPlay player.
+ * \brief Attaches a widget to the VPlay player.
  *
  * This function attaches a widget (specified by the provided window handle) to the VPlay player. 
  * The widget will be rendered with the specified dimensions and render type.
  *
- * @param hWnd The handle of the widget's window.
- * @param w The width of the widget.
- * @param h The height of the widget.
- * @param render The render type to be used for rendering the widget.
- * @return Returns TRUE if the widget was successfully attached, 
+ * \param hWnd The handle of the widget's window.
+ * \param w The width of the widget.
+ * \param h The height of the widget.
+ * \param render The render type to be used for rendering the widget.
+ * \return Returns TRUE if the widget was successfully attached, 
  *         or FALSE if a license is required or an error occurred.
  *
  */
@@ -856,22 +856,22 @@ BOOL VPlay::AttachWidget(HWND hWnd, int w, int h, RenderType render)
 	return TRUE;
 }
 /**
- * @brief Updates the dimensions of the widget and its associated window handle.
+ * \brief Updates the dimensions of the widget and its associated window handle.
  *
  * This function is used to update the dimensions of the widget and its associated window
  * handle. It should be called whenever the size of the widget needs to be changed.
  *
- * @param hWnd The handle to the widget's window.
- * @param w The new width of the widget.
- * @param h The new height of the widget.
- * @return Boolean value indicating the success of the update operation.
+ * \param hWnd The handle to the widget's window.
+ * \param w The new width of the widget.
+ * \param h The new height of the widget.
+ * \return Boolean value indicating the success of the update operation.
  *
- * @note This function assumes that the window handle `hWnd` is valid and refers to a
+ * \note This function assumes that the window handle `hWnd` is valid and refers to a
  *       valid window.
- * @note The function may return false if the update operation fails, for example, if the
+ * \note The function may return false if the update operation fails, for example, if the
  *       widget's window handle is invalid or the dimensions are invalid.
  *
- * @example
+ * \example
  * // Example usage of the UpdateWidget function
  * HWND hWnd = GetWidgetWindow(); // Get the handle to the widget's window
  * int newWidth = 800; // New width for the widget
@@ -896,19 +896,19 @@ BOOL VPlay::UpdateWidget(HWND hWnd, int w, int h)
 	return TRUE;
 }
 /**
- * @brief Enables or disables motion tracking for a specified window.
+ * \brief Enables or disables motion tracking for a specified window.
  *
  * This function enables or disables motion tracking for the specified window
  * identified by its handle (`hWnd`). Motion tracking allows capturing and
  * processing of motion-related events for the window.
  *
- * @param hWnd The handle to the window for which motion tracking is to be enabled or disabled.
- * @param enable Specifies whether motion tracking should be enabled (`true`) or disabled (`false`).
- * @param strConf An additional configuration string for the motion tracking process.
+ * \param hWnd The handle to the window for which motion tracking is to be enabled or disabled.
+ * \param enable Specifies whether motion tracking should be enabled (`true`) or disabled (`false`).
+ * \param strConf An additional configuration string for the motion tracking process.
  *                This parameter is optional and can be used to provide additional settings or parameters
  *                for the motion tracking algorithm.
  *
- * @return Returns a boolean value indicating the success of the operation.
+ * \return Returns a boolean value indicating the success of the operation.
  *         - `true` if motion tracking was enabled or disabled successfully.
  *         - `false` if motion tracking could not be enabled or disabled for the specified window.
  *
@@ -922,18 +922,18 @@ BOOL VPlay::EnableMot(HWND hWnd, bool enable, astring strConf)
 }
 
 /**
- * @brief Displays an alarm.
+ * \brief Displays an alarm.
  *
  * This function displays an alarm window specified by the provided `hWnd`.
  * The `hWnd` parameter represents the handle to the window that will host the alarm display.
  *
- * @param hWnd The handle to the window to display the alarm in.
- * @return Returns a boolean value indicating the success of displaying the alarm.
+ * \param hWnd The handle to the window to display the alarm in.
+ * \return Returns a boolean value indicating the success of displaying the alarm.
  *         - `true` if the alarm was successfully displayed.
  *         - `false` if an error occurred while displaying the alarm.
  *
- * @note The `hWnd` parameter should be a valid window handle.
- * @warning This function may fail if the window handle is invalid or if there is a problem displaying the alarm.
+ * \note The `hWnd` parameter should be a valid window handle.
+ * \warning This function may fail if the window handle is invalid or if there is a problem displaying the alarm.
  *          Ensure that the window handle is valid and the necessary resources are available.
  *
  */
@@ -946,21 +946,21 @@ BOOL VPlay::ShowAlarm(HWND hWnd)
 }
 
 /**
- * @brief Sets a playback time callback for a specified window.
+ * \brief Sets a playback time callback for a specified window.
  *
  * This function sets a callback function to be called whenever the playback time changes
  * for the specified window. The callback will receive the current playback time as a parameter.
  *
- * @param hWnd The handle to the window for which the playback time callback is being set.
- * @param pData A pointer to user-defined data that will be passed to the callback function.
- * @param callback A function pointer to the callback function that will be called when the playback time changes.
+ * \param hWnd The handle to the window for which the playback time callback is being set.
+ * \param pData A pointer to user-defined data that will be passed to the callback function.
+ * \param callback A function pointer to the callback function that will be called when the playback time changes.
  *
- * @note The callback function should have the following signature:
- * @code
+ * \note The callback function should have the following signature:
+ * \code
  * void CallbackFunction(double playbackTime, void* pData);
- * @endcode
+ * \endcode
  *
- * @return BOOL Returns TRUE if the playback time callback was set successfully, or FALSE otherwise.
+ * \return BOOL Returns TRUE if the playback time callback was set successfully, or FALSE otherwise.
  */
 BOOL VPlay::SetPbTimeCallback(HWND hWnd, void* pData, VPlayPBTimeCallback callback)
 {
@@ -968,28 +968,28 @@ BOOL VPlay::SetPbTimeCallback(HWND hWnd, void* pData, VPlayPBTimeCallback callba
 }
 
 /**
- * @brief Controls the VPlay system with the specified command and parameter.
+ * \brief Controls the VPlay system with the specified command and parameter.
  *
  * This function allows you to control the VPlay system by sending different commands
  * and parameters. It provides a way to interact with the VPlay system and perform various
  * actions based on the given command and parameter.
  *
- * @param cmd The command to be executed. It specifies the action to be performed.
- * @param param The parameter associated with the command. It provides additional information
+ * \param cmd The command to be executed. It specifies the action to be performed.
+ * \param param The parameter associated with the command. It provides additional information
  *              or data required for the specified command.
  *
- * @return Returns a boolean value indicating the success or failure of the control operation.
- *         - @c true if the control operation was successful.
- *         - @c false if the control operation failed or the specified command is invalid.
+ * \return Returns a boolean value indicating the success or failure of the control operation.
+ *         - \c true if the control operation was successful.
+ *         - \c false if the control operation failed or the specified command is invalid.
  *
- * @note This function should be called after initializing the VPlay system and establishing
+ * \note This function should be called after initializing the VPlay system and establishing
  *       a connection to the VPlay device.
  *
- * @see VPlay::Init()
- * @see VPlay::ConnectToDevice()
+ * \see VPlay::Init()
+ * \see VPlay::ConnectToDevice()
  *
- * @par Example usage:
- * @code
+ * \par Example usage:
+ * \code
  * VPlay vplay;
  * // Initialize and connect to the VPlay device...
  * // ...
@@ -998,7 +998,7 @@ BOOL VPlay::SetPbTimeCallback(HWND hWnd, void* pData, VPlayPBTimeCallback callba
  * } else {
  *     // Failed to start playback or invalid command
  * }
- * @endcode
+ * \endcode
  */
 
 BOOL VPlay::Control(VPlayCmd cmd, VPlayCmdParam param)
@@ -1009,15 +1009,15 @@ BOOL VPlay::Control(VPlayCmd cmd, VPlayCmdParam param)
 }
 
 /**
- * @brief Detaches a widget from the specified window handle.
+ * \brief Detaches a widget from the specified window handle.
  *
  * This function detaches a widget from the specified window handle (`hWnd`).
  * The widget will no longer be associated with the window and will not receive any further messages or events.
  *
- * @param hWnd The handle of the window from which to detach the widget.
- * @return @c true if the widget was successfully detached, @c false otherwise.
+ * \param hWnd The handle of the window from which to detach the widget.
+ * \return \c true if the widget was successfully detached, \c false otherwise.
  *
- * @see AttachWidget()
+ * \see AttachWidget()
  */
 BOOL VPlay::DetachWidget(HWND hWnd)
 {
@@ -1035,23 +1035,23 @@ BOOL VPlay::DetachWidget(HWND hWnd)
 }
 
 /**
- * @brief Starts retrieving data using the VPlay API.
+ * \brief Starts retrieving data using the VPlay API.
  *
  * This function initiates the process of retrieving data using the VPlay API. It provides a callback mechanism to handle the retrieved data.
  *
- * @param pData A pointer to the data buffer where the retrieved data will be stored.
- * @param callback A function pointer to the data handler callback function that will be called when data is retrieved.
+ * \param pData A pointer to the data buffer where the retrieved data will be stored.
+ * \param callback A function pointer to the data handler callback function that will be called when data is retrieved.
  *                 The callback function should have the following signature:
- *                 @code{.cpp}
+ *                 \code{.cpp}
  *                 void callback(void* data);
- *                 @endcode
+ *                 \endcode
  *                 The `data` parameter in the callback function will contain the retrieved data.
  *
- * @return A boolean value indicating the success of starting the data retrieval process.
+ * \return A boolean value indicating the success of starting the data retrieval process.
  *         - `true` if the data retrieval process was started successfully.
  *         - `false` if there was an error starting the data retrieval process.
  *
- * @note The `pData` parameter must point to a valid memory location where the retrieved data can be stored.
+ * \note The `pData` parameter must point to a valid memory location where the retrieved data can be stored.
  *       The `callback` function will be called asynchronously whenever data is retrieved, so make sure to handle the retrieved data properly in the callback.
  */
 BOOL VPlay::StartGetData(void * pData, VPlayDataHandler callback)
@@ -1067,21 +1067,21 @@ BOOL VPlay::StartGetData(void * pData, VPlayDataHandler callback)
 }
 
 /**
- * @brief Stops the data retrieval process.
+ * \brief Stops the data retrieval process.
  *
  * This function stops the retrieval of data in the VPlay class. It is typically used to
  * terminate the process of getting data from a source. Once called, the data retrieval
  * process will be halted and any ongoing operations related to data retrieval will be
  * interrupted or finalized.
  *
- * @return Boolean value indicating the success of stopping the data retrieval.
+ * \return Boolean value indicating the success of stopping the data retrieval.
  *         - `true` if the data retrieval was successfully stopped.
  *         - `false` if an error occurred or the data retrieval was already stopped.
  *
- * @note This function should be called after the `StartGetData()` function to stop the
+ * \note This function should be called after the `StartGetData()` function to stop the
  *       data retrieval process.
  *
- * @see StartGetData()
+ * \see StartGetData()
  */
 BOOL VPlay::StopGetData()
 {
@@ -1126,16 +1126,16 @@ BOOL VPlay::StartGetRawFrame(void* pData, VPlayRawFrameHandler callback)
 	return ret;
 }
 /**
- * @brief Stops the process of retrieving raw frames.
+ * \brief Stops the process of retrieving raw frames.
  *
  * This function stops the retrieval of raw frames initiated by the `StartGetRawFrame` function.
  * It can be called to terminate the ongoing frame retrieval process and release associated resources.
  *
- * @return Boolean value indicating the success of the operation.
+ * \return Boolean value indicating the success of the operation.
  *         - `true` if the raw frame retrieval was successfully stopped.
  *         - `false` if an error occurred or if the raw frame retrieval was not previously started.
  *
- * @see VPlay::StartGetRawFrame()
+ * \see VPlay::StartGetRawFrame()
  */
 BOOL VPlay::StopGetRawFrame()
 {
@@ -1153,15 +1153,15 @@ BOOL VPlay::StopGetRawFrame()
 	return ret;
 }
 /**
- * @brief Puts raw video data into the VPlay object.
+ * \brief Puts raw video data into the VPlay object.
  *
  * This method is used to supply raw video data to the VPlay object for processing
  * and playback. The provided video data should be contained in a VideoFrame object.
  *
- * @param packet A reference to a VideoFrame object containing the raw video data.
- * @return Returns a boolean value indicating the success of the operation.
+ * \param packet A reference to a VideoFrame object containing the raw video data.
+ * \return Returns a boolean value indicating the success of the operation.
  *
- * @note The VideoFrame object passed to this method should contain valid video data
+ * \note The VideoFrame object passed to this method should contain valid video data
  *       and adhere to the expected format supported by the VPlay object.
  */
 BOOL VPlay::PutRawData(VideoFrame& packet)
@@ -1171,16 +1171,16 @@ BOOL VPlay::PutRawData(VideoFrame& packet)
 }
 
 /**
- * @brief Sets the license for VPlay.
+ * \brief Sets the license for VPlay.
  *
  * This function sets the license for VPlay, allowing the usage of licensed features.
  * The license is provided as a string.
  *
- * @param strLicense A reference to the string containing the license.
+ * \param strLicense A reference to the string containing the license.
  *
- * @return BOOL Returns true if the license was set successfully, false otherwise.
+ * \return BOOL Returns true if the license was set successfully, false otherwise.
  *
- * @note The license string must be valid and correspond to a valid license key.
+ * \note The license string must be valid and correspond to a valid license key.
  * If the license is not set or is invalid, certain features may be disabled or limited.
  * Please contact the VPlay support team for assistance with obtaining a valid license.
  */
@@ -1213,26 +1213,26 @@ BOOL VPlay::GetLicenseInfo(astring &strHostId, int &ch, astring &type,
 }
 
 /**
- * @brief Encodes a raw frame to JPEG format.
+ * \brief Encodes a raw frame to JPEG format.
  *
  * This function encodes a raw frame represented by `pRaw` to JPEG format with the specified
  * dimensions and writes the encoded data to the `output` buffer.
  *
- * @param pRaw The raw frame to be encoded.
- * @param dst_w The width of the destination image in pixels.
- * @param dst_h The height of the destination image in pixels.
- * @param output The buffer to store the encoded JPEG data.
- * @param outputSize The size of the `output` buffer.
- * @return The size of the encoded JPEG data in bytes. Returns 0 if encoding fails or if the
+ * \param pRaw The raw frame to be encoded.
+ * \param dst_w The width of the destination image in pixels.
+ * \param dst_h The height of the destination image in pixels.
+ * \param output The buffer to store the encoded JPEG data.
+ * \param outputSize The size of the `output` buffer.
+ * \return The size of the encoded JPEG data in bytes. Returns 0 if encoding fails or if the
  *         `outputSize` is not large enough to hold the encoded data.
  *
- * @note The `output` buffer should be large enough to hold the encoded JPEG data. Use the
+ * \note The `output` buffer should be large enough to hold the encoded JPEG data. Use the
  *       `outputSize` parameter to ensure sufficient space.
  *
- * @note The `pRaw` parameter should contain valid raw frame data in a suitable format before
+ * \note The `pRaw` parameter should contain valid raw frame data in a suitable format before
  *       calling this function.
  *
- * @warning The `output` buffer must be pre-allocated and have enough capacity to hold the
+ * \warning The `output` buffer must be pre-allocated and have enough capacity to hold the
  *          encoded JPEG data; otherwise, the function may overwrite memory and cause undefined
  *          behavior.
  */

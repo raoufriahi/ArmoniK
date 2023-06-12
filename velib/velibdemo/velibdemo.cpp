@@ -15,15 +15,15 @@
 
 //#define DEMO_PLAYBACK
 /**
- * @brief Dumps hexadecimal data to the console.
+ * \brief Dumps hexadecimal data to the console.
  *
  * This function takes a pointer to a buffer containing binary data and its length,
  * and outputs the hexadecimal representation of the data to the console.
  *
- * @param pNuf Pointer to the data buffer.
- * @param nLen Length of the data buffer.
+ * \param pNuf Pointer to the data buffer.
+ * \param nLen Length of the data buffer.
  *
- * @note This function assumes that the buffer is allocated and valid.
+ * \note This function assumes that the buffer is allocated and valid.
  *       It does not perform any boundary checks.
  */
 static void DumpHexData(unsigned char *pNuf, int nLen)
@@ -37,11 +37,11 @@ static void DumpHexData(unsigned char *pNuf, int nLen)
 }
 
 /**
- * @brief Constructs a new `velibdemo` object.
+ * \brief Constructs a new `velibdemo` object.
  *
  * This constructor initializes a `velibdemo` object, which is a subclass of `QMainWindow`.
  *
- * @param parent The parent widget of the `velibdemo` object.
+ * \param parent The parent widget of the `velibdemo` object.
  */
 velibdemo::velibdemo(QWidget *parent)
 	: QMainWindow(parent)
@@ -69,13 +69,13 @@ velibdemo::velibdemo(QWidget *parent)
 }
 
 /**
- * @brief Destructor for the velibdemo class.
+ * \brief Destructor for the velibdemo class.
  * 
  * This destructor is responsible for cleaning up any resources allocated
  * by the velibdemo class. It is automatically called when an object of
  * the velibdemo class is destroyed.
  *
- * @note The destructor does not take any parameters and has no return value.
+ * \note The destructor does not take any parameters and has no return value.
  */
 velibdemo::~velibdemo()
 {
@@ -85,15 +85,15 @@ velibdemo::~velibdemo()
 
 
 /**
- * @brief Executes the main functionality of the velibdemo.
+ * \brief Executes the main functionality of the velibdemo.
  *
  * This function runs the main logic of the velibdemo application. It performs the necessary setup,
  * initializes variables, and starts the execution loop. It continuously checks for incoming data
  * and processes it accordingly until the application is stopped.
  *
- * @note This function should be called after initializing the velibdemo object.
+ * \note This function should be called after initializing the velibdemo object.
  *
- * @see velibdemo
+ * \see velibdemo
  */
 void velibdemo::run()
 {

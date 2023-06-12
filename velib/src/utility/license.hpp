@@ -18,35 +18,35 @@ using Poco::Environment;
 /**
  * Sets the license.
  *
- * @param lic The license to be set.
- * @return True if the license was set successfully, false otherwise.
+ * \param lic The license to be set.
+ * \return True if the license was set successfully, false otherwise.
  */
 BOOL SetIc(string lic);
 
 /**
  * Checks if the license is valid.
  *
- * @return True if the license is valid, false otherwise.
+ * \return True if the license is valid, false otherwise.
  */
 BOOL IsIced();
 
 /**
  * Sets the license using the provided license string.
  *
- * @param strLicense A reference to the license string.
- * @return True if the license was set successfully, false otherwise.
+ * \param strLicense A reference to the license string.
+ * \return True if the license was set successfully, false otherwise.
  */
 BOOL LicSetLicense(astring &strLicense);
 
 /**
  * Retrieves information about the license.
  *
- * @param strHostId A reference to the host ID.
- * @param ch A reference to the license channel.
- * @param type A reference to the license type.
- * @param startTime A reference to the license start time.
- * @param expireTime A reference to the license expiration time.
- * @return True if the license information was retrieved successfully, false otherwise.
+ * \param strHostId A reference to the host ID.
+ * \param ch A reference to the license channel.
+ * \param type A reference to the license type.
+ * \param startTime A reference to the license start time.
+ * \param expireTime A reference to the license expiration time.
+ * \return True if the license information was retrieved successfully, false otherwise.
  */
 BOOL LicGetLicenseInfo(astring &strHostId, int &ch, astring &type, 
                       astring &startTime, astring &expireTime);
@@ -54,28 +54,28 @@ BOOL LicGetLicenseInfo(astring &strHostId, int &ch, astring &type,
 /**
  * Increments the license reference count for recording.
  *
- * @return True if the reference count was incremented successfully, false otherwise.
+ * \return True if the reference count was incremented successfully, false otherwise.
  */
 bool LicRecordRef();
 
 /**
  * Decrements the license reference count for recording.
  *
- * @return True if the reference count was decremented successfully, false otherwise.
+ * \return True if the reference count was decremented successfully, false otherwise.
  */
 bool LicRecordUnRef();
 
 /**
  * Increments the license reference count for playback.
  *
- * @return True if the reference count was incremented successfully, false otherwise.
+ * \return True if the reference count was incremented successfully, false otherwise.
  */
 bool LicPlayRef();
 
 /**
  * Decrements the license reference count for playback.
  *
- * @return True if the reference count was decremented successfully, false otherwise.
+ * \return True if the reference count was decremented successfully, false otherwise.
  */
 bool LicPlayUnRef();
 
