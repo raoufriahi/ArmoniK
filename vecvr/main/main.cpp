@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2023 Heimdall
  *
  * The computer program contained herein contains proprietary
  * information which is the property of Heimdall.
@@ -35,7 +35,20 @@ astring gAppdir;
 #include "mediaserver.hpp"
 #endif
 
-
+/**
+ * \brief Notifies the web server about a user's password change.
+ *
+ * This function is responsible for notifying the web server when a user's password is changed.
+ * The web server can take appropriate actions based on this notification.
+ *
+ * \param pParam    A pointer to additional parameters or context data (if any).
+ * \param strUser   The username of the user whose password was changed.
+ * \param strPasswd The new password for the user.
+ * \return          Returns a BOOL value indicating the success or failure of the notification.
+ *
+ * \note            This function should be called whenever a user's password is changed
+ *                  to ensure the web server is aware of the change.
+ */
 static BOOL WebServerUserChangeNotify(void* pParam, astring strUser, astring strPasswd)
 {
 	astring strPasswdPath = gAppdir + ".htpasswd";
