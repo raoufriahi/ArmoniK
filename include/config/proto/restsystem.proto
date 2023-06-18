@@ -1,9 +1,9 @@
 syntax = "proto3";
 
 message RestGetCodecInfo {
-    int32 nCPU = 1;
-    int32 nCPUCore = 2;
-    string strCPUModel = 3;
+    int32 nCPU           = 1;
+    int32 nCPUCore       = 2;
+    string strCPUModel   = 3;
     string strHWEncoders = 4;
     string strHWDecoders = 5;
     string strSWEncoders = 6;
@@ -11,68 +11,68 @@ message RestGetCodecInfo {
 }
 
 message RestGetDeviceSummary {
-    string nCameraTotal = 1;
-    string nCameraOnline = 2;
-    string nHikDevTotal = 3;
-    string nHikDevOnline = 4;
-    string nDhDevTotal = 5;
-    string nDhDevOnline = 6;
-    string nHikIscDevTotal = 7;
+    string nCameraTotal     = 1;
+    string nCameraOnline    = 2;
+    string nHikDevTotal     = 3;
+    string nHikDevOnline    = 4;
+    string nDhDevTotal      = 5;
+    string nDhDevOnline     = 6;
+    string nHikIscDevTotal  = 7;
     string nHikIscDevOnline = 8;
-    string nTdDevTotal = 9;
-    string nTdDevOnline = 10;
-    string nGbDevTotal = 11;
-    string nGbDevOnline = 12;
-    string nCloudTotal = 13;
-    string nCloudOnline = 14;
-    string nRTSPRTMPTotal = 15;
-    string nRTSPRTMPOnline = 16;
-    string nONVIFTotal = 17;
-    string nONVIFOnline = 18;
-    string nRTMPPushTotal = 19;
-    string nRTMPPushOnline = 20;
+    string nTdDevTotal      = 9;
+    string nTdDevOnline     = 10;
+    string nGbDevTotal      = 11;
+    string nGbDevOnline     = 12;
+    string nCloudTotal      = 13;
+    string nCloudOnline     = 14;
+    string nRTSPRTMPTotal   = 15;
+    string nRTSPRTMPOnline  = 16;
+    string nONVIFTotal      = 17;
+    string nONVIFOnline     = 18;
+    string nRTMPPushTotal   = 19;
+    string nRTMPPushOnline  = 20;
 }
 
 message RestGetRunInfo {
-    string strRunTime = 1;
-    string strCPU = 2;
-    string strMemory = 3;
-    string strNetworkIn = 4;
-    string strNetworkOut = 5;
-    string strTotalSpace = 6;
-    string strFreeSpace = 7;
-    string nRunTimeSec = 8;
-    string nCPUUsage = 9;
-    string nMemoryUsage = 10;
+    string strRunTime       = 1;
+    string strCPU           = 2;
+    string strMemory        = 3;
+    string strNetworkIn     = 4;
+    string strNetworkOut    = 5;
+    string strTotalSpace    = 6;
+    string strFreeSpace     = 7;
+    string nRunTimeSec      = 8;
+    string nCPUUsage        = 9;
+    string nMemoryUsage     = 10;
     string nTotalMemoryByte = 11;
-    string nNetworkInK = 12;
-    string nNetworkOutK = 13;
-    string nTotalSpaceByte = 14;
-    string nFreeSpaceByte = 15;
+    string nNetworkInK      = 12;
+    string nNetworkOutK     = 13;
+    string nTotalSpaceByte  = 14;
+    string nFreeSpaceByte   = 15;
 }
 
 message RestGetSystemInfo {
-    string strVersion = 1;
-    string strHostId = 2;
-    string strLicenseType = 3;
-    string strLicenseFull = 4;
-    string strChannelLimit = 5;
-    string strEndtime = 6;
-    bool bDeviceSDK = 7;
-    bool bDeviceSDKPb = 8;
-    bool bGB28181 = 9;
-    bool bTranscoding = 10;
-    bool bCluster = 11;
-    bool bPlatform = 12;
-    bool bVideoConference = 13;
+    string strVersion       = 1;
+    string strHostId        = 2;
+    string strLicenseType   = 3;
+    string strLicenseFull   = 4;
+    string strChannelLimit  = 5;
+    string strEndtime       = 6;
+    bool bDeviceSDK         = 7;
+    bool bDeviceSDKPb       = 8;
+    bool bGB28181           = 9;
+    bool bTranscoding       = 10;
+    bool bCluster           = 11;
+    bool bPlatform          = 12;
+    bool bVideoConference   = 13;
 }
 
 message Volumes {
-	string strDevice = 1;
-    string strPath = 2;
-    string bTotal = 3;
-    string bFree = 4;
-    bool bReadOnly = 5;
+	string strDevice  = 1;
+    string strPath    = 2;
+    string bTotal     = 3;
+    string bFree      = 4;
+    bool bReadOnly    = 5;
 }
 
 message RestGetVolumes {
@@ -80,24 +80,24 @@ message RestGetVolumes {
 }
 
 message RestKeepalive {
-    bool bStatus = 1;
+    bool bStatus   = 1;
     string strCode = 2;
 }
 
 
 message RestLogin {
-    bool bStatus = 1;
+    bool bStatus      = 1;
     string strSession = 2;
-    int32 nTimeout = 3;
+    int32 nTimeout    = 3;
 }
 
 
 message RestLogout {
-    bool bStatus = 1;
+    bool bStatus   = 1;
     string strCode = 2;
 }
 
 message RestUpdateUser {
-    bool bStatus = 1;
+    bool bStatus   = 1;
     string strCode = 2;
 }
