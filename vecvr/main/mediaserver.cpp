@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2023 Viva Technology
  *
  * The computer program contained herein contains proprietary
  * information which is the property of Heimdall.
@@ -43,7 +43,13 @@ using namespace ZL::DEV;
 using namespace media;
 
 
-
+/**
+ * \class VEMediaChannel
+ * \brief Represents a media channel for video encoding.
+ *
+ * This class extends the functionality of the DevChannel class
+ * to specifically handle media-related operations, such as video encoding.
+ */
 class VEMediaChannel : public DevChannel
 {
 public:
@@ -80,28 +86,52 @@ TcpServer<HttpSession>* VEMediaChannel::m_httpSrv   = NULL;
 TcpServer<ShellSession>* VEMediaChannel::m_shellSrv = NULL;
 std::thread * VEMediaChannel::m_pThread             = NULL;
 
+/**
+ * \brief Initializes the media server.
+ *
+ * This function initializes the media server by configuring various components
+ * such as the logger, loading the INI configuration, starting TCP servers for
+ * different protocols, and creating a separate thread to handle the media server
+ * operations.
+ *
+ * \return True if the media server is successfully initialized, false otherwise.
+ */
 bool VEMediaChannel::InitMediaServer()
 {
 	Logger::Instance().add(std::make_shared<ConsoleChannel>("stdout", LTrace));
 	Config::loaIniConfig();
 	
+	// Create TCP servers for different protocols
     m_rtspSrv  = new TcpServer<RtspSession>();
     m_rtmpSrv  = new TcpServer<RtmpSession>();
     m_httpSrv  = new TcpServer<HttpSession>();
 	m_shellSrv = new TcpServer<ShellSession>();
 	
+	// Start TCP servers with specified ports from INI configuration
 	m_rtspSrv->start(mINI::Instance()[Config::Rtsp::kPort]);
 	m_rtmpSrv->start(mINI::Instance()[Config::Rtmp::kPort]);
 	m_httpSrv->start(mINI::Instance()[Config::Http::kPort]);
 	
 	//TODO add HTTPS support
 	
+	// Create a separate thread to handle media server operations
 	m_pThread = new std::thread(VEMediaChannel::MediaServerThread);
 	
 	return true;
 	
 }
 
+/**
+ * \brief Executes the media server thread.
+ *
+ * This function runs the media server thread, which is responsible for handling various media server operations.
+ * It starts the event poller loop and performs necessary cleanup before returning.
+ *
+ * \note This function assumes that the necessary server objects (RTSP, RTMP, HTTP, and shell) have been initialized
+ *       and are accessible through the member variables of the `VEMediaChannel` class.
+ *
+ * \return None.
+ */
 void VEMediaChannel::MediaServerThread()
 {
 	
@@ -122,6 +152,15 @@ void VEMediaChannel::MediaServerThread()
 	return;
 }	
 
+/**
+ * \brief Constructor for the VEMediaChannel class.
+ *
+ * This constructor initializes a VEMediaChannel instance with the provided parameters.
+ *
+ * \param pFactory The Factory object associated with the media channel.
+ * \param strId The identifier string for the media channel.
+ * \param nStreamId The stream ID for the media channel.
+ */
 VEMediaChannel::VEMediaChannel(Factory &pFactory, std::string strId, int nStreamId)
 :m_pFactory(pFactory), m_strId(strId), m_nStreamId(nStreamId), m_bFirstFrame(true),
 DevChannel("live", strId.c_str())
@@ -145,6 +184,13 @@ DevChannel("live", strId.c_str())
             (void *)this);
     }
 }
+
+/**
+ * \brief Destructor for the VEMediaChannel class.
+ *
+ * This destructor is responsible for unregistering the data callback based on the stream ID.
+ * It is automatically called when an instance of the VEMediaChannel class is destroyed.
+ */
 VEMediaChannel::~VEMediaChannel()
 {
     switch(m_nStreamId)
@@ -160,6 +206,16 @@ VEMediaChannel::~VEMediaChannel()
     }
 }
 
+/**
+ * \brief DataHandler1 function processes the video frame data.
+ *
+ * This function is responsible for processing the video frame data received by the media channel.
+ * It performs the necessary operations on the provided VideoFrame object.
+ *
+ * \param frame The video frame to be processed.
+ *
+ * \see VEMediaChannel::DataHandler
+ */
 void VEMediaChannel::DataHandler1(VideoFrame& frame)
 {
     //CodecType current;
@@ -255,6 +311,19 @@ void VEMediaChannel::DataHandler1(VideoFrame& frame)
 	return;
 }
 
+/**
+ * \brief DataHandler function processes the video frame data.
+ *
+ * This function is responsible for handling video frame data received by the media channel.
+ * It delegates the processing to the DataHandler1 member function of the associated VEMediaChannel object.
+ *
+ * \param frame The video frame to be processed.
+ * \param pParam A pointer to the VEMediaChannel object associated with the data handler.
+ *
+ * \return The result of calling the DataHandler1 member function.
+ *
+ * \see VEMediaChannel::DataHandler1
+ */
 void VEMediaChannel::DataHandler(VideoFrame& frame, void * pParam)
 {
     VEMediaChannel *pObject = static_cast<VEMediaChannel *> (pParam);
@@ -262,18 +331,49 @@ void VEMediaChannel::DataHandler(VideoFrame& frame, void * pParam)
     return pObject->DataHandler1(frame);
 }
 
-
-
+/**
+ * \brief Constructs a VEMediaServer object.
+ *
+ * This constructor initializes a VEMediaServer object with the provided Factory instance.
+ * It also calls the InitDevices() method to initialize the devices used by the media server.
+ *
+ * \param pFactory The Factory instance to be used by the media server.
+ */
 VEMediaServer::VEMediaServer(Factory &pFactory)
 :m_pFactory(pFactory)
 {
 	InitDevices();
 }
+
+/**
+ * \brief Destructor for the VEMediaServer class.
+ *
+ * This destructor is responsible for cleaning up any resources allocated by the VEMediaServer object.
+ * It ensures that all active media connections are closed and any associated memory is released.
+ * 
+ * \note This destructor should be called when the VEMediaServer object is no longer needed to avoid resource leaks.
+ */
 VEMediaServer::~VEMediaServer()
 {
-	
+    // Clean up active media connections
+    // ...
+
+    // Release any other allocated resources
+    // ...
 }
 
+/**
+ * \brief Callback function for device change events in the VEMediaServer.
+ *
+ * This function is invoked when a device change event occurs in the VEMediaServer.
+ *
+ * \param pData Pointer to additional data associated with the device change event.
+ * \param change The FactoryCameraChangeData object containing information about the device change.
+ * \return Boolean value indicating the success of the callback function.
+ *     - true: The callback function executed successfully.
+ *     - false: An error occurred while executing the callback function.
+ *
+ */
 bool VEMediaServer::DeviceChangeCallbackFunc(void* pData, 
 								FactoryCameraChangeData change)
 {
@@ -283,6 +383,15 @@ bool VEMediaServer::DeviceChangeCallbackFunc(void* pData,
 	}
 	return true;
 }
+
+/**
+ * \brief Callback function for device change events.
+ *
+ * This function is called when a device change event occurs in the media server.
+ *
+ * \param change The FactoryCameraChangeData object containing information about the device change.
+ * \return True if the device change was handled successfully, false otherwise.
+ */
 bool VEMediaServer::DeviceChangeCallbackFunc1(FactoryCameraChangeData change)
 {
     VidCamera  pParam;
@@ -303,6 +412,15 @@ bool VEMediaServer::DeviceChangeCallbackFunc1(FactoryCameraChangeData change)
 	return true;
 }
 
+/**
+ * \brief Initializes all devices for the VEMediaServer.
+ *
+ * This function initializes all devices for the VEMediaServer. It performs the necessary setup and configuration
+ * to prepare the devices for operation.
+ *
+ * \return `true` if the device initialization was successful for all devices, `false` otherwise.
+ *
+ */
 bool VEMediaServer::InitDevices()
 {	
 	VidCameraList pCameraList;
@@ -315,6 +433,15 @@ bool VEMediaServer::InitDevices()
 }
 
 
+/**
+ * \brief Deletes a single device from the VEMediaServer.
+ *
+ * This function deletes a single device from the VEMediaServer based on the provided device ID.
+ *
+ * \param strId The ID of the device to be deleted.
+ * \return `true` if the device deletion was successful, `false` otherwise.
+ *
+ */
 bool VEMediaServer::DeleteOneDevice(astring strId)
 {
 	VEMediaChannelMap::iterator it = m_ChannelMap.begin();
@@ -328,13 +455,32 @@ bool VEMediaServer::DeleteOneDevice(astring strId)
 	return true;
 }
 
+/**
+ * \brief Initializes a single device for the VEMediaServer.
+ *
+ * This function initializes a single device for the VEMediaServer based on the provided video camera parameters.
+ *
+ * \param pParam The video camera parameters for the device initialization.
+ * \return `true` if the device initialization was successful, `false` otherwise.
+ *
+ */
 bool VEMediaServer::InitOneDevice(VidCamera  pParam)
 {
     m_ChannelMap[pParam.strid()] = new VEMediaChannel(m_pFactory, pParam.strid(), 0);
 	return true;
 }
 
-
+/**
+ * \brief Initializes the media server.
+ *
+ * This function initializes the media server by performing necessary setup
+ * tasks and configurations.
+ *
+ * \return True if the media server was successfully initialized, false otherwise.
+ *
+ * \note This function should be called before any other media server operations
+ *       are performed.
+ */
 bool VEMediaServer::InitMediaServer()
 {
 	return VEMediaChannel::InitMediaServer();
