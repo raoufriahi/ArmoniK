@@ -1,25 +1,12 @@
-/** <!--
+/*
+ * Copyright (c) 2017-2023 Viva Technology
  *
- *  Copyright (C) 2017 veyesys support@veyesys.com
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  If you would like this software to be made available to you under an 
- *  alternate commercial license please email support@veyesys.com 
- *  for more information.
- *
- * -->
+ * The computer program contained herein contains proprietary
+ * information which is the property of Heimdall.
+ * The program may be used and/or copied only with the written
+ * permission of Heimdall or in accordance with the
+ * terms and conditions stipulated in the agreement/contract under
+ * which the programs have been supplied.
  */
 #ifndef __VE_MEDIA_SERVER_H__
 #define __VE_MEDIA_SERVER_H__
@@ -28,7 +15,10 @@
 class VEMediaChannel;
 
 typedef std::map<string, VEMediaChannel*> VEMediaChannelMap;
-
+/**
+ * \class VEMediaServer
+ * \brief Represents a media server.
+ */
 class VEMediaServer 
 {
 public:
@@ -36,20 +26,52 @@ public:
 	~VEMediaServer();
 	
 public:
+    /**
+	 * \brief Initializes the media server.
+	 * \return true if the initialization is successful, false otherwise.
+	 */
 	static bool InitMediaServer();
 	
 public:
+    /**
+	 * \brief Callback function for device change events.
+	 * \param pData Pointer to additional data.
+	 * \param change The FactoryCameraChangeData object representing the change event.
+	 * \return true if the callback was successfully executed, false otherwise.
+	 */
 	static bool DeviceChangeCallbackFunc(void* pData, FactoryCameraChangeData change);
+	
+	/**
+	 * \brief Callback function for device change events.
+	 * \param change The FactoryCameraChangeData object representing the change event.
+	 * \return true if the callback was successfully executed, false otherwise.
+	 */
 	bool DeviceChangeCallbackFunc1(FactoryCameraChangeData change);
 	
 public:
+    /**
+	 * \brief Initializes all devices.
+	 * \return true if the initialization is successful, false otherwise.
+	 */
 	bool InitDevices();
+
+	/**
+	 * \brief Initializes a single device.
+	 * \param pParam The VidCamera object representing the device parameters.
+	 * \return true if the initialization is successful, false otherwise.
+	 */
 	bool InitOneDevice(VidCamera  pParam);
+
+	/**
+	 * \brief Deletes a single device.
+	 * \param strId The ID of the device to delete.
+	 * \return true if the deletion is successful, false otherwise.
+	 */
 	bool DeleteOneDevice(astring strId);
 	
 private:
-	VEMediaChannelMap m_ChannelMap;
-	Factory &m_pFactory;
+	VEMediaChannelMap m_ChannelMap;   // A map of media channel names to VEMediaChannel pointers.
+	Factory &m_pFactory;              // A reference to the Factory object.
 };
 
 #endif /* __VE_MEDIA_SERVER_H__ */

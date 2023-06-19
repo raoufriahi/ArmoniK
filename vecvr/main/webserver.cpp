@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2023 Viva Technology
  *
  * The computer program contained herein contains proprietary
  * information which is the property of Heimdall.

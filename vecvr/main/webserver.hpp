@@ -1,25 +1,12 @@
-/** <!--
+/*
+ * Copyright (c) 2017-2023 Viva Technology
  *
- *  Copyright (C) 2017 veyesys support@veyesys.com
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  If you would like this software to be made available to you under an 
- *  alternate commercial license please email support@veyesys.com 
- *  for more information.
- *
- * -->
+ * The computer program contained herein contains proprietary
+ * information which is the property of Heimdall.
+ * The program may be used and/or copied only with the written
+ * permission of Heimdall or in accordance with the
+ * terms and conditions stipulated in the agreement/contract under
+ * which the programs have been supplied.
  */
 #ifndef __VE_WEB_SERVER_H__
 #define __VE_WEB_SERVER_H__
@@ -42,6 +29,16 @@
 class VEWebServer 
 {
 public:
+    /**
+     * \brief Constructor for the VEWebServer class.
+     *
+     * Initializes a VEWebServer object with the provided parameters and sets up
+     * various RESTful API and WebSocket handlers.
+     *
+     * \param cpp_options The options for the CivetServer instance.
+     * \param pFactory A reference to the Factory object.
+     * \param pEvent A reference to the VEventServer object.
+     */
 	VEWebServer(std::vector<std::string> cpp_options, Factory &pFactory, 
 			VEventServer &pEvent)
 		:pServer(new CivetServer(cpp_options)), server(*pServer), m_pFactory(pFactory), 
@@ -64,34 +61,84 @@ public:
 	~VEWebServer(){}
 private:
 
+    /**
+     * \brief Adds WebSocket handlers to the server.
+     *
+     * This function adds WebSocket handlers to the server for handling WebSocket
+     * connections. It sets up handlers for the LINK_PROTO_WS_PATH and
+     * LINK_PROTO_WS_STREAM_PATH paths. Additionally, a test handler is added for
+     * the "/vwsapi" path.
+     */
 	void VEAddWebSocket(){
 		server.addWebSocketHandler(LINK_PROTO_WS_PATH, h_wslink);
 		server.addWebSocketHandler(LINK_PROTO_WS_STREAM_PATH, h_wslinkStream);
 	    //Below is only for test
 		server.addWebSocketHandler("/vwsapi", h_vwsapi);
 	}
-	void 
-	VEWebAPISystemV1(){
-            server.addHandler(VAPI_LOGIN_SYSTEM, h_System);
-            server.addHandler(VAPI_KEEPALIVE_SYSTEM, h_System);
-            server.addHandler(VAPI_LOGOUT_SYSTEM, h_System);
-            server.addHandler(VAPI_GET_SYSTEM_INFO, h_System);
-            server.addHandler(VAPI_GET_CODEC_INFO, h_System);
-            server.addHandler(VAPI_GET_RUN_INFO, h_System);
-            server.addHandler(VAPI_GET_DEVICE_SUMMARY, h_System);
-            server.addHandler(VAPI_GET_VOLUMES_SYSTEM, h_System);
+
+	/**
+     * \brief Registers handlers for various system-related endpoints.
+     *
+     * This function adds multiple handler functions to the server for various system-related endpoints.
+     * Each handler function is associated with a specific endpoint and will be called when a request is made to that endpoint.
+     * The registered endpoints and their corresponding handler functions are as follows:
+     *   - VAPI_LOGIN_SYSTEM:       h_System
+     *   - VAPI_KEEPALIVE_SYSTEM:   h_System
+     *   - VAPI_LOGOUT_SYSTEM:      h_System
+     *   - VAPI_GET_SYSTEM_INFO:    h_System
+     *   - VAPI_GET_CODEC_INFO:     h_System
+     *   - VAPI_GET_RUN_INFO:       h_System
+     *   - VAPI_GET_DEVICE_SUMMARY: h_System
+     *   - VAPI_GET_VOLUMES_SYSTEM: h_System
+     *
+     * \see h_System
+     */
+	void VEWebAPISystemV1(){
+        server.addHandler(VAPI_LOGIN_SYSTEM, h_System);
+        server.addHandler(VAPI_KEEPALIVE_SYSTEM, h_System);
+        server.addHandler(VAPI_LOGOUT_SYSTEM, h_System);
+        server.addHandler(VAPI_GET_SYSTEM_INFO, h_System);
+        server.addHandler(VAPI_GET_CODEC_INFO, h_System);
+        server.addHandler(VAPI_GET_RUN_INFO, h_System);
+        server.addHandler(VAPI_GET_DEVICE_SUMMARY, h_System);
+        server.addHandler(VAPI_GET_VOLUMES_SYSTEM, h_System);
 	}
-	void
-	VEWebAPIGetCamList(){
-            server.addHandler("/vapi/GetCamList", h_GetCamList);
+	
+	/**
+     * \brief Registers a handler for the "/vapi/GetCamList" endpoint.
+     *
+     * This function adds a handler function, `h_GetCamList`, to the server for the "/vapi/GetCamList" endpoint.
+     * The handler function will be called when a request is made to the specified endpoint.
+     *
+     * \see h_GetCamList
+     */
+	void VEWebAPIGetCamList(){
+        server.addHandler("/vapi/GetCamList", h_GetCamList);
 	}
-	void
-	VEWebAPIGetStream(){
-           server.addHandler("/vapi/GetStreamUrl", h_GetStreamUrl);
+
+	/**
+     * \brief Registers a handler for the "/vapi/GetStreamUrl" endpoint.
+     *
+     * This function adds a handler function, `h_GetStreamUrl`, to the server for the "/vapi/GetStreamUrl" endpoint.
+     * The handler function will be called when a request is made to the specified endpoint.
+     *
+     * \see h_GetStreamUrl
+     */
+	void VEWebAPIGetStream(){
+        server.addHandler("/vapi/GetStreamUrl", h_GetStreamUrl);
 	}
-	void
-	VEWebAPIGetImage(){
-           server.addHandler("/vapi/GetImage", h_GetImage);
+
+	/**
+     * \brief Registers a handler function for the "/vapi/GetImage" endpoint.
+     *
+     * This function adds a handler function to the server for the "/vapi/GetImage" endpoint.
+     *
+     * \note The handler function should be implemented separately.
+     *
+     * \see h_GetImage
+     */
+	void VEWebAPIGetImage(){
+        server.addHandler("/vapi/GetImage", h_GetImage);
 	}
 private:
 	
