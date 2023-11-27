@@ -110,11 +110,8 @@ install(TARGETS ${CMAKE_PROJECT_NAME}_static ARCHIVE DESTINATION lib)
 install(DIRECTORY ${PROJECT_BINARY_DIR}/include/${CMAKE_PROJECT_NAME} DESTINATION include)
 
 #测试程序
-if(NOT IOS)
-add_subdirectory(tests)
-else(NOT IOS)
 include_directories(${PROJECT_SOURCE_DIR}/../ZLToolKit/src)
-endif(NOT IOS)
+
 
 
 
