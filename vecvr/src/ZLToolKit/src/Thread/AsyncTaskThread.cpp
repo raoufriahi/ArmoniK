@@ -8,7 +8,7 @@
 #include <iostream>
 #include "Util/logger.h"
 #include "AsyncTaskThread.h"
-
+#include <functional>
 using namespace std;
 using namespace ZL::Util;
 

@@ -18,7 +18,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <condition_variable>
-
+#include <functional>
 using namespace std;
 #define TASK_INTERVAL 50
 

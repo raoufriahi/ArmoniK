@@ -13,7 +13,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <condition_variable>
-
+#include <functional>
 using namespace std;
 
 namespace ZL {
@@ -91,7 +91,7 @@ public:
 		}
 		void onDetach() const {
 			lock_guard<recursive_mutex> lck(mtxCB);
-			detachCB();
+			//setDetachCB();
 		}
 		//读环形缓冲
 		const T *read(RingBuffer *ring) {

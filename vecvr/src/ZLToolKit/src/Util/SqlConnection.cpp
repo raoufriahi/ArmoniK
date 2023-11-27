@@ -7,6 +7,7 @@
 #ifdef ENABLE_MYSQL
 #include "SqlConnection.h"
 #include <stdexcept>
+#include <mysql/mysql.h>
 namespace ZL {
 namespace Util {
 
@@ -20,7 +21,7 @@ SqlConnection::SqlConnection(const string& url, unsigned short port,
 		mysql_close(&sql);
 		throw runtime_error(string("mysql_real_connect:")+mysql_error(&sql));
 	}
-	my_bool reconnect = 1;
+	bool reconnect = 1;
 	mysql_options(&sql, MYSQL_OPT_RECONNECT, &reconnect);
 	mysql_set_character_set(&sql, character.data());
 }
