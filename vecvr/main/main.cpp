@@ -23,7 +23,7 @@
 #include "vonvifdismgr.hpp"
 
 Factory *gFactory = NULL;
-astring gAppdir;
+string gAppdir;
 
 #include <Poco/AutoPtr.h>
 #include <Poco/Util/SystemConfiguration.h>
@@ -49,9 +49,9 @@ astring gAppdir;
  * \note            This function should be called whenever a user's password is changed
  *                  to ensure the web server is aware of the change.
  */
-static BOOL WebServerUserChangeNotify(void* pParam, astring strUser, astring strPasswd)
+static BOOL WebServerUserChangeNotify(void* pParam, string strUser, string strPasswd)
 {
-	astring strPasswdPath = gAppdir + ".htpasswd";
+	string strPasswdPath = gAppdir + ".htpasswd";
 	SimpleCrypt crypt;
 	QString strDePasswd = strPasswd.c_str();
 
@@ -81,11 +81,11 @@ int main(int argc, char *argv[])
 	env.init(argc2, argv2);
 	env.run();
 
-	astring strLoggerPath = env.GetAppConfPath("logs");
+	string strLoggerPath = env.GetAppConfPath("logs");
 
 	Poco::File file1(strLoggerPath);
 	file1.createDirectories();
-	astring strLoggerFile = strLoggerPath + "vidstorlog";
+	string strLoggerFile = strLoggerPath + "vidstorlog";
 	Debug::init(9100, strLoggerFile);
 
 	Debug::logger().info("vidstor started");	
@@ -101,10 +101,10 @@ int main(int argc, char *argv[])
 #endif
 	
 	gAppdir = env.GetAppDir();
-    astring docRoot = env.GetAppDir()+ "www";
-	astring strPasswdPath = env.GetAppDir() + ".htpasswd";
+    string docRoot = env.GetAppDir()+ "www";
+	string strPasswdPath = env.GetAppDir() + ".htpasswd";
 	/* set htpasswd, when start a  */
-	astring strPasswd = "admin";
+	string strPasswd = "admin";
 	pFactory->GetAdminPasswd(strPasswd);
 	WebServerUserChangeNotify(NULL, "admin", strPasswd);
 	
