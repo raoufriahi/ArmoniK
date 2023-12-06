@@ -20,17 +20,28 @@ set(HEADERS
    ./main/link/linkstream.hpp
 )
 
-# Add resource files here
-set(RESOURCES
-   ./main/vscmainwindows.qrc
-)
-
 # Add the include directories
 include_directories(
+    ../veuilib/include
+    ../xcmnlib/include
+    ../xcmnlib/include/utility
+    ../3rdparty/leveldb/include
+    ../3rdparty/spdlog/include
+    ../3rdparty/protobuf/src
+    ../velib/include/vdb
+    ../velib/include/vplay
+    ../3rdparty/poco/Data/include
+    ../3rdparty/poco/Foundation/include
+    ../3rdparty/poco/Util/include
+    ../3rdparty/poco/Data/SQLite/include
+    ../3rdparty/civetweb/include
+    ../onvif/include
+    ./main
+    ../include
     ./GeneratedFiles
     ./
     ./GeneratedFiles/Debug
-    ../main
+    
     ../playback
     # Add other include directories...
 )
