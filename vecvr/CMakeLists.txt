@@ -11,17 +11,17 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/../output/${CA_INSTALL_DIR}
 
 # Add source files here
 set(SOURCES
-    ./main/main.cpp
-    ./main/webserver.cpp
-	./main/mediaserver.cpp
-    ./../3rdparty/civetweb/src/CivetServer.cpp
-    ./../3rdparty/civetweb/src/civetweb.c
-    ./main/link/linkhandler.cpp
-    ./main/link/linkstream.cpp
+    src/main.cpp
+    src/webserver.cpp
+	src/mediaserver.cpp
+    src/link/linkhandler.cpp
+    src/link/linkstream.cpp
+    ../3rdparty/civetweb/src/CivetServer.cpp
+    ../3rdparty/civetweb/src/civetweb.c
 )
 # Add header files here
 set(HEADERS
-   ./main/link/linkstream.hpp
+   src/link/linkstream.hpp
 )
 
 # Add the include directories
@@ -43,8 +43,6 @@ include_directories(
     ${CMAKE_INSTALL_PREFIX}/include/poco/Util/include
     ${CMAKE_INSTALL_PREFIX}/include/poco/Data/SQLite/include
     ${CMAKE_INSTALL_PREFIX}/include/QtWidgets
-    ${CMAKE_INSTALL_PREFIX}/include/QtWidgets/QStyleFactory
-    ${CMAKE_INSTALL_PREFIX}/include/QtWidgets/QApplication
     ${CMAKE_INSTALL_PREFIX}/include/QtNetwork
     ${CMAKE_INSTALL_PREFIX}/include
     ${CMAKE_INSTALL_PREFIX}/include/QtCore
