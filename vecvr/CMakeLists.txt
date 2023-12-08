@@ -21,13 +21,13 @@ set(SOURCES
 )
 # Add header files here
 set(HEADERS
-   src/link/linkstream.hpp
+   ./include/link/linkstream.hpp
 )
 
 # Add the include directories
 include_directories(
-    ../include
     ./include
+    ../include
     ../veuilib/include
     ../xcmnlib/include
     ../xcmnlib/include/utility
