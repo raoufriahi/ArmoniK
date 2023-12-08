@@ -1,4 +1,4 @@
-# Heimdall include hServer and hClient #
+# UBCore include UBServer and UBClient #
 
 # Build #
 ### Linux ###
