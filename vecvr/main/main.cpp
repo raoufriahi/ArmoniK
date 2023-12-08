@@ -8,33 +8,20 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#include <QtWidgets/QApplication>
-#include <QStyleFactory>
 #include "server/factory.hpp"
-#include <QPixmap>
-#include <QSplashScreen>
-#include <QtWidgets/QMainWindow>
-#include <QTranslator>
-#include <QTextCodec>
 #include "vevent.hpp"
 #include "webserver.hpp"
 #include "vrtspserver.hpp"
 #include "server/eventserver.hpp"
 #include "vonvifdismgr.hpp"
-
-Factory *gFactory = NULL;
-string gAppdir;
-
 #include <Poco/AutoPtr.h>
 #include <Poco/Util/SystemConfiguration.h>
 #include <Poco/Format.h>
 #include <Poco/Util/Application.h>
-
-/* The media server only support linux & macOS */
-#ifndef _WIN32
 #include "mediaserver.hpp"
-#endif
 
+Factory *gFactory = NULL;
+string gAppdir;
 /**
  * \brief Notifies the web server about a user's password change.
  *
@@ -51,12 +38,12 @@ string gAppdir;
  */
 static BOOL WebServerUserChangeNotify(void* pParam, string strUser, string strPasswd)
 {
-	string strPasswdPath = gAppdir + ".htpasswd";
+	/*string strPasswdPath = gAppdir + ".htpasswd";
 	SimpleCrypt crypt;
 	QString strDePasswd = strPasswd.c_str();
 
     mg_modify_passwords_file(strPasswdPath.c_str(), "heimdall.com", strUser.c_str(),
-		crypt.decryptToString(strDePasswd).toStdString().c_str());
+		crypt.decryptToString(strDePasswd).toStdString().c_str());*/
 	return TRUE;
 	
 }
@@ -92,7 +79,7 @@ int main(int argc, char *argv[])
     pFactory = new Factory(env);
 	gFactory = pFactory;
 	pFactory->Init();
-	QApplication a(argc1, argv1);
+	//QApplication a(argc1, argv1);
 
 #if 0
 	astring strIdTest = "c9d03a04-6ff0-4733-a5bc-6be41876f080";
@@ -136,13 +123,11 @@ int main(int argc, char *argv[])
 	pFactory->RegUserChangeNotify(pWebServer, WebServerUserChangeNotify);
 
 	pFactory->start();
-	
-#ifndef _WIN32
+
 	/* Init media server */
 	VEMediaServer::InitMediaServer();
 	/* Start Media server */
 	VEMediaServer * pMediaServer = new VEMediaServer(*pFactory);
-#endif
 #if 0
 	VONVIFDisMgr *pDisMgr = new VONVIFDisMgr();
 	
@@ -156,5 +141,5 @@ int main(int argc, char *argv[])
 #endif
 	VDC_DEBUG("Start successfully !\n");
 	
-	return a.exec();
+	return 0; //a.exec();
 }
