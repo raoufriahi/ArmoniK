@@ -34,9 +34,9 @@ include_directories(
     ../3rdparty/leveldb/include
     ../3rdparty/spdlog/include
     ../3rdparty/protobuf/src
+    ../3rdparty/civetweb/include
     ../velib/include/vdb
     ../velib/include/vplay
-    ../3rdparty/civetweb/include
     ../onvif/include
     ${CMAKE_INSTALL_PREFIX}/include/poco/Data/include
     ${CMAKE_INSTALL_PREFIX}/include/poco/Foundation/include
