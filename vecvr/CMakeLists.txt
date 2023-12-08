@@ -27,7 +27,7 @@ set(HEADERS
 # Add the include directories
 include_directories(
     ../include
-    ./main
+    ./include
     ../veuilib/include
     ../xcmnlib/include
     ../xcmnlib/include/utility
@@ -43,6 +43,8 @@ include_directories(
     ${CMAKE_INSTALL_PREFIX}/include/poco/Util/include
     ${CMAKE_INSTALL_PREFIX}/include/poco/Data/SQLite/include
     ${CMAKE_INSTALL_PREFIX}/include/QtWidgets
+    ${CMAKE_INSTALL_PREFIX}/include/QtWidgets/QStyleFactory
+    ${CMAKE_INSTALL_PREFIX}/include/QtWidgets/QApplication
     ${CMAKE_INSTALL_PREFIX}/include/QtNetwork
     ${CMAKE_INSTALL_PREFIX}/include
     ${CMAKE_INSTALL_PREFIX}/include/QtCore
