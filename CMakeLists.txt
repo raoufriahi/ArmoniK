@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 project(UbCore)
 set(CMAKE_CXX_STANDARD 11)
 execute_process(COMMAND lsb_release -si OUTPUT_VARIABLE CA_OS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -19,5 +19,6 @@ add_definitions( -fPIC                 -DUSE_WEBSOCKET
                 -DQT_NO_UDEV           -DWITH_OPENSSL 
                 -DWITH_DOM             -DWITH_PURE_VIRTUAL
                 )
-
-add_subdirectory(vecvr)
+#add_definitions(-DENABLE_RTMP2RTSP -DENABLE_RTSP2RTMP -DENABLE_HLS)
+add_subdirectory(xcmnlib)
+add_subdirectory(vecvr
