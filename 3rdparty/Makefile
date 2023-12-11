@@ -2,18 +2,24 @@
 
 ifeq ($(strip $(PRJ_CROSS)), )
 ifeq ($(strip $(VE_OS)), macos)
-all:poco_build ffmpeg_build openssl_build_macos leveldb_build qt_build curl_build protobuf_build live555_build 
+all:ZLToolKit_build ZLMediaKit_build poco_build ffmpeg_build openssl_build_macos leveldb_build qt_build curl_build protobuf_build live555_build 
 else
-all:poco_build ffmpeg_build openssl_build leveldb_build qt_build curl_build protobuf_build  live555_build 
+all:ZLToolKit_build ZLMediaKit_build poco_build ffmpeg_build openssl_build leveldb_build qt_build curl_build protobuf_build  live555_build 
 endif
 
 else
 all:poco_build_cross ffmpeg_build_cross openssl_build_cross leveldb_build qt_build_cross  qtxmlpatterns_build  curl_build_cross protobuf_build_cross live555_build_cross
 endif
 
-
 clean:distclean
-distclean:poco_clean ffmpeg_clean openssl_clean leveldb_clean qt_clean qtxmlpatterns_clean  onvifc_clean protobuf_clean curl_clean live555_clean
+distclean:ZLToolKit_clean ZLMediaKit_clean poco_clean ffmpeg_clean openssl_clean leveldb_clean qt_clean qtxmlpatterns_clean  onvifc_clean protobuf_clean curl_clean live555_clean
+ZLMediaKit_build:
+	cd ZLMediaKit; mkdir -p build; cd build;cmake .. -DOPENSSL_ROOT_DIR=$(VE_PATH)/output/$(VE_INSTALL_DIR)/ -DCMAKE_CXX_FLAGS="-fpic" -DCMAKE_INSTALL_PREFIX=$(VE_PATH)/output/$(VE_INSTALL_DIR)/; 
+	$(MAKE) -C ZLMediaKit/build && $(MAKE) -C ZLMediaKit/build install;
+
+ZLToolKit_build:
+	cd ZLToolKit; mkdir -p build; cd build;cmake .. -DOPENSSL_ROOT_DIR=$(VE_PATH)/output/$(VE_INSTALL_DIR)/  -DCMAKE_CXX_FLAGS="-fpic" -DCMAKE_INSTALL_PREFIX=$(VE_PATH)/output/$(VE_INSTALL_DIR)/; 
+	$(MAKE) -C ZLToolKit/build && $(MAKE) -C ZLToolKit/build install;
 
 poco_build:
 	cd poco; chmod +x ./configure; chmod +x ./build/script/*; ./configure --no-tests --no-samples --omit=Data/ODBC,Data/MySQL,Crypto,MongoDB,NetSSL_OpenSSL,CppUnit,PDF --prefix=$(VE_PATH)/output/$(VE_INSTALL_DIR)/;
@@ -146,3 +152,12 @@ curl_clean:
 live555_clean:
 	$(MAKE) -C live555 clean
 	$(MAKE) -C live555/live555 clean
+ZLToolKit_clean:
+	$(MAKE) -C ZLToolKit/build clean
+	rm -rf ZLToolKit/build
+	rm -rf $(VE_PATH)/output/$(VE_INSTALL_DIR)/lib/libZLToolKit.*
+	rm -rf $(VE_PATH)/output/$(VE_INSTALL_DIR)/include/ZLToolKit
+ZLMediaKit_clean:
+	$(MAKE) -C ZLMediaKit/build clean
+	rm -rf $(VE_PATH)/output/$(VE_INSTALL_DIR)/lib/libZLMediaKit.*
+	rm -rf $(VE_PATH)/output/$(VE_INSTALL_DIR)/include/ZLMediaKit
