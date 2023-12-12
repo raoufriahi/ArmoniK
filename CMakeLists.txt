@@ -18,8 +18,10 @@ add_definitions( -fPIC                 -DUSE_WEBSOCKET
                 -DQT_XMLPATTERNS_LIB   -DQT_NO_BLUEZ 
                 -DQT_NO_UDEV           -DWITH_OPENSSL 
                 -DWITH_DOM             -DWITH_PURE_VIRTUAL
+                -DLINUX
                 )
 #add_definitions(-DENABLE_RTMP2RTSP -DENABLE_RTSP2RTMP -DENABLE_HLS)
 add_subdirectory(xcmnlib)
 add_subdirectory(vecvr)
 add_subdirectory(onvif)
+add_subdirectory(velib)
