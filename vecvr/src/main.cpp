@@ -50,30 +50,28 @@ static BOOL WebServerUserChangeNotify(void* pParam, string strUser, string strPa
 
 int main(int argc, char *argv[])
 {
-	Factory *pFactory = NULL;
-	char *argv1[] = 
-        {"heimdall",
-		"-platform", 
-		"offscreen", 
-		NULL};
 
-    int argc1 = sizeof(argv1) / sizeof(char*) - 1;
-    char *argv2[] =
-    {"heimdall",
-     NULL
-    };
+	// Initialize Factory and set program name
+    Factory* pFactory = nullptr;
+    std::string programName = "UbCore";
 
-    int argc2 = sizeof(argv2) / sizeof(char*) - 1;
+    // Set up arguments for VidEnv initialization
+    char* vidEnvArgv[] = {(char*)programName.c_str(), nullptr};
+    int vidEnvArgc = sizeof(vidEnvArgv) / sizeof(char*) - 1;
+
+    // Initialize VidEnv
     VidEnv env;
-	env.init(argc2, argv2);
-	env.run();
+    env.init(vidEnvArgc, vidEnvArgv);
+    env.run();
 
-	string strLoggerPath = env.GetAppConfPath("logs");
+    // Set up logger path and create directories
+    std::string loggerPath = env.GetAppConfPath("logs");
+    Poco::File loggerDir(loggerPath);
+    loggerDir.createDirectories();
 
-	Poco::File file1(strLoggerPath);
-	file1.createDirectories();
-	string strLoggerFile = strLoggerPath + "vidstorlog";
-	Debug::init(9100, strLoggerFile);
+    // Initialize Debug with logger port and file path
+    std::string loggerFile = loggerPath + "vidstorlog";
+    Debug::init(9100, loggerFile);
 
 	Debug::logger().info("vidstor started");	
     pFactory = new Factory(env);
@@ -99,7 +97,7 @@ int main(int argc, char *argv[])
         "document_root", docRoot.c_str(),
 		"listening_ports", PORT, 
 		"global_auth_file", strPasswdPath.c_str(),
-        "authentication_domain", "heimdall.com",
+        "authentication_domain", "ubvideo.com",
 		0};
     
 	std::vector<std::string> cpp_options;
