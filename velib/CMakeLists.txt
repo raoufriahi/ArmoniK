@@ -41,11 +41,11 @@ set( SOURCES
     ./src/vdb/hdfsrecsession.cpp
     ./src/vdb/hdfswrapper.cpp
     ./src/vdb/vhdfsdb.cpp
+    ./src/vrender/sdl_render.cpp
     )
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED 
             ${SOURCES})
-
 install(TARGETS ${PROJECT_NAME} 
         LIBRARY DESTINATION lib/
         ARCHIVE DESTINATION lib/)

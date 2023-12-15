@@ -43,28 +43,17 @@ include_directories(
 link_directories(${PROJECT_NAME} "${CMAKE_INSTALL_PREFIX}/lib")
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}
-    -lZLMediaKit
-    -lQt5Core
-    -lZLToolKit
-    -lcmnlib
-    -lavcodec
-    -lavformat
-    -lavutil
-    -lavfilter
-    -lswscale
-    -lleveldb
-    -lvelib
-    -lveuilib
-    -lPocoFoundation
-    -lPocoDataSQLite
-    -lPocoData
-    -lPocoUtil
-    -lprotobuf
-    -lssl
-    -lcrypto
-    -ldl
-    -lpthread
-)
+    -lZLMediaKit     -lQt5Core         -lZLToolKit
+    -lcmnlib         -lavcodec         -lavformat
+    -lavutil         -lavfilter        -lswscale
+    -lleveldb        -lvelib           -lveuilib
+    -lPocoFoundation -lPocoDataSQLite  -lPocoData  
+    -lPocoUtil       -lPocoNet         -lprotobuf        
+    -lcrypto         -ldl              -lpthread
+    -lcrypt          -lcurl            -lyuv
+    -lSDL2           -lz               -lm
+    -lssl        
+    )
 
 install(TARGETS ${PROJECT_NAME} 
        RUNTIME DESTINATION bin/
