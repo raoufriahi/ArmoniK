@@ -8,16 +8,10 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#include "server/factory.hpp"
+
 #include "vevent.hpp"
 #include "webserver.hpp"
 #include "vrtspserver.hpp"
-#include "server/eventserver.hpp"
-#include "vonvifdismgr.hpp"
-#include <Poco/AutoPtr.h>
-#include <Poco/Util/SystemConfiguration.h>
-#include <Poco/Format.h>
-#include <Poco/Util/Application.h>
 #include "mediaserver.hpp"
 
 Factory *gFactory = NULL;
@@ -142,6 +136,7 @@ int main(int argc, char *argv[])
 	pFactory->GetAdminPasswd(strPasswd);
 	WebServerUserChangeNotify(nullptr, "admin", strPasswd);
 	// Set up web server options
+
 	const char *options[] = {
         "document_root", docRoot.c_str(),
 		"listening_ports", PORT, 
