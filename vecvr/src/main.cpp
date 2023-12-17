@@ -22,6 +22,25 @@
 
 Factory *gFactory = NULL;
 string gAppdir;
+
+
+// Signal handler function
+void signalHandler(int signum) {
+
+	std::cout << "Signal received: " << signum << std::endl;
+    // Handle specific signals here
+    switch(signum) {
+        case SIGINT:
+			VDC_DEBUG("Handling SIGINT (Ctrl+C) signal.\n");
+            exit(0);
+            break;
+        case SIGTERM:
+			VDC_DEBUG("Handling SIGTERM signal.\n");
+            exit(0);
+            break;
+    }
+}
+
 /**
  * \brief Notifies the web server about a user's password change.
  *
@@ -55,6 +74,10 @@ int main(int argc, char *argv[])
     Factory* pFactory = nullptr;
     std::string programName = "UbCore";
 
+     // Register signal handlers
+    signal(SIGINT, signalHandler);  // Interrupt signal (Ctrl+C)
+    signal(SIGTERM, signalHandler); // Termination signal
+
     // Set up arguments for VidEnv initialization
     char* vidEnvArgv[] = {(char*)programName.c_str(), nullptr};
     int vidEnvArgc = sizeof(vidEnvArgv) / sizeof(char*) - 1;
@@ -73,7 +96,7 @@ int main(int argc, char *argv[])
     std::string loggerFile = loggerPath + "vidstorlog";
     Debug::init(9100, loggerFile);
 
-	Debug::logger().info("vidstor started");	
+	Debug::logger().info("Running the main program...");	
     pFactory = new Factory(env);
 	gFactory = pFactory;
 	pFactory->Init();
@@ -139,5 +162,13 @@ int main(int argc, char *argv[])
 #endif
 	VDC_DEBUG("Start successfully !\n");
 	
-	return 0; //a.exec();
+
+	    // Infinite loop to keep the program running
+    while (true) {
+       sleep(1);  // Introduce a delay to simulate work
+    }
+	// Rest of the program cleanup or finalization
+    VDC_DEBUG("Exiting the main program...  \n");
+    
+	return 0;
 }
