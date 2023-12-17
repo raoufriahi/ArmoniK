@@ -1,30 +1,24 @@
 /*
- * Copyright (c) 2017-2023 Viva Technology
+ * Copyright (c) 2017-2023 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Viva Technology.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Viva Technology or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __VE_WEB_SERVER_H__
-#define __VE_WEB_SERVER_H__
+#ifndef __UB_WEB_SERVER_H__
+#define __UB_WEB_SERVER_H__
 
-#include "CivetServer.h"
 #include "vapi/vapiimage.hpp"
 #include "vapi/vapisystem.hpp"
 #include "vapi/vapicamlist.hpp"
 #include "vapi/vwsapi.hpp"
 #include "link/wslink.hpp"
 
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 #define DOCUMENT_ROOT "."
-#define PORT "8080"
+#define PORT "8888"
 
 class VEWebServer 
 {
