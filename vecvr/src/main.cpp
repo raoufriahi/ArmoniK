@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2023 Viva Technology
+ * Copyright (c) 2017-2023 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Viva Technology.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Viva Technology or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -24,22 +24,46 @@ Factory *gFactory = NULL;
 string gAppdir;
 
 
-// Signal handler function
+/**
+ * \brief Signal handler function for handling various signals.
+ *
+ * This function prints information about the received signal and performs
+ * specific actions for certain signals, such as SIGINT and SIGTERM.
+ *
+ * \param signum The signal number received.
+ *
+ * \details
+ * The function prints the received signal number and handles specific signals:
+ * - SIGINT (Ctrl+C): Exits the program with a status of 0.
+ * - SIGTERM: Exits the program with a status of 0.
+ *
+ * \note
+ * Ensure that this signal handler is registered appropriately using the
+ * signal() or sigaction() functions to handle the desired signals.
+ *
+ * Example of registering the handler for SIGINT:
+ * \code
+ * signal(SIGINT, signalHandler);
+ * \endcode
+ *
+ * \param signum The signal number received.
+ */
 void signalHandler(int signum) {
 
-	std::cout << "Signal received: " << signum << std::endl;
+	VDC_DEBUG("Signal received: %d.\n",signum );
     // Handle specific signals here
     switch(signum) {
         case SIGINT:
-			VDC_DEBUG("Handling SIGINT (Ctrl+C) signal.\n");
+            VDC_DEBUG("Handling SIGINT (Ctrl+C) signal.\n");
             exit(0);
             break;
         case SIGTERM:
-			VDC_DEBUG("Handling SIGTERM signal.\n");
+            VDC_DEBUG("Handling SIGTERM signal.\n");
             exit(0);
             break;
     }
 }
+
 
 /**
  * \brief Notifies the web server about a user's password change.
@@ -107,27 +131,26 @@ int main(int argc, char *argv[])
 	VidCamera camTest;
 	pFactory->GetConfDB().GetCameraConf(strIdTest, camTest);
 #endif
-	
-	gAppdir = env.GetAppDir();
-    string docRoot = env.GetAppDir()+ "www";
-	string strPasswdPath = env.GetAppDir() + ".htpasswd";
-	/* set htpasswd, when start a  */
+
+	// Obtain the application directory
+	string appDir = env.GetAppDir();
+	// Set up paths
+	string docRoot = appDir + "www";
+	string strPasswdPath = appDir + ".htpasswd";
+	// Set the default password for admin
 	string strPasswd = "admin";
 	pFactory->GetAdminPasswd(strPasswd);
-	WebServerUserChangeNotify(NULL, "admin", strPasswd);
-	
+	WebServerUserChangeNotify(nullptr, "admin", strPasswd);
+	// Set up web server options
 	const char *options[] = {
         "document_root", docRoot.c_str(),
 		"listening_ports", PORT, 
 		"global_auth_file", strPasswdPath.c_str(),
-        "authentication_domain", "ubvideo.com",
+        "authentication_domain", "heimdall.com",
 		0};
-    
-	std::vector<std::string> cpp_options;
-	for (int i=0; i<(sizeof(options)/sizeof(options[0])-1); i++) {
-	    cpp_options.push_back(options[i]);
-	}
-	
+	// Convert options to a vector of strings
+	std::vector<std::string> cpp_options(options, options + sizeof(options) / sizeof(options[0]) - 1);
+
 	/* Start RTSP server */
 	VRTSPServer *pRTSPServer = new VRTSPServer(*pFactory);
 
@@ -161,14 +184,11 @@ int main(int argc, char *argv[])
 	}
 #endif
 	VDC_DEBUG("Start successfully !\n");
-	
-
-	    // Infinite loop to keep the program running
+	// Infinite loop to keep the program running
     while (true) {
        sleep(1);  // Introduce a delay to simulate work
     }
 	// Rest of the program cleanup or finalization
     VDC_DEBUG("Exiting the main program...  \n");
-    
 	return 0;
 }
