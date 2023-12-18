@@ -1,195 +1,373 @@
+/*
+ * Copyright (c) 2017-2023 UbVideo
+ *
+ * The computer program contained herein contains proprietary
+ * information which is the property of UbVideo.
+ * The program may be used and/or copied only with the written
+ * permission of UbVideo or in accordance with the
+ * terms and conditions stipulated in the agreement/contract under
+ * which the programs have been supplied.
+ */
+
 #include "link/linkhandler.hpp"
-#include "config/vidconf.pb.h"
-#include "config/restsystem.pb.h"
-#include <QtCore/QStorageInfo>
-#include <QtCore/QFileInfoList>
-#include <QtCore/QDir>
-#include <QHostAddress>
-#include "XSDK/XMutex.h"
-#include "XSDK/XGuard.h"
-#include "pbwrapper.hpp"
-#include <QTimer>
 
-
+/**
+ * \brief Constructor for the LinkHandler class.
+ *
+ * Initializes a new instance of the LinkHandler class with the provided Factory
+ * and VEventServer objects. Sets various member variables to their initial values,
+ * including generating a random UUID for the session ID using UUIDGenerator.
+ *
+ * \param pFactory Reference to the Factory object used for initialization.
+ * \param pEvent Reference to the VEventServer object for event handling.
+ */
 LinkHandler::LinkHandler(Factory &pFactory, VEventServer &pEvent)
-:m_pFactory(pFactory), m_bLogin(false), m_bRegNotify(false), m_server(NULL), 
-m_conn(NULL), m_bRealEvent(false), m_bSearchEvent(false), m_pEvent(pEvent), 
-m_pCamSearch(NULL)
+    : m_pFactory(pFactory),          /**< Reference to the Factory object. */
+      m_bLogin(false),               /**< Flag indicating login status. */
+      m_bRegNotify(false),           /**< Flag indicating registration notification status. */
+      m_server(NULL),                /**< Pointer to the server object (initially set to NULL). */
+      m_conn(NULL),                  /**< Pointer to the connection object (initially set to NULL). */
+      m_bRealEvent(false),           /**< Flag indicating real event status. */
+      m_bSearchEvent(false),         /**< Flag indicating search event status. */
+      m_pEvent(pEvent),              /**< Reference to the VEventServer object. */
+      m_pCamSearch(NULL)             /**< Pointer to the camera search object (initially set to NULL). */
 {
-	UUIDGenerator uuidCreator;
-	
-	m_seesionId  = uuidCreator.createRandom().toString();
+    // Generate a random UUID for the session ID
+    UUIDGenerator uuidCreator;
+    m_seesionId = uuidCreator.createRandom().toString();
 }
+
+/**
+ * \brief Destructor for the LinkHandler class.
+ *
+ * The destructor handles the cleanup tasks when an instance of the LinkHandler class
+ * is being destroyed. It checks the status of registration flags and unregisters
+ * from corresponding event notifications provided by Factory and VEventServer.
+ */
 LinkHandler::~LinkHandler()
 {
-	if (m_bRegNotify == true)
-	{
-		m_pFactory.UnRegCameraChangeNotify((void *)this);
-	}
-	
-	if (m_bSearchEvent == true)
-	{
-		m_pEvent.UnRegSearchEventNotify((void *)this);
-	}
-	if (m_bRealEvent == true)
-	{
-		m_pEvent.UnRegEventNotify((void *)this);
-	}
-}
+    // Unregister from camera change notifications if registered
+    if (m_bRegNotify == true) {
+        m_pFactory.UnRegCameraChangeNotify((void *)this);
+    }
 
-bool LinkHandler::CallChange(void* pParam, FactoryCameraChangeData data)
-{
-    int dummy = errno;
-   LinkHandler * pObject = (LinkHandler * )pParam;
+    // Unregister from search event notifications if registered
+    if (m_bSearchEvent == true) {
+        m_pEvent.UnRegSearchEventNotify((void *)this);
+    }
 
-    if (pObject)
-    {
-        return pObject->CallChange1(data);
+    // Unregister from real event notifications if registered
+    if (m_bRealEvent == true) {
+        m_pEvent.UnRegEventNotify((void *)this);
     }
 }
+
+/**
+ * \brief Initiates a call to the CallChange1 method of a LinkHandler instance.
+ *
+ * This method is typically used as a callback function for handling camera change events.
+ * It retrieves the LinkHandler instance from the provided void pointer and calls the
+ * CallChange1 method, passing the FactoryCameraChangeData as a parameter.
+ *
+ * \param pParam A void pointer to the LinkHandler instance.
+ * \param data The FactoryCameraChangeData containing information about the camera change event.
+ * \return Returns the boolean result of the CallChange1 method if the LinkHandler instance is valid;
+ *         otherwise, false is returned.
+ */
+bool LinkHandler::CallChange(void* pParam, FactoryCameraChangeData data)
+{
+    // Save the current value of errno (error number) in case it is needed later
+    int dummy = errno;
+    // Cast the void pointer to a LinkHandler instance
+    LinkHandler * pObject = (LinkHandler *)pParam;
+    // Check if the LinkHandler instance is valid
+    if (pObject) {
+        // Call the CallChange1 method of the LinkHandler instance with the provided data
+        return pObject->CallChange1(data);
+    }
+    // Return false if the LinkHandler instance is not valid
+    return false;
+}
+
+/**
+ * \brief Handles camera change events based on the provided FactoryCameraChangeData.
+ *
+ * This method is called when a camera change event occurs, and it processes the event
+ * based on the event type specified in the FactoryCameraChangeData. If the LinkHandler
+ * instance is not registered or if the necessary objects are not initialized, it returns true.
+ *
+ * \param data The FactoryCameraChangeData containing information about the camera change event.
+ * \return Returns true if the LinkHandler instance is not registered or if the necessary objects
+ *         are not initialized; otherwise, returns the boolean result of the specific camera change
+ *         notification method (e.g., NotifyCamAdd, NotifyCamDel) based on the event type.
+ */
 bool LinkHandler::CallChange1(FactoryCameraChangeData data)
 {
-	/* have not register */
-	if (m_server == NULL || m_conn == NULL || m_bRegNotify == false)
-	{
-		return true;
-	}
-		
-	switch(data.type)
-	{
-		case FACTORY_CAMERA_ADD:
-			return NotifyCamAdd(data);
-			break;
-		case FACTORY_CAMERA_DEL:
-			return NotifyCamDel(data);
-			break;
-		case FACTORY_CAMERA_ONLINE:
-			return NotifyCamOnline(data);
-			break;
-		case FACTORY_CAMERA_OFFLINE:
-			return NotifyCamOffline(data);
-			break;
-		case FACTORY_CAMERA_REC_ON:
-			return NotifyCamRecOn(data);
-			break;
-		case FACTORY_CAMERA_REC_OFF:
-			return NotifyCamRecOff(data);
-			break;
-		default:
-			break;		
-	}
+    // Check if the server, connection, and registration flags are valid
+    if (m_server == NULL || m_conn == NULL || m_bRegNotify == false) {
+        return true;
+    }
+
+    // Process the camera change event based on the event type
+    switch (data.type) {
+        case FACTORY_CAMERA_ADD:
+            return NotifyCamAdd(data);
+            break;
+        case FACTORY_CAMERA_DEL:
+            return NotifyCamDel(data);
+            break;
+        case FACTORY_CAMERA_ONLINE:
+            return NotifyCamOnline(data);
+            break;
+        case FACTORY_CAMERA_OFFLINE:
+            return NotifyCamOffline(data);
+            break;
+        case FACTORY_CAMERA_REC_ON:
+            return NotifyCamRecOn(data);
+            break;
+        case FACTORY_CAMERA_REC_OFF:
+            return NotifyCamRecOff(data);
+            break;
+        default:
+            break;
+    }
+
+    // Return false if the event type is not recognized (should not reach this point)
+    return false;
 }
 
+/**
+ * \brief Notifies the addition of a camera and sends the corresponding response message.
+ *
+ * This method is called when a camera addition event is received. It creates a LinkCmd response
+ * of type LINK_CMD_CAM_ADD_NOTIFY and constructs a LinkCamAddNotify message containing
+ * information about the added camera. The response message is then sent using the SendRespMsg method.
+ *
+ * \param data The FactoryCameraChangeData containing information about the added camera.
+ * \return Returns true if the camera addition notification is successfully sent; otherwise, false.
+ */
 bool LinkHandler::NotifyCamAdd(FactoryCameraChangeData data)
 {
-	Link::LinkCmd cmdResp;
+    // Create a LinkCmd response of type LINK_CMD_CAM_ADD_NOTIFY
+    Link::LinkCmd cmdResp;
+    cmdResp.set_type(Link::LINK_CMD_CAM_ADD_NOTIFY);
 
-	cmdResp.set_type(Link::LINK_CMD_CAM_ADD_NOTIFY);
-	LinkCamAddNotify * resp = new LinkCamAddNotify;
+    // Create a LinkCamAddNotify message
+    LinkCamAddNotify * resp = new LinkCamAddNotify;
 
-	VidCamera *pCam = new VidCamera;
-	if (m_pFactory.GetConfDB().GetCameraConf(data.id, *pCam) == false)
-	{
-		return false;
-	}
+    // Create a VidCamera object and retrieve camera configuration from the Factory's ConfDB
+    VidCamera *pCam = new VidCamera;
+    if (m_pFactory.GetConfDB().GetCameraConf(data.id, *pCam) == false) {
+        delete resp; // Cleanup allocated resources before returning
+        delete pCam;
+        return false;
+    }
 
-	resp->set_allocated_ccam(pCam);
+    // Set the VidCamera object in the LinkCamAddNotify message
+    resp->set_allocated_ccam(pCam);
 
-	cmdResp.set_allocated_camaddnotify(resp);
+    // Set the LinkCamAddNotify message in the LinkCmd response
+    cmdResp.set_allocated_camaddnotify(resp);
 
-	SendRespMsg(cmdResp, m_server, m_conn);
+    // Send the response message using the SendRespMsg method
+    SendRespMsg(cmdResp, m_server, m_conn);
 
-	return true;
+    // Return true to indicate successful notification
+    return true;
 }
+
+/**
+ * \brief Notifies the deletion of a camera and sends the corresponding response message.
+ *
+ * This method is called when a camera deletion event is received. It creates a LinkCmd response
+ * of type LINK_CMD_CAM_DEL_NOTIFY and constructs a LinkCamIdNotify message containing
+ * the identifier of the deleted camera. The response message is then sent using the SendRespMsg method.
+ *
+ * \param data The FactoryCameraChangeData containing information about the deleted camera.
+ * \return Returns true if the camera deletion notification is successfully sent; otherwise, false.
+ */
 bool LinkHandler::NotifyCamDel(FactoryCameraChangeData data)
 {
-	Link::LinkCmd cmdResp;
+    // Create a LinkCmd response of type LINK_CMD_CAM_DEL_NOTIFY
+    Link::LinkCmd cmdResp;
+    cmdResp.set_type(Link::LINK_CMD_CAM_DEL_NOTIFY);
 
-	cmdResp.set_type(Link::LINK_CMD_CAM_DEL_NOTIFY);
-	LinkCamIdNotify * resp = new LinkCamIdNotify;
-	resp->set_strid(data.id);
+    // Create a LinkCamIdNotify message and set the camera identifier
+    LinkCamIdNotify *resp = new LinkCamIdNotify;
+    resp->set_strid(data.id);
 
-	cmdResp.set_allocated_camidnotify(resp);
+    // Set the LinkCamIdNotify message in the LinkCmd response
+    cmdResp.set_allocated_camidnotify(resp);
 
-	SendRespMsg(cmdResp, m_server, m_conn);
+    // Send the response message using the SendRespMsg method
+    SendRespMsg(cmdResp, m_server, m_conn);
 
-	return true;
+    // Return true to indicate successful notification
+    return true;
 }
+
+/**
+ * \brief Notifies the online status of a camera and sends the corresponding response message.
+ *
+ * This method is called when a camera online event is received. It creates a LinkCmd response
+ * of type LINK_CMD_CAM_ONLINE_NOTIFY and constructs a LinkCamIdNotify message containing
+ * the identifier of the camera that came online. The response message is then sent using the
+ * SendRespMsg method.
+ *
+ * \param data The FactoryCameraChangeData containing information about the camera that came online.
+ * \return Returns true if the camera online notification is successfully sent; otherwise, false.
+ */
 bool LinkHandler::NotifyCamOnline(FactoryCameraChangeData data)
 {
-	Link::LinkCmd cmdResp;
+    // Create a LinkCmd response of type LINK_CMD_CAM_ONLINE_NOTIFY
+    Link::LinkCmd cmdResp;
+    cmdResp.set_type(Link::LINK_CMD_CAM_ONLINE_NOTIFY);
 
-	cmdResp.set_type(Link::LINK_CMD_CAM_ONLINE_NOTIFY);
-	LinkCamIdNotify * resp = new LinkCamIdNotify;
-	resp->set_strid(data.id);
+    // Create a LinkCamIdNotify message and set the camera identifier
+    LinkCamIdNotify *resp = new LinkCamIdNotify;
+    resp->set_strid(data.id);
 
-	cmdResp.set_allocated_camidnotify(resp);
+    // Set the LinkCamIdNotify message in the LinkCmd response
+    cmdResp.set_allocated_camidnotify(resp);
 
-	SendRespMsg(cmdResp, m_server, m_conn);
+    // Send the response message using the SendRespMsg method
+    SendRespMsg(cmdResp, m_server, m_conn);
 
-	return true;
+    // Return true to indicate successful notification
+    return true;
 }
+
+/**
+ * \brief Notifies the offline status of a camera and sends the corresponding response message.
+ *
+ * This method is called when a camera offline event is received. It creates a LinkCmd response
+ * of type LINK_CMD_CAM_OFFLINE_NOTIFY and constructs a LinkCamIdNotify message containing
+ * the identifier of the camera that went offline. The response message is then sent using the
+ * SendRespMsg method.
+ *
+ * \param data The FactoryCameraChangeData containing information about the camera that went offline.
+ * \return Returns true if the camera offline notification is successfully sent; otherwise, false.
+ */
 bool LinkHandler::NotifyCamOffline(FactoryCameraChangeData data)
 {
-	Link::LinkCmd cmdResp;
+    // Create a LinkCmd response of type LINK_CMD_CAM_OFFLINE_NOTIFY
+    Link::LinkCmd cmdResp;
+    cmdResp.set_type(Link::LINK_CMD_CAM_OFFLINE_NOTIFY);
 
-	cmdResp.set_type(Link::LINK_CMD_CAM_OFFLINE_NOTIFY);
-	LinkCamIdNotify * resp = new LinkCamIdNotify;
-	resp->set_strid(data.id);
+    // Create a LinkCamIdNotify message and set the camera identifier
+    LinkCamIdNotify *resp = new LinkCamIdNotify;
+    resp->set_strid(data.id);
 
-	cmdResp.set_allocated_camidnotify(resp);
+    // Set the LinkCamIdNotify message in the LinkCmd response
+    cmdResp.set_allocated_camidnotify(resp);
 
-	SendRespMsg(cmdResp, m_server, m_conn);
+    // Send the response message using the SendRespMsg method
+    SendRespMsg(cmdResp, m_server, m_conn);
 
-	return true;
+    // Return true to indicate successful notification
+    return true;
 }
+
+/**
+ * \brief Notifies the recording activation of a camera and sends the corresponding response message.
+ *
+ * This method is called when a camera recording activation event is received. It creates a LinkCmd response
+ * of type LINK_CMD_CAM_REC_ON_NOTIFY and constructs a LinkCamIdNotify message containing
+ * the identifier of the camera for which recording is activated. The response message is then sent using the
+ * SendRespMsg method.
+ *
+ * \param data The FactoryCameraChangeData containing information about the camera with activated recording.
+ * \return Returns true if the camera recording activation notification is successfully sent; otherwise, false.
+ */
 bool LinkHandler::NotifyCamRecOn(FactoryCameraChangeData data)
 {
-	Link::LinkCmd cmdResp;
+    // Create a LinkCmd response of type LINK_CMD_CAM_REC_ON_NOTIFY
+    Link::LinkCmd cmdResp;
+    cmdResp.set_type(Link::LINK_CMD_CAM_REC_ON_NOTIFY);
 
-	cmdResp.set_type(Link::LINK_CMD_CAM_REC_ON_NOTIFY);
-	LinkCamIdNotify * resp = new LinkCamIdNotify;
-	resp->set_strid(data.id);
+    // Create a LinkCamIdNotify message and set the camera identifier
+    LinkCamIdNotify *resp = new LinkCamIdNotify;
+    resp->set_strid(data.id);
 
-	cmdResp.set_allocated_camidnotify(resp);
+    // Set the LinkCamIdNotify message in the LinkCmd response
+    cmdResp.set_allocated_camidnotify(resp);
 
-	SendRespMsg(cmdResp, m_server, m_conn);
+    // Send the response message using the SendRespMsg method
+    SendRespMsg(cmdResp, m_server, m_conn);
 
-	return true;
+    // Return true to indicate successful notification
+    return true;
 }
+
+/**
+ * \brief Notifies the recording deactivation of a camera and sends the corresponding response message.
+ *
+ * This method is called when a camera recording deactivation event is received. It creates a LinkCmd response
+ * of type LINK_CMD_CAM_REC_OFF_NOTIFY and constructs a LinkCamIdNotify message containing
+ * the identifier of the camera for which recording is deactivated. The response message is then sent using the
+ * SendRespMsg method.
+ *
+ * \param data The FactoryCameraChangeData containing information about the camera with deactivated recording.
+ * \return Returns true if the camera recording deactivation notification is successfully sent; otherwise, false.
+ */
 bool LinkHandler::NotifyCamRecOff(FactoryCameraChangeData data)
 {
-	Link::LinkCmd cmdResp;
+    // Create a LinkCmd response of type LINK_CMD_CAM_REC_OFF_NOTIFY
+    Link::LinkCmd cmdResp;
+    cmdResp.set_type(Link::LINK_CMD_CAM_REC_OFF_NOTIFY);
 
-	cmdResp.set_type(Link::LINK_CMD_CAM_REC_OFF_NOTIFY);
-	LinkCamIdNotify * resp = new LinkCamIdNotify;
-	resp->set_strid(data.id);
+    // Create a LinkCamIdNotify message and set the camera identifier
+    LinkCamIdNotify *resp = new LinkCamIdNotify;
+    resp->set_strid(data.id);
 
-	cmdResp.set_allocated_camidnotify(resp);
+    // Set the LinkCamIdNotify message in the LinkCmd response
+    cmdResp.set_allocated_camidnotify(resp);
 
-	SendRespMsg(cmdResp, m_server, m_conn);
+    // Send the response message using the SendRespMsg method
+    SendRespMsg(cmdResp, m_server, m_conn);
 
-	return true;
+    // Return true to indicate successful notification
+    return true;
 }
 
-bool LinkHandler::NewCam(astring strIP, astring strPort, 
-		astring strModel, astring strONVIFAddr)
+
+/**
+ * \brief Notifies the discovery of a new camera and sends the corresponding response message.
+ *
+ * This method is called when a new camera is discovered. It creates a LinkCmd response
+ * of type LINK_CMD_CAM_SEARCHED_NOTIFY and constructs a LinkCamSearchedNotify message containing
+ * information about the newly discovered camera, such as its IP address, port, model, and ONVIF address.
+ * The response message is then sent using the SendRespMsg method.
+ *
+ * \param strIP The IP address of the newly discovered camera.
+ * \param strPort The port number of the newly discovered camera.
+ * \param strModel The model information of the newly discovered camera.
+ * \param strONVIFAddr The ONVIF address of the newly discovered camera.
+ * \return Returns true if the camera discovery notification is successfully sent; otherwise, false.
+ */
+bool LinkHandler::NewCam(astring strIP, astring strPort, astring strModel, astring strONVIFAddr)
 {
-	Link::LinkCmd cmdResp;
+    // Create a LinkCmd response of type LINK_CMD_CAM_SEARCHED_NOTIFY
+    Link::LinkCmd cmdResp;
+    cmdResp.set_type(Link::LINK_CMD_CAM_SEARCHED_NOTIFY);
 
-	cmdResp.set_type(Link::LINK_CMD_CAM_SEARCHED_NOTIFY);
-	LinkCamSearchedNotify * resp = new LinkCamSearchedNotify;
-	resp->set_strip(strIP);
-	resp->set_strport(strPort);
-	resp->set_strmodel(strModel);
-	resp->set_stronvifaddress(strONVIFAddr);
+    // Create a LinkCamSearchedNotify message and set the camera information
+    LinkCamSearchedNotify *resp = new LinkCamSearchedNotify;
+    resp->set_strip(strIP);
+    resp->set_strport(strPort);
+    resp->set_strmodel(strModel);
+    resp->set_stronvifaddress(strONVIFAddr);
 
-	cmdResp.set_allocated_camsearchednotify(resp);
+    // Set the LinkCamSearchedNotify message in the LinkCmd response
+    cmdResp.set_allocated_camsearchednotify(resp);
 
-	SendRespMsg(cmdResp, m_server, m_conn);
-	
-	return true;
+    // Send the response message using the SendRespMsg method
+    SendRespMsg(cmdResp, m_server, m_conn);
+
+    // Return true to indicate successful notification
+    return true;
 }
+
 
 void LinkHandler::EventHandler1(VEventData data)
 {
