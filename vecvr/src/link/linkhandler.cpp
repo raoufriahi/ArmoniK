@@ -368,63 +368,126 @@ bool LinkHandler::NewCam(astring strIP, astring strPort, astring strModel, astri
     return true;
 }
 
-
+/**
+ * \brief Event handler for the LinkHandler class.
+ *
+ * This function handles a specific event and sends a response message.
+ *
+ * \param data The event data containing information about the event.
+ */
 void LinkHandler::EventHandler1(VEventData data)
 {
-	Link::LinkCmd cmdResp;
+    // Create a response command object
+    Link::LinkCmd cmdResp;
 
-	cmdResp.set_type(Link::LINK_CMD_EVENT_NOTIFY);
-	LinkEventNotify * resp = new LinkEventNotify;
-	VidEvent * pEvent = new VidEvent;
-	
-	pEvent->set_strid(data.strId);
-	pEvent->set_strdevice(data.strDevice);
-	pEvent->set_strdevicename(data.strDeviceName);
-	pEvent->	set_ntime(data.nTime);
-	pEvent->set_strtime(data.strEvttime);
-	pEvent->set_strtype(data.strType);
-	pEvent->set_bsearched(false);
-	pEvent->set_bhandled(data.bHandled);
-	resp->set_allocated_cevent(pEvent);
+    // Set the type of the response command to event notification
+    cmdResp.set_type(Link::LINK_CMD_EVENT_NOTIFY);
 
-	cmdResp.set_allocated_evnetnotify(resp);
+    // Create objects for the event notification and event data
+    LinkEventNotify* resp = new LinkEventNotify;
+    VidEvent* pEvent = new VidEvent;
 
-	SendRespMsg(cmdResp, m_server, m_conn);
+    // Set properties of the event data
+    pEvent->set_strid(data.strId);
+    pEvent->set_strdevice(data.strDevice);
+    pEvent->set_strdevicename(data.strDeviceName);
+    pEvent->set_ntime(data.nTime);
+    pEvent->set_strtime(data.strEvttime);
+    pEvent->set_strtype(data.strType);
+    pEvent->set_bsearched(false);
+    pEvent->set_bhandled(data.bHandled);
+
+    // Allocate the event data to the response object
+    resp->set_allocated_cevent(pEvent);
+
+    // Allocate the response object to the response command
+    cmdResp.set_allocated_evnetnotify(resp);
+
+    // Send the response message
+    SendRespMsg(cmdResp, m_server, m_conn);
 }
+
+/**
+ * \brief Event handler for the LinkHandler class with additional parameter.
+ *
+ * This function is a wrapper for the EventHandler1 method, allowing it to be used in
+ * contexts where a function pointer or callback with a specific signature is required.
+ * It is designed to be used with the EventHandler1 method of the LinkHandler class.
+ *
+ * \param data The event data containing information about the event.
+ * \param pParam A pointer to the LinkHandler object that will handle the event.
+ *               It is expected to be a pointer to the same object calling this method.
+ *               Used to forward the event handling to the appropriate instance.
+ */
 void LinkHandler::EventHandler(VEventData data, void* pParam)
 {
-    LinkHandler *pObj = static_cast<LinkHandler *> (pParam);
-    
-    return pObj->EventHandler1(data);
+    // Cast the void pointer to a LinkHandler pointer
+    LinkHandler* pObj = static_cast<LinkHandler*>(pParam);
+
+    // Call the EventHandler1 method of the LinkHandler object
+    pObj->EventHandler1(data);
 }
+
+/**
+ * \brief Search event handler for the LinkHandler class.
+ *
+ * This function handles a specific search event and sends a response message.
+ *
+ * \param data The event data containing information about the search event.
+ */
 void LinkHandler::SearchEventHandler1(VEventData data)
 {
-	Link::LinkCmd cmdResp;
+    // Create a response command object
+    Link::LinkCmd cmdResp;
 
-	cmdResp.set_type(Link::LINK_CMD_EVENT_NOTIFY);
-	LinkEventNotify * resp = new LinkEventNotify;
-	VidEvent * pEvent = new VidEvent;
-	
-	pEvent->set_strid(data.strId);
-	pEvent->set_strdevice(data.strDevice);
-	pEvent->set_strdevicename(data.strDeviceName);
-	pEvent->	set_ntime(data.nTime);
-	pEvent->set_strtime(data.strEvttime);
-	pEvent->set_strtype(data.strType);
-	pEvent->set_bsearched(true);
-	pEvent->set_bhandled(data.bHandled);
-	resp->set_allocated_cevent(pEvent);
+    // Set the type of the response command to event notification
+    cmdResp.set_type(Link::LINK_CMD_EVENT_NOTIFY);
 
-	cmdResp.set_allocated_evnetnotify(resp);
+    // Create objects for the event notification and event data
+    LinkEventNotify* resp = new LinkEventNotify;
+    VidEvent* pEvent = new VidEvent;
 
-	SendRespMsg(cmdResp, m_server, m_conn);
+    // Set properties of the event data
+    pEvent->set_strid(data.strId);
+    pEvent->set_strdevice(data.strDevice);
+    pEvent->set_strdevicename(data.strDeviceName);
+    pEvent->set_ntime(data.nTime);
+    pEvent->set_strtime(data.strEvttime);
+    pEvent->set_strtype(data.strType);
+    pEvent->set_bsearched(true);  // Indicates that this is a search event
+    pEvent->set_bhandled(data.bHandled);
+
+    // Allocate the event data to the response object
+    resp->set_allocated_cevent(pEvent);
+
+    // Allocate the response object to the response command
+    cmdResp.set_allocated_evnetnotify(resp);
+
+    // Send the response message
+    SendRespMsg(cmdResp, m_server, m_conn);
 }
+
+/**
+ * \brief Search event handler for the LinkHandler class with additional parameter.
+ *
+ * This function is a wrapper for the SearchEventHandler1 method, allowing it to be used in
+ * contexts where a function pointer or callback with a specific signature is required.
+ * It is designed to be used with the SearchEventHandler1 method of the LinkHandler class.
+ *
+ * \param data The event data containing information about the search event.
+ * \param pParam A pointer to the LinkHandler object that will handle the search event.
+ *               It is expected to be a pointer to the same object calling this method.
+ *               Used to forward the search event handling to the appropriate instance.
+ */
 void LinkHandler::SearchEventHandler(VEventData data, void* pParam)
 {
-    LinkHandler *pObj = static_cast<LinkHandler *> (pParam);
-    
-    return pObj->SearchEventHandler1(data);
+    // Cast the void pointer to a LinkHandler pointer
+    LinkHandler* pObj = static_cast<LinkHandler*>(pParam);
+
+    // Call the SearchEventHandler1 method of the LinkHandler object
+    pObj->SearchEventHandler1(data);
 }
+
 
 
 bool LinkHandler::ProcessLoginReq(Link::LinkCmd &req, CivetServer *server,
@@ -1216,33 +1279,39 @@ bool LinkHandler::ProcessHandleEventReq(Link::LinkCmd &req, CivetServer *server,
 {
 	long long p = (long long)conn;
 	Link::LinkCmd cmdResp;
-	if (!req.has_handleeventreq())
-	{
+	if (!req.has_handleeventreq()) {
 		return false;
 	}
 
 	const LinkHandleEventReq& pReq =  req.handleeventreq();
-
 	bool bRet = m_pEvent.HandleEvent(pReq.strid());
-
 	cmdResp.set_type(Link::LINK_CMD_HANDLE_EVENT_RESP);
 	LinkHandleEventResp * resp = new LinkHandleEventResp;
-
 	resp->set_bsuccess(bRet);
 
 	cmdResp.set_allocated_handleeventresp(resp);
 
 	SendRespMsg(cmdResp, server, conn);
-	
 	return true;
 }
+
+/**
+ * \brief Process an incoming event search request and send a response over a WebSocket connection.
+ *
+ * This function is responsible for processing an incoming event search request,
+ * generating a response, and sending it over a WebSocket connection.
+ *
+ * \param req The LinkCmd request message containing the event search parameters.
+ * \param server A pointer to the CivetServer instance.
+ * \param conn A pointer to the mg_connection representing the WebSocket connection.
+ * \return True if the event search request was successfully processed, false otherwise.
+ */
 bool LinkHandler::ProcessEventSearchReq(Link::LinkCmd &req, CivetServer *server,
                         struct mg_connection *conn)
 {
 	long long p = (long long)conn;
 	Link::LinkCmd cmdResp;
-	if (!req.has_eventsearchreq())
-	{
+	if (!req.has_eventsearchreq()) {
 		return false;
 	}
 	m_server = server;
@@ -1264,179 +1333,172 @@ bool LinkHandler::ProcessEventSearchReq(Link::LinkCmd &req, CivetServer *server,
 	SendRespMsg(cmdResp, server, conn);
 
 	return true;
-
-
-	return true;
 }
 	
-
+/**
+ * \brief Process an incoming message received over a WebSocket connection.
+ *
+ * This function is responsible for processing an incoming message received over a WebSocket connection.
+ * It may involve parsing the message, handling specific commands, and sending an appropriate response.
+ *
+ * \param strMsg The incoming message as a string.
+ * \param server A pointer to the CivetServer instance.
+ * \param conn A pointer to the mg_connection representing the WebSocket connection.
+ * \return True if the message was successfully processed, false otherwise.
+ */
 bool LinkHandler::ProcessMsg(std::string &strMsg, CivetServer *server,
                         struct mg_connection *conn)
 {
 	Link::LinkCmd cmd;
 	::google::protobuf::util::Status status = 
 		::google::protobuf::util::JsonStringToMessage(strMsg, &cmd);
-	if (!status.ok())
-	{
+	if (!status.ok()) {
 		return false;
 	}
 
-	switch (cmd.type())
-	{
-		case Link::LINK_CMD_LOGIN_REQ:
-		{
+	switch (cmd.type()) {
+		case Link::LINK_CMD_LOGIN_REQ: {
 			return ProcessLoginReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_REG_NOTIFY_REQ:
-		{
+		case Link::LINK_CMD_REG_NOTIFY_REQ: {
 			return ProcessRegNotifyReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_CAM_LIST_REQ:
-		{
+		case Link::LINK_CMD_CAM_LIST_REQ: {
 			return ProcessCamListReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_CAM_REQ:
-		{
+		case Link::LINK_CMD_CAM_REQ: {
 			return ProcessCamReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_ADD_CAM_REQ:
-		{
+		case Link::LINK_CMD_ADD_CAM_REQ: {
 			return ProcessAddCamReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_DEL_CAM_REQ:
-		{
+		case Link::LINK_CMD_DEL_CAM_REQ: {
 			return ProcessDelCamReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_SET_CAM_SCHED_REQ:
-		{
+		case Link::LINK_CMD_SET_CAM_SCHED_REQ: {
 			return ProcessSetCamSchedReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_GET_STREAM_LIST_REQ:
-		{
+		case Link::LINK_CMD_GET_STREAM_LIST_REQ: {
 			return ProcessGetStreamListReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_DISK_LIST_REQ:
-		{
+		case Link::LINK_CMD_DISK_LIST_REQ: {
 			return ProcessDiskListReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_SYS_DISK_LIST_REQ:
-		{
+		case Link::LINK_CMD_SYS_DISK_LIST_REQ: {
 			return ProcessSysDiskListReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_ADD_DISK_REQ:
-		{
+		case Link::LINK_CMD_ADD_DISK_REQ: {
 			return ProcessAddDiskReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_DEL_DISK_REQ:
-		{
+		case Link::LINK_CMD_DEL_DISK_REQ: {
 			return ProcessDelDiskReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_UPDATE_DISK_LIMIT_REQ:
-		{
+		case Link::LINK_CMD_UPDATE_DISK_LIMIT_REQ: {
 			return ProcessUpdateDiskLimitReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_GET_LIC_REQ:
-		{
+		case Link::LINK_CMD_GET_LIC_REQ: {
 			return ProcessGetLicReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_GET_VER_REQ:
-		{
+		case Link::LINK_CMD_GET_VER_REQ: {
 			return ProcessGetVerReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_CONF_LIC_REQ:
-		{
+		case Link::LINK_CMD_CONF_LIC_REQ: {
 			return ProcessConfLicReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_ADD_USER_REQ:
-		{
+		case Link::LINK_CMD_ADD_USER_REQ: {
 			return ProcessAddUserReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_HAS_RECORD_REQ:
-		{
+		case Link::LINK_CMD_HAS_RECORD_REQ: {
 			return ProcessHasRecordReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_SEARCH_RECORD_REQ:
-		{
+		case Link::LINK_CMD_SEARCH_RECORD_REQ: {
 			return ProcessSearchRecordReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_PTZ_CMD:
-		{
+		case Link::LINK_CMD_PTZ_CMD: {
 			return ProcessPtzCmdReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_REG_EVENT_REQ:
-		{
+		case Link::LINK_CMD_REG_EVENT_REQ: {
 			return ProcessRegEventReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_CAM_SEARCH_START_REQ:
-		{
+		case Link::LINK_CMD_CAM_SEARCH_START_REQ: {
 			return ProcessCamSearchStartReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_CAM_SEARCH_STOP_REQ:
-		{
+		case Link::LINK_CMD_CAM_SEARCH_STOP_REQ: {
 			return ProcessCamSearchStopReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_UNREG_EVENT_REQ:
-		{
+		case Link::LINK_CMD_UNREG_EVENT_REQ: {
 			return ProcessUnRegEventReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_HANDLE_EVENT_REQ:
-		{
+		case Link::LINK_CMD_HANDLE_EVENT_REQ: {
 			return ProcessHandleEventReq(cmd, server, conn);
 			break;
 		}
-		case Link::LINK_CMD_EVENT_SEARCH_REQ:
-		{
+		case Link::LINK_CMD_EVENT_SEARCH_REQ: {
 			return ProcessEventSearchReq(cmd, server, conn);
 			break;
 		}
 		default:
 		   	return false;
 	};		
-	
-
 }
 
+/**
+ * \brief Send a response message over a WebSocket connection.
+ *
+ * This function converts a protocol buffer message to a JSON string and sends it over a WebSocket connection.
+ *
+ * \param resp The LinkCmd response message to be sent.
+ * \param server A pointer to the CivetServer instance.
+ * \param conn A pointer to the mg_connection representing the WebSocket connection.
+ * \return True if the message was successfully sent, false otherwise.
+ */
 bool LinkHandler::SendRespMsg(Link::LinkCmd &resp, CivetServer *server,
-                        struct mg_connection *conn)
+                              struct mg_connection *conn)
 {
-	std::string strMsg;
-	::google::protobuf::util::Status status = 
-		::google::protobuf::util::MessageToJsonString(resp, &strMsg);
-	if (!status.ok())
-	{
-		return false;
-	}
-	int ret = mg_websocket_write(conn, 
-		WEBSOCKET_OPCODE_TEXT, strMsg.c_str(), strMsg.length());
-	//printf("%s %d websocket send %d\n", __FILE__, __LINE__, ret);
-	if (ret == strMsg.length())
-	{
-		return true;
-	}
-	return false;
+    // Convert the protocol buffer message to a JSON string
+    std::string strMsg;
+    ::google::protobuf::util::Status status =
+        ::google::protobuf::util::MessageToJsonString(resp, &strMsg);
+
+    // Check if conversion was successful
+    if (!status.ok()) {
+        return false;
+    }
+
+    // Send the JSON string over the WebSocket connection
+    int ret = mg_websocket_write(conn,
+                                 WEBSOCKET_OPCODE_TEXT, strMsg.c_str(), strMsg.length());
+
+    // Check if the message was sent successfully
+    if (ret == strMsg.length()) {
+        return true;
+    }
+    // Return false if the message was not sent successfully
+    return false;
 }
+
 
