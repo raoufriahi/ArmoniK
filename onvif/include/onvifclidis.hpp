@@ -288,7 +288,7 @@ public:
 
 	bool SendProbe(int nFd)
 	{
-		char *cxml = {"<?xml version=\"1.0\" encoding=\"UTF-8\"?><SOAP-ENV:Envelope x"
+		const char *cxml = (const char *) {"<?xml version=\"1.0\" encoding=\"UTF-8\"?><SOAP-ENV:Envelope x"
 		    "mlns:SOAP-ENV=\"http://www.w3.org/2003/05/soap-envelope\" x"
 		    "mlns:SOAP-ENC=\"http://www.w3.org/2003/05/soap-encoding\" x"
 		    "mlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" x"
