@@ -52,7 +52,7 @@ target_link_libraries(${PROJECT_NAME}
     -lcrypto         -ldl              -lpthread
     -lcrypt          -lcurl            -lyuv
     -lSDL2           -lz               -lm
-    -lssl        
+    -lssl                              
     )
 
 install(TARGETS ${PROJECT_NAME} 

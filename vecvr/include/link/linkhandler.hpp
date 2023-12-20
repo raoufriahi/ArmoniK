@@ -9,9 +9,7 @@
  * which the programs have been supplied.
  */
 
-#ifndef __LINK_HANDLER_H__
-#define __LINK_HANDLER_H__
-
+#pragma once
 class LinkHandler: public CamSearchNotify
 {
 public:
@@ -100,5 +98,3 @@ private:
 
 typedef std::map<void *, LinkHandler *> LinkHandlerMap;
 
-
-#endif /* __LINK_HANDLER_H__ */

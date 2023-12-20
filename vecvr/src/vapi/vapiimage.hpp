@@ -1,42 +1,18 @@
-/** <!--
+/*
+ * Copyright (c) 2017-2023 UbVideo
  *
- *  Copyright (C) 2017 veyesys support@veyesys.com
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  If you would like this software to be made available to you under an 
- *  alternate commercial license please email support@veyesys.com 
- *  for more information.
- *
- * -->
+ * The computer program contained herein contains proprietary
+ * information which is the property of UbVideo.
+ * The program may be used and/or copied only with the written
+ * permission of UbVideo or in accordance with the
+ * terms and conditions stipulated in the agreement/contract under
+ * which the programs have been supplied.
  */
-#ifndef __VE_IMAGE_API_H__
-#define __VE_IMAGE_API_H__
+#pragma once
 
 #include "CivetServer.h"
-#include "server/factory.hpp"
-#include "cppkit/ck_string.h"
 #include "cppkit/os/ck_sprintf.h"
 #include "rapidmedia/rapidmedia.hpp"
-#include "vplay.hpp"
-
-
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 using namespace cppkit;
 
 #define VAPI_JPEG_SIZE 1024*1024 * 1
@@ -140,5 +116,3 @@ private:
 	Factory &m_pFactory;
 };
 
-
-#endif /* __VE_WEB_SERVER_H__ */
