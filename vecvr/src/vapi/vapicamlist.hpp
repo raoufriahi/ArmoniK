@@ -1,64 +1,34 @@
-/** <!--
+/*
+ * Copyright (c) 2017-2023 UbVideo
  *
- *  Copyright (C) 2017 veyesys support@veyesys.com
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  If you would like this software to be made available to you under an 
- *  alternate commercial license please email support@veyesys.com 
- *  for more information.
- *
- * -->
+ * The computer program contained herein contains proprietary
+ * information which is the property of UbVideo.
+ * The program may be used and/or copied only with the written
+ * permission of UbVideo or in accordance with the
+ * terms and conditions stipulated in the agreement/contract under
+ * which the programs have been supplied.
  */
 #pragma once
-
-#include "CivetServer.h"
-#include "server/factory.hpp"
-#include "cppkit/ck_string.h"
-#include "cppkit/os/ck_sprintf.h"
-#include "rapidmedia/rapidmedia.hpp"
-#include "vplay.hpp"
-#include <google/protobuf/util/json_util.h>
-
-
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
-using namespace cppkit;
-
 #include "onvifclidis.hpp"
-
-#define VAPI_JPEG_SIZE 1024*1024 * 1
-
 
 /* /vapi/GetCamList */
 class WebAPIGetCamListHandler : public CivetHandler
 {
 public:
-	WebAPIGetCamListHandler(Factory &pFactory)
-		:m_pFactory(pFactory)
-	{
+	WebAPIGetCamListHandler(Factory &pFactory) :m_pFactory(pFactory) {
 
 	}
+
+   	bool handleGet(CivetServer *pServer, mg_connection *pConnection) {
+		return handleAll("GET", pServer, pConnection);
+	}
+
+	bool handlePost(CivetServer *pServer, mg_connection *pConnection) {
+		return handleAll("POST", pServer, pConnection);
+	}
+
 private:
-	bool
-	handleAll(const char *method,
-	          CivetServer *server,
-	          struct mg_connection *conn)
-	{
+	bool handleAll(const char *method, CivetServer *pServer, mg_connection *pConnection) {
 		CameraOnlineMap pCameraOnlineMap;
 		CameraRecMap pCameraRecMap;
 
@@ -68,43 +38,28 @@ private:
 		VidCameraList pCameraList;
 		m_pFactory.GetCameraList(pCameraList);
 
-		for (s32 i = 0; i < pCameraList.cvidcamera_size(); i ++)
-		{
+		for (s32 i = 0; i < pCameraList.cvidcamera_size(); i ++) {
 			VidCamera &cam = (VidCamera &)(pCameraList.cvidcamera(i));
 			cam.set_strpasswd("******");
 		}
 		std::string strMsg;
 		::google::protobuf::util::Status status = 
 			::google::protobuf::util::MessageToJsonString(pCameraList, &strMsg);
-
-		s32 nJsonLen = strMsg.length();
-		if (nJsonLen <= 0)
-		{
-
+        s32 nJsonLen = strMsg.length();
+		if (nJsonLen <= 0) {
 			return true;
 		}
-		
-		std::string s = "";
-		mg_printf(conn,
+
+		mg_printf(pConnection,
 		          "HTTP/1.1 200 OK\r\nContent-Type: "
 		          "application/json\r\n"
 				  "Content-Length: %d\r\n\r\n", nJsonLen);
-		mg_printf(conn, strMsg.c_str());
+		mg_printf(pConnection,"%s", strMsg.c_str());
 		return true;
 	}
 
-  public:
-	bool
-	handleGet(CivetServer *server, struct mg_connection *conn)
-	{
-		return handleAll("GET", server, conn);
-	}
-	bool
-	handlePost(CivetServer *server, struct mg_connection *conn)
-	{
-		return handleAll("POST", server, conn);
-	}
 private:
+
 	Factory &m_pFactory;
 };
 
@@ -120,30 +75,15 @@ public:
 private:
 	bool
 	handleAll(const char *method,
-	          CivetServer *server,
-	          struct mg_connection *conn)
+	          CivetServer *pServer,
+	          mg_connection *pConnection)
 	{
 		u8 * pBuf=NULL;
 		int nLen= 0;
 		std::string strCamera = "";
-		if (CivetServer::getParam(conn, "Camera", strCamera)  == true)
+		if (CivetServer::getParam(pConnection, "Camera", strCamera)  == true)
 		{
 			VidStreamUrlList UrlList;
-#if 0
-			size_t locallen;
-			struct sockaddr_in local;
-  			locallen = sizeof(local);  
-			memset(&local, 0, locallen);
-			
-			#ifdef _WIN32
-			#include <winsock.h>
-			#endif
-			#ifdef _WIN32
-			  getsockname(conn->client.sock, (sockaddr *)&local, (int *)&(locallen));
-			#else
-			  getsockname(conn->socket, (sockaddr *)&local, (socklen_t *)&(locallen));
-			#endif
-#endif
 			std::vector<std::string> ipList = OnvifDisClient::GetInterfaces();
 			if (ipList.size() <= 0)
 			{
@@ -192,20 +132,20 @@ private:
 			}
 
 			std::string s = "";
-			mg_printf(conn,
+			mg_printf(pConnection,
 			          "HTTP/1.1 200 OK\r\nContent-Type: "
 			          "application/json\r\n"
 					  "Content-Length: %d\r\n\r\n", nJsonLen);
-			mg_printf(conn, strMsg.c_str());
+			mg_printf(pConnection,"%s", strMsg.c_str());
 			
 			
 			
 		}else
 		{
-			mg_printf(conn,
+			mg_printf(pConnection,
 			          "HTTP/1.1 200 OK\r\nContent-Type: "
 			          "text/plain\r\nConnection: close\r\n\r\n");
-			mg_printf(conn, "Can't Get Stream Url!\n");			
+			mg_printf(pConnection, "Can't Get Stream Url!\n");			
 		}
 
 		return true;
@@ -213,14 +153,14 @@ private:
 
   public:
 	bool
-	handleGet(CivetServer *server, struct mg_connection *conn)
+	handleGet(CivetServer *pServer, mg_connection *pConnection)
 	{
-		return handleAll("GET", server, conn);
+		return handleAll("GET", pServer, pConnection);
 	}
 	bool
-	handlePost(CivetServer *server, struct mg_connection *conn)
+	handlePost(CivetServer *pServer, mg_connection *pConnection)
 	{
-		return handleAll("POST", server, conn);
+		return handleAll("POST", pServer, pConnection);
 	}
 private:
 	Factory &m_pFactory;

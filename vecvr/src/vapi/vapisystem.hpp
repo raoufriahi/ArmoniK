@@ -159,14 +159,15 @@ private:
                 mg_printf(conn,
                           "HTTP/1.1 200 OK\r\nContent-Type: "
                           "application/json\r\n"
-                          "Content-Length: %d\r\n\r\n", strMsg.length());
-                mg_printf(conn, strMsg.c_str());
+                          "Content-Length: %lu\r\n\r\n", strMsg.length());
+                mg_printf(conn,"%s", strMsg.c_str());
             }else {
                 mg_printf(conn,
                           "HTTP/1.1 200 OK\r\nContent-Type: "
-                          "text/plain\r\nConnection: close\r\n\r\n");
+                          "text/plai.n\r\nConnection: close\r\n\r\n");
                 mg_printf(conn, "unknown problem!\n");
             }
+            return true;
     }
 
     bool
