@@ -34,8 +34,8 @@ LinkHandler::LinkHandler(Factory &pFactory, VEventServer &pEvent)
     : m_pFactory(pFactory),          /**< Reference to the Factory object. */
       m_bLogin(false),               /**< Flag indicating login status. */
       m_bRegNotify(false),           /**< Flag indicating registration notification status. */
-      m_server(NULL),                /**< Pointer to the server object (initially set to NULL). */
-      m_conn(NULL),                  /**< Pointer to the connection object (initially set to NULL). */
+      m_pServer(NULL),                /**< Pointer to the pServer object (initially set to NULL). */
+      m_pConnection(NULL),                  /**< Pointer to the pConnection object (initially set to NULL). */
       m_bRealEvent(false),           /**< Flag indicating real event status. */
       m_bSearchEvent(false),         /**< Flag indicating search event status. */
       m_pEvent(pEvent),              /**< Reference to the VEventServer object. */
@@ -112,8 +112,8 @@ bool LinkHandler::CallChange(void* pParam, FactoryCameraChangeData data)
  */
 bool LinkHandler::CallChange1(FactoryCameraChangeData data)
 {
-    // Check if the server, connection, and registration flags are valid
-    if (m_server == NULL || m_conn == NULL || m_bRegNotify == false) {
+    // Check if the pServer, pConnection, and registration flags are valid
+    if (m_pServer == NULL || m_pConnection == NULL || m_bRegNotify == false) {
         return true;
     }
 
@@ -179,7 +179,7 @@ bool LinkHandler::NotifyCamAdd(FactoryCameraChangeData data)
     cmdResp.set_allocated_camaddnotify(resp);
 
     // Send the response message using the SendRespMsg method
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 
     // Return true to indicate successful notification
     return true;
@@ -209,7 +209,7 @@ bool LinkHandler::NotifyCamDel(FactoryCameraChangeData data)
     cmdResp.set_allocated_camidnotify(resp);
 
     // Send the response message using the SendRespMsg method
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 
     // Return true to indicate successful notification
     return true;
@@ -240,7 +240,7 @@ bool LinkHandler::NotifyCamOnline(FactoryCameraChangeData data)
     cmdResp.set_allocated_camidnotify(resp);
 
     // Send the response message using the SendRespMsg method
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 
     // Return true to indicate successful notification
     return true;
@@ -271,7 +271,7 @@ bool LinkHandler::NotifyCamOffline(FactoryCameraChangeData data)
     cmdResp.set_allocated_camidnotify(resp);
 
     // Send the response message using the SendRespMsg method
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 
     // Return true to indicate successful notification
     return true;
@@ -302,7 +302,7 @@ bool LinkHandler::NotifyCamRecOn(FactoryCameraChangeData data)
     cmdResp.set_allocated_camidnotify(resp);
 
     // Send the response message using the SendRespMsg method
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 
     // Return true to indicate successful notification
     return true;
@@ -333,7 +333,7 @@ bool LinkHandler::NotifyCamRecOff(FactoryCameraChangeData data)
     cmdResp.set_allocated_camidnotify(resp);
 
     // Send the response message using the SendRespMsg method
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 
     // Return true to indicate successful notification
     return true;
@@ -371,7 +371,7 @@ bool LinkHandler::NewCam(string strIP, string strPort, string strModel, string s
     cmdResp.set_allocated_camsearchednotify(resp);
 
     // Send the response message using the SendRespMsg method
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 
     // Return true to indicate successful notification
     return true;
@@ -413,7 +413,7 @@ void LinkHandler::EventHandler1(VEventData data)
     cmdResp.set_allocated_evnetnotify(resp);
 
     // Send the response message
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 }
 
 /**
@@ -473,7 +473,7 @@ void LinkHandler::SearchEventHandler1(VEventData data)
     cmdResp.set_allocated_evnetnotify(resp);
 
     // Send the response message
-    SendRespMsg(cmdResp, m_server, m_conn);
+    SendRespMsg(cmdResp, m_pServer, m_pConnection);
 }
 
 /**
@@ -499,9 +499,9 @@ void LinkHandler::SearchEventHandler(VEventData data, void* pParam)
 
 
 
-bool LinkHandler::ProcessLoginReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessLoginReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_loginreq()) {
 		return false;
@@ -513,7 +513,7 @@ bool LinkHandler::ProcessLoginReq(Link::LinkCmd &req, CivetServer *server, mg_co
 	cmdResp.set_type(Link::LINK_CMD_LOGIN_RESP);
 	LinkLoginResp * resp = new LinkLoginResp;
 
-	astring realPasswd = "admin";
+	string realPasswd = "admin";
 
 	SimpleCrypt crypt;
 	// here has error QString strDePasswd = m_pFactory.GetAdminPasswd(realPasswd);
@@ -545,14 +545,14 @@ bool LinkHandler::ProcessLoginReq(Link::LinkCmd &req, CivetServer *server, mg_co
 
 	cmdResp.set_allocated_loginresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
-bool LinkHandler::ProcessRegNotifyReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessRegNotifyReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	bool nRet = false;
 	if (!req.has_regnotifyreq()) {
@@ -561,8 +561,8 @@ bool LinkHandler::ProcessRegNotifyReq(Link::LinkCmd &req, CivetServer *server, m
 
 	const LinkRegNotifyReq& pReq =  req.regnotifyreq();
 	m_bRegNotify = true;
-	m_server = server;
-	m_conn = conn;
+	m_pServer = pServer;
+	m_pConnection = pConnection;
 	m_pFactory.RegCameraChangeNotify(this,
 		(FactoryCameraChangeNotify)(LinkHandler::CallChange));
 
@@ -574,15 +574,15 @@ bool LinkHandler::ProcessRegNotifyReq(Link::LinkCmd &req, CivetServer *server, m
 
 	cmdResp.set_allocated_regnotifyresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 	                        
 
-bool LinkHandler::ProcessCamListReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessCamListReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_camlistreq()) {
 		return false;
@@ -613,14 +613,14 @@ bool LinkHandler::ProcessCamListReq(Link::LinkCmd &req, CivetServer *server, mg_
 
 	cmdResp.set_allocated_camlistresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
-bool LinkHandler::ProcessCamReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessCamReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_camreq()) {
 		return false;
@@ -637,14 +637,14 @@ bool LinkHandler::ProcessCamReq(Link::LinkCmd &req, CivetServer *server, mg_conn
 
 	cmdResp.set_allocated_camresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
-bool LinkHandler::ProcessAddCamReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessAddCamReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	bool nRet = false;
 	if (!req.has_addcamreq()) {
@@ -663,13 +663,13 @@ bool LinkHandler::ProcessAddCamReq(Link::LinkCmd &req, CivetServer *server, mg_c
 
 	cmdResp.set_allocated_addcamresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
-bool LinkHandler::ProcessDelCamReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessDelCamReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	bool bRet = false;
 	if (!req.has_delcamreq()) {
@@ -687,13 +687,13 @@ bool LinkHandler::ProcessDelCamReq(Link::LinkCmd &req, CivetServer *server, mg_c
 
 	cmdResp.set_allocated_delcamresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
-bool LinkHandler::ProcessSetCamSchedReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessSetCamSchedReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	bool nRet = false;
 	if (!req.has_setcamschedreq()) {
@@ -712,14 +712,14 @@ bool LinkHandler::ProcessSetCamSchedReq(Link::LinkCmd &req, CivetServer *server,
 
 	cmdResp.set_allocated_setcamschedresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
-bool LinkHandler::ProcessGetStreamListReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessGetStreamListReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	bool nRet = false;
 	if (!req.has_getstreamlistreq()) {
@@ -738,14 +738,14 @@ bool LinkHandler::ProcessGetStreamListReq(Link::LinkCmd &req, CivetServer *serve
 
 	cmdResp.set_allocated_getstreamlistresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
-bool LinkHandler::ProcessDiskListReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessDiskListReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_disklistreq()) {
 		return false;
@@ -775,13 +775,13 @@ bool LinkHandler::ProcessDiskListReq(Link::LinkCmd &req, CivetServer *server, mg
 
 	cmdResp.set_allocated_disklistresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
-bool LinkHandler::ProcessSysDiskListReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessSysDiskListReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_sysdisklistreq()) {
 		return false;
@@ -827,15 +827,15 @@ bool LinkHandler::ProcessSysDiskListReq(Link::LinkCmd &req, CivetServer *server,
 
 	cmdResp.set_allocated_sysdisklistresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;	
 }
 
 
-bool LinkHandler::ProcessAddDiskReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessAddDiskReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_adddiskreq()) {
 		return false;
@@ -851,13 +851,13 @@ bool LinkHandler::ProcessAddDiskReq(Link::LinkCmd &req, CivetServer *server, mg_
 
 	cmdResp.set_allocated_adddiskresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 	return true;
 }
 
-bool LinkHandler::ProcessDelDiskReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessDelDiskReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_deldiskreq()) {
 		return false;
@@ -871,14 +871,14 @@ bool LinkHandler::ProcessDelDiskReq(Link::LinkCmd &req, CivetServer *server, mg_
 
 	cmdResp.set_allocated_deldiskresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
-bool LinkHandler::ProcessUpdateDiskLimitReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessUpdateDiskLimitReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_disklimitreq()) {
 		return false;
@@ -894,15 +894,15 @@ bool LinkHandler::ProcessUpdateDiskLimitReq(Link::LinkCmd &req, CivetServer *ser
 
 	cmdResp.set_allocated_disklimitresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
 /* License & Version */
-bool LinkHandler::ProcessGetLicReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessGetLicReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_licreq()) {
 		return false;
@@ -929,13 +929,13 @@ bool LinkHandler::ProcessGetLicReq(Link::LinkCmd &req, CivetServer *server, mg_c
 
 	cmdResp.set_allocated_licresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
-bool LinkHandler::ProcessGetVerReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessGetVerReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_verreq()) {
 		return false;
@@ -951,14 +951,14 @@ bool LinkHandler::ProcessGetVerReq(Link::LinkCmd &req, CivetServer *server, mg_c
 
 	cmdResp.set_allocated_verresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
-bool LinkHandler::ProcessConfLicReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessConfLicReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_conflicreq()) {
 		return false;
@@ -966,7 +966,7 @@ bool LinkHandler::ProcessConfLicReq(Link::LinkCmd &req, CivetServer *server, mg_
 
 	const LinkConfLicReq& pReq =  req.conflicreq();
 
-	astring strLic = pReq.strlic();
+	string strLic = pReq.strlic();
 	m_pFactory.SetLicense(strLic);
 
 	cmdResp.set_type(Link::LINK_CMD_CONF_LIC_RESP);
@@ -976,15 +976,15 @@ bool LinkHandler::ProcessConfLicReq(Link::LinkCmd &req, CivetServer *server, mg_
 
 	cmdResp.set_allocated_conflicresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;	
 }
 
-bool LinkHandler::ProcessAddUserReq(Link::LinkCmd &req, CivetServer *server,
-                        mg_connection *conn)
+bool LinkHandler::ProcessAddUserReq(Link::LinkCmd &req, CivetServer *pServer,
+                        mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	bool nRet = false;
 	if (!req.has_adduserreq()) {
@@ -1008,15 +1008,15 @@ bool LinkHandler::ProcessAddUserReq(Link::LinkCmd &req, CivetServer *server,
 
 	cmdResp.set_allocated_adduserresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;	
 }
 
 /* Search */
-bool LinkHandler::ProcessHasRecordReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessHasRecordReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	bool nRet = false;
 	if (!req.has_hasrecreq()) {
@@ -1042,14 +1042,14 @@ bool LinkHandler::ProcessHasRecordReq(Link::LinkCmd &req, CivetServer *server, m
 
 	cmdResp.set_allocated_hasrecresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;	
 }
 
-bool LinkHandler::ProcessSearchRecordReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessSearchRecordReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	bool nRet = false;
 	if (!req.has_searchrecreq()) {
@@ -1080,13 +1080,13 @@ bool LinkHandler::ProcessSearchRecordReq(Link::LinkCmd &req, CivetServer *server
 	}
 	resp->set_allocated_clist(pList);
 	cmdResp.set_allocated_searchrecresp(resp);
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 	return true;	
 }
 
-bool LinkHandler::ProcessPtzCmdReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessPtzCmdReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_ptzcmd()) {
 		return false;
@@ -1098,15 +1098,15 @@ bool LinkHandler::ProcessPtzCmdReq(Link::LinkCmd &req, CivetServer *server, mg_c
 	return true;
 }
 
-bool LinkHandler::ProcessCamSearchStartReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessCamSearchStartReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_camsearchstartreq()) {
 		return false;
 	}
-	m_server = server;
-	m_conn = conn;
+	m_pServer = pServer;
+	m_pConnection = pConnection;
 	
 	const LinkCamSearchStartReq& pReq =  req.camsearchstartreq();
 
@@ -1123,12 +1123,12 @@ bool LinkHandler::ProcessCamSearchStartReq(Link::LinkCmd &req, CivetServer *serv
 
 	resp->set_bsuccess(true);
 	cmdResp.set_allocated_camsearchstartresp(resp);
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 	return true;	
 }
-bool LinkHandler::ProcessCamSearchStopReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessCamSearchStopReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_camsearchstopreq()) {
 		return false;
@@ -1144,20 +1144,20 @@ bool LinkHandler::ProcessCamSearchStopReq(Link::LinkCmd &req, CivetServer *serve
 
 	resp->set_bsuccess(true);
 	cmdResp.set_allocated_camsearchstopresp(resp);
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 
-bool LinkHandler::ProcessRegEventReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessRegEventReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_regeventreq()) {
 		return false;
 	}
-	m_server = server;
-	m_conn = conn;
+	m_pServer = pServer;
+	m_pConnection = pConnection;
 	
 	const LinkRegEventReq& pReq =  req.regeventreq();
 
@@ -1169,13 +1169,13 @@ bool LinkHandler::ProcessRegEventReq(Link::LinkCmd &req, CivetServer *server, mg
 
 	resp->set_bsuccess(true);
 	cmdResp.set_allocated_regeventresp(resp);
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
-bool LinkHandler::ProcessUnRegEventReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessUnRegEventReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_unregeventreq()) {
 		return false;
@@ -1192,13 +1192,13 @@ bool LinkHandler::ProcessUnRegEventReq(Link::LinkCmd &req, CivetServer *server, 
 
 	resp->set_bsuccess(true);
 	cmdResp.set_allocated_unregeventresp(resp);
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 	
 	return true;
 }
-bool LinkHandler::ProcessHandleEventReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessHandleEventReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_handleeventreq()) {
 		return false;
@@ -1212,30 +1212,30 @@ bool LinkHandler::ProcessHandleEventReq(Link::LinkCmd &req, CivetServer *server,
 
 	cmdResp.set_allocated_handleeventresp(resp);
 
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 	return true;
 }
 
 /**
- * \brief Process an incoming event search request and send a response over a WebSocket connection.
+ * \brief Process an incoming event search request and send a response over a WebSocket pConnection.
  *
  * This function is responsible for processing an incoming event search request,
- * generating a response, and sending it over a WebSocket connection.
+ * generating a response, and sending it over a WebSocket pConnection.
  *
  * \param req The LinkCmd request message containing the event search parameters.
- * \param server A pointer to the CivetServer instance.
- * \param conn A pointer to the mg_connection representing the WebSocket connection.
+ * \param pServer A pointer to the CivetServer instance.
+ * \param pConnection A pointer to the mg_connection representing the WebSocket pConnection.
  * \return True if the event search request was successfully processed, false otherwise.
  */
-bool LinkHandler::ProcessEventSearchReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessEventSearchReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection)
 {
-	long long p = (long long)conn;
+	long long p = (long long)pConnection;
 	Link::LinkCmd cmdResp;
 	if (!req.has_eventsearchreq()) {
 		return false;
 	}
-	m_server = server;
-	m_conn = conn;
+	m_pServer = pServer;
+	m_pConnection = pConnection;
 	
 	const LinkEventSearchReq& pReq =  req.eventsearchreq();
 
@@ -1248,23 +1248,23 @@ bool LinkHandler::ProcessEventSearchReq(Link::LinkCmd &req, CivetServer *server,
 
 	resp->set_bsuccess(true);
 	cmdResp.set_allocated_eventsearchresp(resp);
-	SendRespMsg(cmdResp, server, conn);
+	SendRespMsg(cmdResp, pServer, pConnection);
 
 	return true;
 }
 	
 /**
- * \brief Process an incoming message received over a WebSocket connection.
+ * \brief Process an incoming message received over a WebSocket pConnection.
  *
- * This function is responsible for processing an incoming message received over a WebSocket connection.
+ * This function is responsible for processing an incoming message received over a WebSocket pConnection.
  * It may involve parsing the message, handling specific commands, and sending an appropriate response.
  *
  * \param strMsg The incoming message as a string.
- * \param server A pointer to the CivetServer instance.
- * \param conn A pointer to the mg_connection representing the WebSocket connection.
+ * \param pServer A pointer to the CivetServer instance.
+ * \param pConnection A pointer to the mg_connection representing the WebSocket pConnection.
  * \return True if the message was successfully processed, false otherwise.
  */
-bool LinkHandler::ProcessMsg(std::string &strMsg, CivetServer *server, mg_connection *conn)
+bool LinkHandler::ProcessMsg(std::string &strMsg, CivetServer *pServer, mg_connection *pConnection)
 {
 	Link::LinkCmd cmd;
 	::google::protobuf::util::Status status = 
@@ -1275,107 +1275,107 @@ bool LinkHandler::ProcessMsg(std::string &strMsg, CivetServer *server, mg_connec
 
 	switch (cmd.type()) {
 		case Link::LINK_CMD_LOGIN_REQ: {
-			return ProcessLoginReq(cmd, server, conn);
+			return ProcessLoginReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_REG_NOTIFY_REQ: {
-			return ProcessRegNotifyReq(cmd, server, conn);
+			return ProcessRegNotifyReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_CAM_LIST_REQ: {
-			return ProcessCamListReq(cmd, server, conn);
+			return ProcessCamListReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_CAM_REQ: {
-			return ProcessCamReq(cmd, server, conn);
+			return ProcessCamReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_ADD_CAM_REQ: {
-			return ProcessAddCamReq(cmd, server, conn);
+			return ProcessAddCamReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_DEL_CAM_REQ: {
-			return ProcessDelCamReq(cmd, server, conn);
+			return ProcessDelCamReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_SET_CAM_SCHED_REQ: {
-			return ProcessSetCamSchedReq(cmd, server, conn);
+			return ProcessSetCamSchedReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_GET_STREAM_LIST_REQ: {
-			return ProcessGetStreamListReq(cmd, server, conn);
+			return ProcessGetStreamListReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_DISK_LIST_REQ: {
-			return ProcessDiskListReq(cmd, server, conn);
+			return ProcessDiskListReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_SYS_DISK_LIST_REQ: {
-			return ProcessSysDiskListReq(cmd, server, conn);
+			return ProcessSysDiskListReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_ADD_DISK_REQ: {
-			return ProcessAddDiskReq(cmd, server, conn);
+			return ProcessAddDiskReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_DEL_DISK_REQ: {
-			return ProcessDelDiskReq(cmd, server, conn);
+			return ProcessDelDiskReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_UPDATE_DISK_LIMIT_REQ: {
-			return ProcessUpdateDiskLimitReq(cmd, server, conn);
+			return ProcessUpdateDiskLimitReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_GET_LIC_REQ: {
-			return ProcessGetLicReq(cmd, server, conn);
+			return ProcessGetLicReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_GET_VER_REQ: {
-			return ProcessGetVerReq(cmd, server, conn);
+			return ProcessGetVerReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_CONF_LIC_REQ: {
-			return ProcessConfLicReq(cmd, server, conn);
+			return ProcessConfLicReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_ADD_USER_REQ: {
-			return ProcessAddUserReq(cmd, server, conn);
+			return ProcessAddUserReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_HAS_RECORD_REQ: {
-			return ProcessHasRecordReq(cmd, server, conn);
+			return ProcessHasRecordReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_SEARCH_RECORD_REQ: {
-			return ProcessSearchRecordReq(cmd, server, conn);
+			return ProcessSearchRecordReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_PTZ_CMD: {
-			return ProcessPtzCmdReq(cmd, server, conn);
+			return ProcessPtzCmdReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_REG_EVENT_REQ: {
-			return ProcessRegEventReq(cmd, server, conn);
+			return ProcessRegEventReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_CAM_SEARCH_START_REQ: {
-			return ProcessCamSearchStartReq(cmd, server, conn);
+			return ProcessCamSearchStartReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_CAM_SEARCH_STOP_REQ: {
-			return ProcessCamSearchStopReq(cmd, server, conn);
+			return ProcessCamSearchStopReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_UNREG_EVENT_REQ: {
-			return ProcessUnRegEventReq(cmd, server, conn);
+			return ProcessUnRegEventReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_HANDLE_EVENT_REQ: {
-			return ProcessHandleEventReq(cmd, server, conn);
+			return ProcessHandleEventReq(cmd, pServer, pConnection);
 			break;
 		}
 		case Link::LINK_CMD_EVENT_SEARCH_REQ: {
-			return ProcessEventSearchReq(cmd, server, conn);
+			return ProcessEventSearchReq(cmd, pServer, pConnection);
 			break;
 		}
 		default:
@@ -1384,16 +1384,16 @@ bool LinkHandler::ProcessMsg(std::string &strMsg, CivetServer *server, mg_connec
 }
 
 /**
- * \brief Send a response message over a WebSocket connection.
+ * \brief Send a response message over a WebSocket pConnection.
  *
- * This function converts a protocol buffer message to a JSON string and sends it over a WebSocket connection.
+ * This function converts a protocol buffer message to a JSON string and sends it over a WebSocket pConnection.
  *
  * \param resp The LinkCmd response message to be sent.
- * \param server A pointer to the CivetServer instance.
- * \param conn A pointer to the mg_connection representing the WebSocket connection.
+ * \param pServer A pointer to the CivetServer instance.
+ * \param pConnection A pointer to the mg_connection representing the WebSocket pConnection.
  * \return True if the message was successfully sent, false otherwise.
  */
-bool LinkHandler::SendRespMsg(Link::LinkCmd &resp, CivetServer *server, mg_connection *conn)
+bool LinkHandler::SendRespMsg(Link::LinkCmd &resp, CivetServer *pServer, mg_connection *pConnection)
 {
     // Convert the protocol buffer message to a JSON string
     std::string strMsg;
@@ -1405,8 +1405,8 @@ bool LinkHandler::SendRespMsg(Link::LinkCmd &resp, CivetServer *server, mg_conne
         return false;
     }
 
-    // Send the JSON string over the WebSocket connection
-    int ret = mg_websocket_write(conn,
+    // Send the JSON string over the WebSocket pConnection
+    int ret = mg_websocket_write(pConnection,
                                  WEBSOCKET_OPCODE_TEXT, strMsg.c_str(), strMsg.length());
 
     // Check if the message was sent successfully

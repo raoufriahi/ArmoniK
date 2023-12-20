@@ -11,15 +11,21 @@
 
 #ifndef __LINK_HANDLER_H__
 #define __LINK_HANDLER_H__
-#include "server/eventserver.hpp"
 
 class LinkHandler: public CamSearchNotify
 {
 public:
+
 	LinkHandler(Factory &pFactory, VEventServer &pEvent);
 	~LinkHandler();
 
 	static bool CallChange(void* pParam, FactoryCameraChangeData data);
+	
+	static void EventHandler(VEventData data, void* pParam);
+	static void SearchEventHandler(VEventData data, void* pParam);	
+    
+	virtual bool NewCam(string strIP, string strPort, string strModel, string strONVIFAddr);
+
 
 	bool CallChange1(FactoryCameraChangeData data);
 	bool NotifyCamAdd(FactoryCameraChangeData data);
@@ -28,57 +34,54 @@ public:
 	bool NotifyCamOffline(FactoryCameraChangeData data);
 	bool NotifyCamRecOn(FactoryCameraChangeData data);
 	bool NotifyCamRecOff(FactoryCameraChangeData data);
-	virtual bool NewCam(string strIP, string strPort, string strModel, string strONVIFAddr);
+	
 	
 	/* Event */
 	void EventHandler1(VEventData data);
 	void SearchEventHandler1(VEventData data);
 
-	static void EventHandler(VEventData data, void* pParam);
-	static void SearchEventHandler(VEventData data, void* pParam);	
-
-	bool ProcessMsg(std::string &strMsg, CivetServer *server, mg_connection *conn);
-	bool ProcessLoginReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessRegNotifyReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
+	bool ProcessMsg(std::string &strMsg, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessLoginReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessRegNotifyReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* Camera */
-	bool ProcessCamListReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessCamReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessAddCamReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessDelCamReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessSetCamSchedReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessGetStreamListReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
+	bool ProcessCamListReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessCamReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessAddCamReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessDelCamReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessSetCamSchedReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessGetStreamListReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* Disk */
-	bool ProcessDiskListReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessSysDiskListReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessAddDiskReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessDelDiskReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessUpdateDiskLimitReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
+	bool ProcessDiskListReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessSysDiskListReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessAddDiskReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessDelDiskReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessUpdateDiskLimitReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* License & Version */
-	bool ProcessGetLicReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessGetVerReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessConfLicReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
+	bool ProcessGetLicReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessGetVerReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessConfLicReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* User */
-	bool ProcessAddUserReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
+	bool ProcessAddUserReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* Search */
-	bool ProcessHasRecordReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessSearchRecordReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
+	bool ProcessHasRecordReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessSearchRecordReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* PTZ command */
-	bool ProcessPtzCmdReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
+	bool ProcessPtzCmdReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* Cam Search & Event */
-	bool ProcessCamSearchStartReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessCamSearchStopReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessRegEventReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessUnRegEventReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessHandleEventReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool ProcessEventSearchReq(Link::LinkCmd &req, CivetServer *server, mg_connection *conn);
-	bool SendRespMsg(Link::LinkCmd &resp, CivetServer *server, mg_connection *conn);					  
+	bool ProcessCamSearchStartReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessCamSearchStopReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessRegEventReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessUnRegEventReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessHandleEventReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessEventSearchReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool SendRespMsg(Link::LinkCmd &resp, CivetServer *pServer, mg_connection *pConnection);					  
 private:
 
     bool m_bLogin;
@@ -89,8 +92,8 @@ private:
 	Factory &m_pFactory;
 	string m_seesionId;
 	VEventServer &m_pEvent;
-	CivetServer *m_server;
-	mg_connection *m_conn;
+	CivetServer *m_pServer;
+	mg_connection *m_pConnection;
 	OnvifDisClientMgr *m_pCamSearch;
 };
 

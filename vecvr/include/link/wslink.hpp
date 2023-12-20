@@ -11,7 +11,7 @@
 #include "link/linkhandler.hpp"
 #include "link/linkstream.hpp"
 #include "server/factory.hpp"
-
+#include "server/eventserver.hpp"
 #include "CivetServer.h"
 
 

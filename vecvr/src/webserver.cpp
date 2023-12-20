@@ -8,4 +8,5 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
+#include "server/eventserver.hpp"
 #include "webserver.hpp"
