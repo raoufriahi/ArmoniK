@@ -1,31 +1,17 @@
-#ifndef __LINK_STREAM_H__
-#define __LINK_STREAM_H__
-#include <string.h>
-#include <vector>
-#include <iostream>
-#include <thread>
-#include <mutex>
-#include <chrono>
-#include <map>
-#include <google/protobuf/util/json_util.h>
-#include "utility/type.hpp"
+/*
+ * Copyright (c) 2017-2023 UbVideo
+ *
+ * The computer program contained herein contains proprietary
+ * information which is the property of UbVideo.
+ * The program may be used and/or copied only with the written
+ * permission of UbVideo or in accordance with the
+ * terms and conditions stipulated in the agreement/contract under
+ * which the programs have been supplied.
+ */
+#pragma once
 
-#include "config/linkproto.pb.h"
-#include "config/linksystem.pb.h"
-#include "config/vidconf.pb.h"
-#include "simplecrypt.hpp"
-#include "server/factory.hpp"
-#include "XSDK/XHash.h"
-#include "XSDK/TimeUtils.h"
-#include "XSDK/XSocket.h"
-#include "XSDK/XSSLSocket.h"
 #include "XSDK/XMD5.h"
 #include "pbwrapper.hpp"
-
-#include "CivetServer.h"
-
-using namespace Poco;
-
 class LinkPlaybackInterface
 {
 public:
@@ -36,10 +22,9 @@ class LinkServerPlayback
 {
 public:
 	LinkServerPlayback(LinkPlaybackInterface &pPbInf, 
-		Factory &pFactory, astring strId, u32 nPlaytime);
+		Factory &pFactory, string strId, u32 nPlaytime);
 	~LinkServerPlayback();
 
-public:
 	void DataHandler1(VideoFrame& frame){
 		XGuard guard(m_cMutex);
 		if (m_bQuit == false){
@@ -62,7 +47,7 @@ public:
 private:
 	Factory &m_pFactory;
 	LinkPlaybackInterface &m_pPbInf;
-	astring m_strId;
+	string m_strId;
 	u32 m_nPlaytime;
 	PlaybackWrapper m_pbWrapper;
 	XMutex m_cMutex;
@@ -76,50 +61,35 @@ public:
 	LinkStream(Factory &pFactory);
 	~LinkStream();
 
-public:	
-	bool ProcessMsg(std::string &strMsg, CivetServer *server,
-	                        struct mg_connection *conn);
-	bool ProcessLoginReq(Link::LinkCmd &req, CivetServer *server,
-	                        struct mg_connection *conn);
-
+	bool ProcessMsg(std::string &strMsg, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessLoginReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* Live view command  */
-	bool ProcessStartLiveReq(Link::LinkCmd &req, CivetServer *server,
-	                        struct mg_connection *conn);
-	bool ProcessStopLiveReq(Link::LinkCmd &req, CivetServer *server,
-	                        struct mg_connection *conn);
+	bool ProcessStartLiveReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessStopLiveReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
 
 	/* Playback command */
-	bool ProcessPlayBackReq(Link::LinkCmd &req, CivetServer *server,
-	                        struct mg_connection *conn);
-	bool ProcessPlayPauseReq(Link::LinkCmd &req, CivetServer *server,
-	                        struct mg_connection *conn);
-	bool ProcessPlayResumeReq(Link::LinkCmd &req, CivetServer *server,
-	                        struct mg_connection *conn);
-	bool ProcessPlaySeekReq(Link::LinkCmd &req, CivetServer *server,
-	                        struct mg_connection *conn);
-	bool ProcessPlayStopReq(Link::LinkCmd &req, CivetServer *server,
-	                        struct mg_connection *conn);
-	
-	bool SendRespMsg(Link::LinkCmd &resp, CivetServer *server,
-	                        struct mg_connection *conn);
-
-public:
+	bool ProcessPlayBackReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessPlayPauseReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessPlayResumeReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessPlaySeekReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool ProcessPlayStopReq(Link::LinkCmd &req, CivetServer *pServer, mg_connection *pConnection);
+	bool SendRespMsg(Link::LinkCmd &resp, CivetServer *pServer, mg_connection *pConnection);
+    bool StopAll();
 
 	void DataHandler1(VideoFrame& frame);
+
 	static void DataHandler(VideoFrame& frame, void * pParam);
 	virtual bool NewFrame(VideoFrame& frame);
-
-	bool StopAll();
-							  
+			  
 private:
 	Factory &m_pFactory;
-	astring m_seesionId;
+	string m_seesionId;
 	bool m_bLogin;
 	CivetServer *m_server;
-	struct mg_connection *m_conn;
+	mg_connection *m_pConnection;
 	bool m_bStreaming;
-	astring m_strLiveviewId;
+	string m_strLiveviewId;
 	unsigned int m_nStream;
 	bool m_bPlayback;
 	u8 * m_pSendBuf;
@@ -130,5 +100,3 @@ private:
 
 typedef std::map<void *, LinkStream *> LinkStreamMap;
 
-
-#endif /* __LINK_HANDLER_H__ */

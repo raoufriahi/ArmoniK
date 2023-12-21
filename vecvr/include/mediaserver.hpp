@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2017-2023 Viva Technology
+ * Copyright (c) 2017-2023 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Viva Technology.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Viva Technology or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __VE_MEDIA_SERVER_H__
-#define __VE_MEDIA_SERVER_H__
+#pragma once
 #include "server/factory.hpp"
 
 class VEMediaChannel;
@@ -74,4 +73,3 @@ private:
 	Factory &m_pFactory;              // A reference to the Factory object.
 };
 
-#endif /* __VE_MEDIA_SERVER_H__ */
