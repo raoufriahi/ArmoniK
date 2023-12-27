@@ -19,10 +19,10 @@ Ubcore est une solution Cloud puissante, capable de gérer plus d'un million de 
 - **Sécurité des flux vidéo:**
 Ubcore utilise des protocoles de chiffrement avancés pour assurer que vos flux vidéo sont sécurisés et ne peuvent être accédés que par des utilisateurs autorisés.
 
-- **Gestion de millions de caméras IP:**
+- **Gestion de millions de caméras IP:**
 Ubcore est conçu pour s'adapter à une infrastructure de surveillance de grande envergure, vous permettant de gérer facilement des millions de caméras provenant de différents fabricants.
 
-- **Analyse d'images avancée:**
+- **Analyse d'images avancée:**
 Grâce à des fonctionnalités telles que le tracking, la reconnaissance faciale et le comptage, Ubcore vous aide à réduire les fausses alertes et à optimiser l'efficacité de votre système de sécurité.
 
 ## Innovation et performance avec Ubcore
@@ -39,27 +39,27 @@ Dr. Raouf RIAHI, Expert en vidéosurveillance
 
 ## L'efficacité au coeur d'Ubcore
 
-- **Optimisation des processus:**
+- **Optimisation des processus:**
 Grâce à son analyse de statistiques et de flux, Ubcore vous permet d'identifier et d'optimiser les processus dans votre environnement de vidéosurveillance, améliorant ainsi l'efficacité globale de votre système.
 
-- **Qualité d'image exceptionnelle:**
+- **Qualité d'image exceptionnelle:**
 Avec Ubcore, vous bénéficiez d'une qualité d'image exceptionnelle, vous permettant de visualiser les détails les plus précis et d'obtenir une vision claire de votre environnement de surveillance.
 
-- **Contrôle d'accès sophistiqué:**
+- **Contrôle d'accès sophistiqué:**
 Ubcore offre des fonctionnalités avancées de contrôle d'accès, permettant de sécuriser et de contrôler les points d'accès à votre système de vidéosurveillance, garantissant ainsi la confidentialité et la sécurité de vos données.
 
 
 ## Une solution complète et évolutive
 
 
-1 **Scalabilité:**
+1) **Scalabilité:**
    Avec Ubcore, vous pouvez facilement faire évoluer votre système de vidéosurveillance pour répondre à vos besoins croissants, en ajoutant simplement de nouvelles caméras IP à votre infrastructure existante.
-
-2 **Simplicité d'utilisation:**
+   
+2) **Simplicité d'utilisation:**
 
    Ubcore a été conçu pour être facile à utiliser, avec une interface intuitive qui permet aux utilisateurs de naviguer et de gérer leur système de vidéosurveillance sans effort.
-
-3 **Mises à jour régulières:**
+   
+3) **Mises à jour régulières:**
 
    Ubcore vous offre des mises à jour régulières, vous donnant accès aux dernières fonctionnalités et améliorations pour garantir que votre système de vidéosurveillance reste à la pointe de la technologie.
 
