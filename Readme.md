@@ -27,12 +27,12 @@ Grâce à des fonctionnalités telles que le tracking, la reconnaissance faciale
 
 ## Innovation et performance avec Ubcore
 
-|<p>Analyse d'images</p><p>Ubcore propose une analyse d'images avancée, offrant des fonctionnalités telles que la reconnaissance faciale, le comptage et l'analyse de statistiques pour vous permettre de tirer le meilleur parti de votre système de vidéosurveillance.</p>|<p>Solution Cloud</p><p>Avec une architecture Cloud robuste, Ubcore permet un stockage sécurisé et fiable des enregistrements vidéo, offrant une accessibilité à distance et une flexibilité totale pour les utilisateurs.</p>|<p>Sécurité des données</p><p>Ubcore met l'accent sur la sécurité des données, en utilisant des protocoles de chiffrement avancés pour garantir que vos données vidéo sont toujours protégées contre les accès non autorisés.</p>|
+|<p>Analyse d'images</p>Ubcore propose une analyse d'images avancée, offrant des fonctionnalités telles que la reconnaissance faciale, le comptage et l'analyse de statistiques pour vous permettre de tirer le meilleur parti de votre système de vidéosurveillance.|<p>Solution Cloud</p>Avec une architecture Cloud robuste, Ubcore permet un stockage sécurisé et fiable des enregistrements vidéo, offrant une accessibilité à distance et une flexibilité totale pour les utilisateurs.|<p>Sécurité des données</p>Ubcore met l'accent sur la sécurité des données, en utilisant des protocoles de chiffrement avancés pour garantir que vos données vidéo sont toujours protégées contre les accès non autorisés.|
 | - | - | - |
 
 ## Une analyse d'images intelligente
 
-"La fonctionnalité de suivi d'Ubcore vous permet de garder un œ il sur tout ce qui se passe dans votre zone de surveillance, vous offrant une tranquillité d'esprit totale."
+"La fonctionnalité de suivi d'Ubcore vous permet de garder un oeil sur tout ce qui se passe dans votre zone de surveillance, vous offrant une tranquillité d'esprit totale."
 
 Dr. Raouf RIAHI, Expert en vidéosurveillance
 
