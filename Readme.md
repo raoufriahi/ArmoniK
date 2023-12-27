@@ -1,4 +1,4 @@
-# Ubcore: la solution Cloud pour la gestion de vidéo 
+# Ubcore : Une Solution Cloud pour la Gestion Intelligente de Vidéos 
 
 Ubcore est une solution Cloud puissante, capable de gérer plus d'un million de caméras IP provenant de différents fabricants. Avec ses fonctionnalités d'affichage en direct, d'enregistrement sur le Cloud et d'analyse d'images avancée, Ubcore vous aide à réduire les fausses alertes et à sécuriser vos flux vidéo.
 
@@ -56,12 +56,10 @@ Ubcore offre des fonctionnalités avancées de contrôle d'accès, permettant de
    Avec Ubcore, vous pouvez facilement faire évoluer votre système de vidéosurveillance pour répondre à vos besoins croissants, en ajoutant simplement de nouvelles caméras IP à votre infrastructure existante.
    
 2) **Simplicité d'utilisation:**
-
-   Ubcore a été conçu pour être facile à utiliser, avec une interface intuitive qui permet aux utilisateurs de naviguer et de gérer leur système de vidéosurveillance sans effort.
+Ubcore a été conçu pour être facile à utiliser, avec une interface intuitive qui permet aux utilisateurs de naviguer et de gérer leur système de vidéosurveillance sans effort.
    
 3) **Mises à jour régulières:**
-
-   Ubcore vous offre des mises à jour régulières, vous donnant accès aux dernières fonctionnalités et améliorations pour garantir que votre système de vidéosurveillance reste à la pointe de la technologie.
+Ubcore vous offre des mises à jour régulières, vous donnant accès aux dernières fonctionnalités et améliorations pour garantir que votre système de vidéosurveillance reste à la pointe de la technologie.
 
 
 ## Confiance
