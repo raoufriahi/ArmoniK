@@ -266,7 +266,7 @@ bool RapidMedia::DecodeiFrameFreeDec(void* pDec)
 {
 	if (pDec)
 	{
-		delete pDec;
+		delete static_cast<RapidDec*>(pDec);
 		pDec = NULL;
 	}
 
