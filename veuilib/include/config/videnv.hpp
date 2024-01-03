@@ -30,7 +30,7 @@ using namespace Poco::Util;
 #ifdef _WIN32
 #define VID_PATH_SPLIT "\\"
 #else
-#define VID_PATH_SPLIT "\/"
+#define VID_PATH_SPLIT "/"
 #endif
 
 
