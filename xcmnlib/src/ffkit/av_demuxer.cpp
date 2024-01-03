@@ -436,7 +436,8 @@ void av_demuxer::_free_packet()
         //av_free( _deMuxPkt.data );
         //_deMuxPkt.data = NULL;
         //_deMuxPkt.size = 0;
-	av_free_packet(&_deMuxPkt);
+	av_packet_unref(&_deMuxPkt);
+    
     }
 }
 
