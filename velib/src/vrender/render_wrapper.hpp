@@ -290,6 +290,7 @@ public:
 			RenderWrapper *pData = (RenderWrapper *)pContext;
 			return pData->RenderRMRawVideoHandler1(packet);
 		}
+		return FALSE;
 	}
 
 	inline BOOL RenderRMRawVideoHandler1(RawFrame& packet);

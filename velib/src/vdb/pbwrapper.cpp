@@ -340,6 +340,7 @@ BOOL PlaybackWrapperImpl::MakeUpSessionNext()
 	{
 		MakeUpSessionNear(m_nLastSeekTime);
 	}
+	return TRUE;
 }
 
 

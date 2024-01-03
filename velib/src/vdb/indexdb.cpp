@@ -457,7 +457,7 @@ BOOL IndexDB::CreateABlock(astring & strHdd, astring &strBlockPath)
 	path.append("mdb");
 
 	char buff[256];
-	sprintf(buff, "%d", split/4096);
+	sprintf(buff, "%ld", split/4096);
 	path.append(buff);
 	Poco::File file1(path);
 	file1.createDirectories();

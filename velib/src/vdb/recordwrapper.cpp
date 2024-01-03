@@ -121,6 +121,7 @@ bool RecordWrapperImpl::ApplySched(std::time_t pTime)
 		//StopRecord();
 		m_nCurrRectype = nNextRectype;
 	}
+	return true;
 }
 
 bool RecordWrapperImpl::StopRecord()
