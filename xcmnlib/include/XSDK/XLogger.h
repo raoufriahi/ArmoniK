@@ -148,7 +148,7 @@ private:
     static XMutex _cMutex;
     static bool  _cPrintToStdOutEnabled;
 
-    static std::auto_ptr<std::ofstream> _cFile;
+    static std::unique_ptr<std::ofstream> _cFile;
 
 public:
     class StaticInit

@@ -595,7 +595,7 @@ bool XLog::_Write(const std::string& module, const LOG_LEVEL level, const std::s
     {
         stringstream msgStream;
         msgStream << prefix << " [" << module << "] " << msg;
-        syslog(priority, msgStream.str().c_str());
+        syslog(priority,"%s", msgStream.str().c_str());
     }
     // Write chunks to syslog to avoid message length errors
     else
@@ -621,7 +621,7 @@ bool XLog::_Write(const std::string& module, const LOG_LEVEL level, const std::s
             else
                 msgChunk << msg.substr(pos);
 
-            syslog(priority, msgChunk.str().c_str());
+            syslog(priority,"%s", msgChunk.str().c_str());
         }
     }
 #elif defined(IS_WINDOWS)
@@ -663,7 +663,7 @@ LOG_LEVEL XLog::_cCurrLogLevel = LOGLEVEL_WARNING;
 bool XLog::_cLogEnabled = true;
 XMutex XLog::_cMutex;
 bool XLog::_cPrintToStdOutEnabled = false;
-auto_ptr<ofstream> XLog::_cFile;
+unique_ptr<ofstream> XLog::_cFile;
 
 XLog::StaticInit::StaticInit()
 {

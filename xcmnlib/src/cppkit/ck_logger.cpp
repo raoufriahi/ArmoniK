@@ -469,7 +469,7 @@ CK_API bool ck_log::_write(const std::string& module, const LOG_LEVEL level, con
     {
         stringstream msgStream;
         msgStream << prefix << " [" << module << "] " << msg;
-        syslog(priority, msgStream.str().c_str());
+        syslog(priority,"%s", msgStream.str().c_str());
     }
     // Write chunks to syslog to avoid message length errors
     else
@@ -495,7 +495,7 @@ CK_API bool ck_log::_write(const std::string& module, const LOG_LEVEL level, con
             else
                 msgChunk << msg.substr(pos);
 
-            syslog(priority, msgChunk.str().c_str());
+            syslog(priority,"%s", msgChunk.str().c_str());
         }
     }
 #endif

@@ -30,7 +30,7 @@ RapidFFMPEGDec::RapidFFMPEGDec(const struct codec_options& options,
 	}
 	if( !m_codec )
 	{
-		printf("Failed to find %s decoder.\n", m_id);
+		printf("Failed to find %d decoder.\n", m_id);
 		return;
 	}
 

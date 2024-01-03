@@ -403,7 +403,7 @@ void CRapidRTSPFFMPEG::proc1()
 						memcpy(&m_currVidTime, &timeNew, sizeof(m_currVidTime));
 					}
 				}
-				RRLOG(RRLOG_INFO, "%s av_read_frame size %d ts %lld key %d (%d, %d)\n", __FUNCTION__, 
+				RRLOG(RRLOG_INFO, "%s av_read_frame size %d ts %ld key %d (%ld, %ld)\n", __FUNCTION__, 
 							packet.size, pts, frameType, m_currVidTime.tv_sec, m_currVidTime.tv_usec);
 				m_LastVidPts = pts;
 				if (m_AVinfo.video.codec == CODEC_H264)
