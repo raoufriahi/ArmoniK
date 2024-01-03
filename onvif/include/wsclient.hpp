@@ -81,7 +81,7 @@ public:
 
 	{
 
-		printf("%s %d websocket recv %d\n", __FILE__, __LINE__, data_len);
+		printf("%s %d websocket recv %ld\n", __FILE__, __LINE__, data_len);
 		ProcessRecvMsg(data, data_len);
 
 		return;
