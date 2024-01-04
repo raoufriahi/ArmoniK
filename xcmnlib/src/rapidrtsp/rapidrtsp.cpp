@@ -47,10 +47,10 @@ static void fRapidRTSP_DEFAULT_DATA_HANDLE(void *pdata, unsigned int dataSize,
 {
 	printf("RapidRTSP Got %d data (size:%u timestamp:%u)  ===> \n", dataType, dataSize, sec);
 	//DumpHexData((unsigned char *)pdata, 20);
-	printf("info frame header I %d P %d\n", sizeof(InfoFrameI), sizeof(InfoFrameP));
+	printf("info frame header I %ld P %ld\n", sizeof(InfoFrameI), sizeof(InfoFrameP));
 }
 
-static char *_get_stream_name(int dataType)
+static const char *_get_stream_name(int dataType)
 {
 	switch(dataType)
 	{
