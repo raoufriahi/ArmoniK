@@ -1,19 +1,17 @@
 
-#ifndef __WS_LINK_H__
-#define __WS_LINK_H__
-#include <string.h>
-#include <vector>
-#include <iostream>
-#include <thread>
-#include <mutex>
-#include <chrono>
-#include <map>
-#include "link/linkhandler.hpp"
-#include "link/linkstream.hpp"
-#include "server/factory.hpp"
-#include "server/eventserver.hpp"
-#include "CivetServer.h"
+/*
+ * Copyright (c) 2017-2024 UbVideo
+ *
+ * The computer program contained herein contains proprietary
+ * information which is the property of UbVideo.
+ * The program may be used and/or copied only with the written
+ * permission of UbVideo or in accordance with the
+ * terms and conditions stipulated in the agreement/contract under
+ * which the programs have been supplied.
+ */
+#pragma once
 
+#include "link/linkhandler.hpp"
 
 class WSLinkAuth : public CivetAuthHandler
 {
@@ -200,5 +198,3 @@ private:
 	Factory &m_pFactory;
 };
 
-
-#endif /* __WS_LINK_H__ */

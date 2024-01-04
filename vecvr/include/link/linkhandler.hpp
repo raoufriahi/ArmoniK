@@ -10,6 +10,7 @@
  */
 
 #pragma once
+
 class LinkHandler: public CamSearchNotify
 {
 public:
