@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -14,30 +14,9 @@
 #include "utility.hpp"
 #include "fast_mutex.h"
 
-/* 
-#include "Poco/Notification.h"
-#include "Poco/NotificationQueue.h"
-#include "Poco/ThreadPool.h"
-#include "Poco/Thread.h"
-#include "Poco/Runnable.h"
-#include "Poco/Mutex.h"
-#include "Poco/Random.h"
-#include "Poco/AutoPtr.h"
-#include "Poco/Net/HTTPCredentials.h" 
 
-
-using Poco::NotificationCenter;
-using Poco::NotificationQueue;
-using Poco::Notification;
-using Poco::AutoPtr;
-*/
-
-
-
-VE_LIBRARY_API bool VHttpClientGet(astring strHost, astring strPath, astring strUser, astring strPasswd, 
-							astring &pResponse);
-VE_LIBRARY_API bool VHttpClientPost(astring strHost, astring strPath, astring strUser, astring strPasswd, , astring strBody
-							astring &pResponse);
+VE_LIBRARY_API bool VHttpClientGet(string strHost, string strPath, string strUser, string strPasswd, string &pResponse);
+VE_LIBRARY_API bool VHttpClientPost(string strHost, string strPath, string strUser, string strPasswd,  string strBody, string &pResponse);
 
 
 #endif /* _VDC_UTILITY_H_ */

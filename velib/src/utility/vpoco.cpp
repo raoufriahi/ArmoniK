@@ -26,8 +26,7 @@ using Poco::NotificationQueue;
 using Poco::Notification;
 using Poco::AutoPtr;
 
-static bool VHTTPClient(astring strHost, astring strPath, astring strUser, astring strPasswd, astring strBody
-							astring &pResponse, const std::string& method)
+static bool VHTTPClient(string strHost, string strPath, string strUser, string strPasswd, string strBody, string &pResponse, const std::string& method)
 {
 	try {
 		Poco::Net::HTTPCredentials creds(strUser, strPasswd);
@@ -62,14 +61,12 @@ static bool VHTTPClient(astring strHost, astring strPath, astring strUser, astri
 	return true;
 }
 
-bool VHttpClientGet(astring strHost, astring strPath, astring strUser, astring strPasswd, 
-							astring &pResponse)
+bool VHttpClientGet(string strHost, string strPath, string strUser, string strPasswd, string &pResponse)
 {
-	astring strBody = "dummy";
+	string strBody = "dummy";
 	return VHTTPClient(strHost, strPath, strUser, strPasswd, strBody, pResponse, HTTPRequest::HTTP_GET);
 }
-bool VHttpClientPost(astring strHost, astring strPath, astring strUser, astring strPasswd, astring strBody
-							astring &pResponse)
+bool VHttpClientPost(string strHost, string strPath, string strUser, string strPasswd, string strBody, string &pResponse)
 {
 	return VHTTPClient(strHost, strPath, strUser, strPasswd, strBody, pResponse, HTTPRequest::HTTP_POST);
 }
