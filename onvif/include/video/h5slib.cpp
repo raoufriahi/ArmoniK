@@ -110,7 +110,7 @@ bool H5SLibRTSP::onData(unsigned char* buffer, int size, unsigned long long secs
 	}
 
 	
-	if (m_VideoCodec != codec)
+	if (static_cast<Live555CodecType>(m_VideoCodec) != codec)
 	{
 		UpdateCodecSink((H5SCodecType)codec);
 	}
