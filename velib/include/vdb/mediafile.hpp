@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __MEDIA_FILE_HPP__
-#define __MEDIA_FILE_HPP__
-#include "utility.hpp"
+
+#pragma once
+
 #include "vdbfile.hpp"
 #include "utility/videotype.hpp"
 
@@ -21,31 +21,31 @@ typedef enum
     MEDIA_SESSION_LAST
 } MediaSessionType;
 
-using namespace UtilityLib;
+
 
 class MediaFileData;
 class VE_LIBRARY_API MediaFile
 {
 public:
-	MediaFile(astring & strPath, u32 startTime, MediaSessionType type, 
-					u32 maxLength, BOOL bSeekIFrame = FALSE);
+	MediaFile(string & strPath, unsigned int startTime, MediaSessionType type, 
+					unsigned int maxLength, BOOL bSeekIFrame = FALSE);
 	~MediaFile();
 	
 public:
 	MFStatus PushAFrame(VideoFrame *pFrame);
-	MFStatus GetAFrame(VideoFrame &pFrame, s32 &waiting);
+	MFStatus GetAFrame(VideoFrame &pFrame, int &waiting);
 	BOOL PauseForRead();
-	BOOL ReadSeek(u32 startTime);
-	BOOL ReadSeekByType(u32 startTime, s32 type, BOOL playMode);
+	BOOL ReadSeek(unsigned int startTime);
+	BOOL ReadSeekByType(unsigned int startTime, int type, BOOL playMode);
 
-	BOOL ReadFrame(void * pkt, u32 len, u32 time);
-	BOOL ReadFrameNext(void * pkt, u32 len, u32 time, s32 type);
-	BOOL ReadFramePrev(void * pkt, u32 len, u32 time, s32 type);
-	BOOL SeekToTime(u32 seekTime);
+	BOOL ReadFrame(void * pkt, unsigned int len, unsigned int time);
+	BOOL ReadFrameNext(void * pkt, unsigned int len, unsigned int time, int type);
+	BOOL ReadFramePrev(void * pkt, unsigned int len, unsigned int time, int type);
+	BOOL SeekToTime(unsigned int seekTime);
 	BOOL SeekToNextIFrame();
 	BOOL SeekToPreIFrame();
-	BOOL GetStartAndEndTime(u32  &startTime, u32 &endTime);
-	u32 GetEndTime();
+	BOOL GetStartAndEndTime(unsigned int  &startTime, unsigned int &endTime);
+	unsigned int GetEndTime();
 private:
 	BOOL Init();
 	BOOL InitWrite();
@@ -55,4 +55,3 @@ private:
 	MediaFileData * m_data;
 };
 
-#endif /* __MEDIA_FILE_HPP__ */

@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -20,45 +20,40 @@ using namespace XSDK;
 #define MF_TIME_POS_LEN 1024 * 512 /* MF Time postion length */
 #define MF_TIME_POS MF_TIME_POS_LEN/(sizeof(int) * 2) /* Each time postion has 4 bytes */
 
-#ifdef WIN32
-#pragma   pack(1)
-#endif
 /* Header */
 typedef struct __MFHeader{
-    u32 version;/* version */
-    u32 startTime;
-    u32 endTime;
+    unsigned int version;/* version */
+    unsigned int startTime;
+    unsigned int endTime;
 } MFHeader;
 
 /* Time postion header, here must be (sizeof(int) * 2) bytes */
 typedef struct __MFTimePostion{
-	u32 time;
-    u32 postion;/* the postions */
+	unsigned int time;
+    unsigned int postion;/* the postions */
 }  MFTimePostion;
 
 /* packet link, all the packet are list by this link */
 typedef struct __MFPktLink{
-	u32 prev;
-	u32 next;
-	u32 dataLen;
-	u32 streamType;
-	u32 frameType;
-	u32 secs;       /* timestamp in seconds */
-	u32 msecs;      /* timestamp in mseconds */
+	unsigned int prev;
+	unsigned int next;
+	unsigned int dataLen;
+	unsigned int streamType;
+	unsigned int frameType;
+	unsigned int secs;       /* timestamp in seconds */
+	unsigned int msecs;      /* timestamp in mseconds */
 } MFPktLink;
-#ifdef WIN32
-#pragma   pack()
-#endif
+
 
 typedef struct __MFTimePostionVector{
    MFTimePostion timePostion[MF_TIME_POS];
-   u32 postion[MF_TIME_POS];/* the postion of this Postion */
+   unsigned int postion[MF_TIME_POS];/* the postion of this Postion */
 } MFTimePostionVector;
 
 class MediaFileData
 {
 public:
-	MediaFileData(astring & strPath, u32 startTime, MediaSessionType type, u32 maxLength, 
+	MediaFileData(string & strPath, unsigned int startTime, MediaSessionType type, unsigned int maxLength, 
 		BOOL bSeekIFrame)
 	:m_File(strPath), m_StartTime(startTime), m_SessionType(type), 
 	 m_isFirstFrame(TRUE), m_MaxLength(maxLength), m_bSeekIFrame(bSeekIFrame)
@@ -68,14 +63,14 @@ public:
 	MFHeader m_Header;
 	MFTimePostionVector m_PostionVector;
 	VdbFile m_File;
-	u32 m_StartTime;
+	unsigned int m_StartTime;
 	MediaSessionType m_SessionType;
-	u32 m_CurTimeIdx;
-	u32 m_LastTime;
-	u32 m_LastSeek;
-	u32 m_LastRead;
+	unsigned int m_CurTimeIdx;
+	unsigned int m_LastTime;
+	unsigned int m_LastSeek;
+	unsigned int m_LastRead;
 	BOOL m_isFirstFrame;
-	u32 m_MaxLength;
+	unsigned int m_MaxLength;
 	BOOL m_bSeekIFrame;
 
 	struct timeval m_ExpectTime;
@@ -83,7 +78,7 @@ public:
 };
 
 
-MediaFile::MediaFile(astring & strPath, u32 startTime, MediaSessionType type, u32 maxLength, 
+MediaFile::MediaFile(string & strPath, unsigned int startTime, MediaSessionType type, unsigned int maxLength, 
 	BOOL bSeekIFrame)
 {
 	m_data = new MediaFileData(strPath, startTime, type, maxLength, bSeekIFrame);
@@ -98,7 +93,7 @@ MediaFile::~MediaFile()
 	}
 }
 
-u32 MediaFile::GetEndTime()
+unsigned int MediaFile::GetEndTime()
 {
 	return m_data->m_LastTime;
 }
@@ -136,7 +131,7 @@ BOOL MediaFile::InitWrite()
 	m_data->m_File.Lseek(0, SEEK_SET);
 	m_data->m_File.Write(&m_data->m_Header, sizeof(m_data->m_Header));
 	
-	for (s32 i = 0; i < MF_TIME_POS; i ++)
+	for (int i = 0; i < MF_TIME_POS; i ++)
 	{
 		m_data->m_PostionVector.postion[i] = MF_HEADER_LEN + i * (sizeof(int) * 2);
 		m_data->m_PostionVector.timePostion[i].postion = 0;
@@ -158,7 +153,7 @@ BOOL MediaFile::InitRead()
 	m_data->m_File.Lseek(0, SEEK_SET);
 	m_data->m_File.Read(&m_data->m_Header, sizeof(m_data->m_Header));
 	
-	for (s32 i = 0; i < MF_TIME_POS; i ++)
+	for (int i = 0; i < MF_TIME_POS; i ++)
 	{
 		m_data->m_PostionVector.postion[i] = MF_HEADER_LEN + i * sizeof(int);
 		m_data->m_PostionVector.timePostion[i].postion = 0;
@@ -170,7 +165,7 @@ BOOL MediaFile::InitRead()
 	m_data->m_LastRead = MF_HEADER_LEN + MF_TIME_POS_LEN;
        if (m_data->m_Header.startTime == m_data->m_Header.endTime)
        {
-               for (s32 i = 0; i < MF_TIME_POS; i ++)
+               for (int i = 0; i < MF_TIME_POS; i ++)
                {
                	
                	if (m_data->m_PostionVector.timePostion[i].postion != 0 &&
@@ -191,7 +186,7 @@ BOOL MediaFile::InitRead()
 	return TRUE;
 }
 
-BOOL MediaFile::GetStartAndEndTime(u32  &startTime, u32 &endTime)
+BOOL MediaFile::GetStartAndEndTime(unsigned int  &startTime, unsigned int &endTime)
 {
     startTime = m_data->m_Header.startTime;
     endTime  = m_data->m_Header.endTime;
@@ -210,7 +205,7 @@ void DumpHexData(unsigned char *pNuf, int nLen)
 }
 
 
-MFStatus MediaFile::GetAFrame(VideoFrame &pFrame, s32 &waiting)
+MFStatus MediaFile::GetAFrame(VideoFrame &pFrame, int &waiting)
 {
     MFPktLink link;
     waiting = 0;
@@ -299,7 +294,7 @@ BOOL MediaFile::PauseForRead()
 	return TRUE;
 }
 
-BOOL MediaFile::SeekToTime(u32 seekTime)
+BOOL MediaFile::SeekToTime(unsigned int seekTime)
 {
     VDC_DEBUG("SeekToTime Time %d start %d end %d\n", seekTime, 
                        m_data->m_Header.startTime,  m_data->m_Header.endTime);
@@ -309,7 +304,7 @@ BOOL MediaFile::SeekToTime(u32 seekTime)
         return FALSE;
     }
 
-    u32 TimeIdx = seekTime - m_data->m_Header.startTime;
+    unsigned int TimeIdx = seekTime - m_data->m_Header.startTime;
 
     m_data->m_isFirstFrame = TRUE;
     m_data->m_LastRead = m_data->m_PostionVector.timePostion[TimeIdx].postion;
@@ -382,7 +377,7 @@ MFStatus MediaFile::PushAFrame(VideoFrame *pFrame)
 	MFPktLink link;
 	MFPktLink linkEnd;
 	
-	s32 timeDiff = pFrame->secs - m_data->m_StartTime;
+	int timeDiff = pFrame->secs - m_data->m_StartTime;
 	if (timeDiff < 0)
 	{
 		VDC_DEBUG("PushAFrame timeDiff < 0, just skip this Frame\n");
@@ -392,8 +387,8 @@ MFStatus MediaFile::PushAFrame(VideoFrame *pFrame)
 	{
 		VDC_DEBUG("Max Length Reached !\n");
 		/* Write the end time to the file */
-		m_data->m_File.Lseek(sizeof(u32) * 2, SEEK_SET);
-		m_data->m_File.Write(&m_data->m_LastTime, sizeof(u32));
+		m_data->m_File.Lseek(sizeof(unsigned int) * 2, SEEK_SET);
+		m_data->m_File.Write(&m_data->m_LastTime, sizeof(unsigned int));
 		return MF_WRTIE_REACH_END;	
 	}
 	

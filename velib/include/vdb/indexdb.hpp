@@ -13,8 +13,6 @@
 #include "Poco/Data/Session.h"
 #include "utility/videotype.hpp"
 
-
-using namespace UtilityLib;
 /* The string is the device id of disk
     For example, on Unix filesystems (including OS X), this returns the
     devpath like \c /dev/sda0 for local storages. On Windows, it returns the UNC
