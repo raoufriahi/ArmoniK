@@ -1,38 +1,34 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __PB_SESSION_HPP__
-#define __PB_SESSION_HPP__
-#include "utility.hpp"
+#pragma once
 #include "mediafile.hpp"
 
 class VE_LIBRARY_API PlaybackSession
 {
 public:
     /* bSeekIFrame is for play a new block from seek method  */
-    PlaybackSession(astring deviceId, astring &strBlockPath, BOOL bSeekIFrame = FALSE);
+    PlaybackSession(string deviceId, string &strBlockPath, BOOL bSeekIFrame = FALSE);
     ~PlaybackSession();
 public:
-	MFStatus GetAFrame(VideoFrame &pFrame, s32 &waiting);
-	BOOL SeekToTime(u32 seekTime);
+	MFStatus GetAFrame(VideoFrame &pFrame, int &waiting);
+	BOOL SeekToTime(unsigned int seekTime);
 	BOOL Pause();
-	astring GetBlockPath()
-	{
+	string GetBlockPath() {
 		return m_StrBlockPath;
 	}
 	
 private:
-	astring m_DeviceId;
-    astring m_StrBlockPath;
-    u32 m_startTime;
+	string m_DeviceId;
+    string m_StrBlockPath;
+    unsigned int m_startTime;
     MediaFile m_MediaFile;
 };
 
-#endif /* __RECORD_SESSION_HPP__ */
