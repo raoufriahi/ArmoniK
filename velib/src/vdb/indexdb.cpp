@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -40,7 +40,7 @@ using Poco::Data::Session;
 /* Default pre record time is 60s */
 #define VDB_DEFAULT_PRE_RECORD_TIME 60
 
-IndexDB::IndexDB(astring & strPath)
+IndexDB::IndexDB(string & strPath)
 : m_strIndexPath(strPath), m_DB(NULL), m_diskStatusInit(false)
 {
 	Init();
@@ -109,9 +109,9 @@ BOOL IndexDB::Init()
 
 BOOL IndexDB::ClearAllBlockLock()
 {
-	s64 recordIdLast = 0;
-	std::vector<s64> recordId;
-	s64 id = 0;
+	long recordIdLast = 0;
+	std::vector<long> recordId;
+	long id = 0;
 	while (1)
 	{
 		Statement stmt = (*m_DB << "SELECT id FROM records WHERE ref >0 AND id >:id", 
@@ -121,7 +121,7 @@ BOOL IndexDB::ClearAllBlockLock()
 
 		if (recordId.size() > 0)
 		{
-			std::vector<s64>::iterator it = recordId.begin();
+			std::vector<long>::iterator it = recordId.begin();
 			id = *it;
 			recordIdLast = id;
 			*m_DB << "UPDATE records SET ref=0 WHERE id=:id", use(id), now;
@@ -137,9 +137,9 @@ BOOL IndexDB::ClearAllBlockLock()
 
 BOOL IndexDB::ClearAllBlockWriting()
 {
-	s64 recordIdLast = 0;
-	std::vector<s64> recordId;
-	s64 id = 0;
+	long recordIdLast = 0;
+	std::vector<long> recordId;
+	long id = 0;
 	while (1)
 	{
 		Statement stmt = (*m_DB << "SELECT id FROM records WHERE writing >0 AND id >:id", 
@@ -149,7 +149,7 @@ BOOL IndexDB::ClearAllBlockWriting()
 
 		if (recordId.size() > 0)
 		{
-			std::vector<s64>::iterator it = recordId.begin();
+			std::vector<long>::iterator it = recordId.begin();
 			id = *it;
 			recordIdLast = id;
 			*m_DB << "UPDATE records SET writing=0 WHERE id=:id", use(id), now;
@@ -165,10 +165,10 @@ BOOL IndexDB::ClearAllBlockWriting()
 
 BOOL IndexDB::CorrectAllTheRecord()
 {
-	s64 recordIdLast = 0;
-       std::vector<s64> recordId;
-       s64 id = 0;
-       astring strPath;
+	long recordIdLast = 0;
+       std::vector<long> recordId;
+       long id = 0;
+       string strPath;
 
        while (1)
        {
@@ -179,19 +179,19 @@ BOOL IndexDB::CorrectAllTheRecord()
                
                if (recordId.size() > 0)
                {
-               	std::vector<s64>::iterator it = recordId.begin();
+               	std::vector<long>::iterator it = recordId.begin();
                	id = *it;
 			recordIdLast = id;
 			*m_DB << "SELECT blockpath FROM records WHERE id=:id", use(id), into(strPath), now;
 			MediaFile * VFile = new MediaFile(strPath, 0, MEDIA_SESSION_PLAYBACK, 
 			                            MF_FILE_MAX_LENGTH); 
-			u32 endTime;
-			u32 startTime;
+			unsigned int endTime;
+			unsigned int startTime;
 			if (strPath.length() == 0)
 			{
 				endTime = 0;
 				startTime = 0;
-	               	astring start;
+	               	string start;
 				start = Time2String(startTime);
 				VDC_DEBUG("Update records ID %lld End\n", id);
 				*m_DB << "UPDATE records SET start=:startdate WHERE id=:id", 
@@ -202,7 +202,7 @@ BOOL IndexDB::CorrectAllTheRecord()
 			{	
                       	VFile->GetStartAndEndTime(startTime, endTime);
 			}
-               	astring end;
+               	string end;
 	               end = Time2String(endTime);
 	               VDC_DEBUG("Update records ID %lld End\n", id);
 	               *m_DB << "UPDATE records SET end=:enddate WHERE id=:id", 
@@ -226,17 +226,17 @@ BOOL IndexDB::CorrectAllTheRecord()
 
 BOOL IndexDB::InitDiskMap()
 {
-	std::vector<astring> hdd;
+	std::vector<string> hdd;
 	VdbDiskItem diskItem;
 	/* Clear all the data */
 	m_diskMap.clear();
-	s64 diskLimit;
+	long diskLimit;
 	
 	Statement stmt = (*m_DB << "SELECT hdd FROM hdds", into(hdd), limit(64)); 
 	stmt.execute();
 	if (hdd.size() > 0)
 	{
-		std::vector<astring>::iterator it;
+		std::vector<string>::iterator it;
 		for (it = hdd.begin(); it != hdd.end(); ++it)	
 		{
 			diskItem.hdd = *it;
@@ -253,9 +253,9 @@ BOOL IndexDB::InitDiskMap()
 	return TRUE;
 }
 
-BOOL  IndexDB::SelectADisk(astring &strHdd)
+BOOL  IndexDB::SelectADisk(string &strHdd)
 {
-	s64 loading = -1;
+	long loading = -1;
   	/* loop to find a good disk */
 	for (VDBDiskMap::iterator it = m_diskMap.begin(); it != m_diskMap.end(); it++)
 	{
@@ -327,9 +327,9 @@ BOOL IndexDB::UpdateDiskStatusMap(VDBDiskStatus &pMap)
 }
 
 /* nSize is in MBytes */
-BOOL IndexDB::AddHdd(astring &strHdd, astring & strPath, s64 nSize)
+BOOL IndexDB::AddHdd(string &strHdd, string & strPath, long nSize)
 {
-	std::vector<astring> hdd;
+	std::vector<string> hdd;
 	VdbDiskItem diskItem;
 	Statement stmt = (*m_DB << "SELECT hdd FROM hdds", into(hdd), limit(64)); 
 	stmt.execute();
@@ -337,7 +337,7 @@ BOOL IndexDB::AddHdd(astring &strHdd, astring & strPath, s64 nSize)
 	/* Check is the HDD is in the hdds tables */
 	if (hdd.size() > 0)
 	{
-		std::vector<astring>::iterator it;
+		std::vector<string>::iterator it;
 		it = find(hdd.begin(), hdd.end(), strHdd);
 		if (it != hdd.end())
 		{
@@ -367,7 +367,7 @@ BOOL IndexDB::AddHdd(astring &strHdd, astring & strPath, s64 nSize)
 	return TRUE;
 }
 
-BOOL IndexDB::DelHdd(astring & strHdd)
+BOOL IndexDB::DelHdd(string & strHdd)
 {
     VDBDiskMap::iterator it1 = m_diskMap.find(strHdd), ite1 = m_diskMap.end();
     if (it1 == ite1)
@@ -375,7 +375,7 @@ BOOL IndexDB::DelHdd(astring & strHdd)
     	VDC_DEBUG("Can not find the hdd\n", strHdd.c_str());
     	return false;
     }
-    s64 id = 0;
+    long id = 0;
     *m_DB << "SELECT id FROM hdds WHERE hdd=:hdd", use(strHdd), 
         into(id), now;
     VDC_DEBUG("Hdd id %lld\n", id);
@@ -384,7 +384,7 @@ BOOL IndexDB::DelHdd(astring & strHdd)
 	return true;
 }
 
-BOOL IndexDB::HddUpdateSize(astring &strHdd, s64 nSize)
+BOOL IndexDB::HddUpdateSize(string &strHdd, long nSize)
 {
     VDBDiskMap::iterator it1 = m_diskMap.find(strHdd), ite1 = m_diskMap.end();
     if (it1 == ite1)
@@ -399,11 +399,11 @@ BOOL IndexDB::HddUpdateSize(astring &strHdd, s64 nSize)
 	return true;
 }
 
-BOOL IndexDB::CreateBlocksIfNecessary(astring & strPath, s32 nSize)
+BOOL IndexDB::CreateBlocksIfNecessary(string & strPath, int nSize)
 {
 	UUIDGenerator uuidCreator;
-	s64 nTotalSize = nSize * 1024;
-	s64 nBlocks = nTotalSize / (MF_FILE_MAX_LENGTH / (1024 * 1024));
+	long nTotalSize = nSize * 1024;
+	long nBlocks = nTotalSize / (MF_FILE_MAX_LENGTH / (1024 * 1024));
 	//Just for test insert 200 block 
 	for (int i = 0; i < nBlocks; i ++)
 	{
@@ -416,8 +416,8 @@ BOOL IndexDB::CreateBlocksIfNecessary(astring & strPath, s32 nSize)
 		path.append(buff);
 		Poco::File file1(path);
 		file1.createDirectories();
-		astring id = uuidCreator.createRandom().toString();
-		astring fileName = id + ".vm";
+		string id = uuidCreator.createRandom().toString();
+		string fileName = id + ".vm";
 		path.append(fileName);
 		
 		path.makeFile();
@@ -425,7 +425,7 @@ BOOL IndexDB::CreateBlocksIfNecessary(astring & strPath, s32 nSize)
 		file2.createFile();
 		file2.setSize(MF_FILE_MAX_LENGTH);//TODO set the block size
 		VDC_DEBUG("Create the Block file %s\n", path.toString().c_str());
-		astring tempPath = path.toString(); 
+		string tempPath = path.toString(); 
 		*m_DB << "INSERT INTO blocks VALUES(NULL, :device, :path, :uuid, 0)", use(strPath), 
 			use(tempPath), use(id), now;
 	}
@@ -434,14 +434,14 @@ BOOL IndexDB::CreateBlocksIfNecessary(astring & strPath, s32 nSize)
 	
 }
 
-BOOL IndexDB::CreateABlock(astring & strHdd, astring &strBlockPath)
+BOOL IndexDB::CreateABlock(string & strHdd, string &strBlockPath)
 {
-	astring tempPath = "path";
-	s64 split = 0;
-	astring strPath = m_diskMap[strHdd].path;
+	string tempPath = "path";
+	long split = 0;
+	string strPath = m_diskMap[strHdd].path;
 	UUIDGenerator uuidCreator;
 	
-	astring id = uuidCreator.createRandom().toString();
+	string id = uuidCreator.createRandom().toString();
 	*m_DB << "INSERT INTO blocks VALUES(NULL, :hdd, :path, :uuid, 0)", use(strHdd), 
 		use(tempPath), use(id), now;
     	*m_DB << "SELECT id FROM blocks WHERE uuid=:uuid", 
@@ -462,7 +462,7 @@ BOOL IndexDB::CreateABlock(astring & strHdd, astring &strBlockPath)
 	Poco::File file1(path);
 	file1.createDirectories();
 	
-	astring fileName = id + ".vm";
+	string fileName = id + ".vm";
 	path.append(fileName);
 
 	path.makeFile();
@@ -482,7 +482,7 @@ BOOL IndexDB::CreateABlock(astring & strHdd, astring &strBlockPath)
 	return true;
 }
 
-BOOL IndexDB::RequestABlockFile(astring & strPath)
+BOOL IndexDB::RequestABlockFile(string & strPath)
 {
 	/* Disk status not init, can not recording */
 	if (m_diskStatusInit == false)
@@ -491,7 +491,7 @@ BOOL IndexDB::RequestABlockFile(astring & strPath)
 	}
 	
 	/* create a block */
-	astring strHdd;
+	string strHdd;
 	if (SelectADisk(strHdd) == false)
 	{
 		return false;
@@ -504,14 +504,14 @@ BOOL IndexDB::RequestABlockFile(astring & strPath)
 	return true;
 }
 
-BOOL IndexDB::GetAOldRecord(astring & strPath)
+BOOL IndexDB::GetAOldRecord(string & strPath)
 {
 	/* Disk status not init, can not recording */
 	if (m_diskStatusInit == false)
 	{
 		return false;
 	}
-    s64 recordId;
+    long recordId;
     *m_DB << "SELECT MIN(Id) FROM records", into(recordId), now;
 
     *m_DB << "SELECT blockpath FROM records WHERE id=:recordid", use(recordId), into(strPath), now;
@@ -524,11 +524,11 @@ BOOL IndexDB::GetAOldRecord(astring & strPath)
     return TRUE;
 }
 
-s64 IndexDB::AddRecord(astring deviceId, u32 recordType, u32 startTime, astring & strPathBlock)
+long IndexDB::AddRecord(string deviceId, unsigned int recordType, unsigned int startTime, string & strPathBlock)
 {
-	astring start;
-	s64 recordId;
-	astring ext = " ";
+	string start;
+	long recordId;
+	string ext = " ";
 	start = Time2String(startTime);
 	*m_DB << "INSERT INTO records VALUES(NULL, :device, :path, :type, :start, :end, "
 		":startstr, :endstr, 0, 0, 0, 0, :ext)", 
@@ -543,17 +543,17 @@ s64 IndexDB::AddRecord(astring deviceId, u32 recordType, u32 startTime, astring 
 }
 
 
-BOOL IndexDB::SearchAItem(astring deviceId, u32 Time, VdbRecordItem &pItem)
+BOOL IndexDB::SearchAItem(string deviceId, unsigned int Time, VdbRecordItem &pItem)
 {
-    s64 recordId = -1;
-    std::vector<s64> recordIds;
+    long recordId = -1;
+    std::vector<long> recordIds;
     Statement stmt = (*m_DB << "SELECT id FROM records WHERE device=:device AND start<=:time AND end >=:time", 
         use(deviceId), use(Time), use(Time), into(recordIds), limit(1)); 
     stmt.execute();
 	
     if (recordIds.size() > 0)
     {
-    	std::vector<s64>::iterator it = recordIds.begin();
+    	std::vector<long>::iterator it = recordIds.begin();
     	recordId = *it;
     	//VDC_DEBUG("Find a record %d\n", recordId);
     }else
@@ -573,17 +573,17 @@ BOOL IndexDB::SearchAItem(astring deviceId, u32 Time, VdbRecordItem &pItem)
     return TRUE;
 }
 
-BOOL IndexDB::SearchAItemNear(astring deviceId, u32 Time, VdbRecordItem &pItem)
+BOOL IndexDB::SearchAItemNear(string deviceId, unsigned int Time, VdbRecordItem &pItem)
 {
-    s64 recordId = -1;
-    std::vector<s64> recordIds;
+    long recordId = -1;
+    std::vector<long> recordIds;
     Statement stmt = (*m_DB << "SELECT id FROM records WHERE device=:device AND start>=:time", 
         use(deviceId), use(Time), into(recordIds), limit(1)); 
     stmt.execute();
 	
     if (recordIds.size() > 0)
     {
-    	std::vector<s64>::iterator it = recordIds.begin();
+    	std::vector<long>::iterator it = recordIds.begin();
     	recordId = *it;
     	//VDC_DEBUG("Find a record %d\n", recordId);
     }else
@@ -604,11 +604,11 @@ BOOL IndexDB::SearchAItemNear(astring deviceId, u32 Time, VdbRecordItem &pItem)
 }
 
 
-BOOL IndexDB::SearchItems(astring deviceId, u32 startTime, u32 endTime, u32 recordType, 
+BOOL IndexDB::SearchItems(string deviceId, unsigned int startTime, unsigned int endTime, unsigned int recordType, 
 					RecordItemMap & pMap)
 {
-    s64 recordId = 0;
-    s64 recordLastId = 0;
+    long recordId = 0;
+    long recordLastId = 0;
 
     VdbRecordItem Item;
     int searchTime = startTime;
@@ -616,7 +616,7 @@ BOOL IndexDB::SearchItems(astring deviceId, u32 startTime, u32 endTime, u32 reco
 
     while (1)
     {
-        std::vector<s64> recordIds;
+        std::vector<long> recordIds;
         
         Statement stmt = (*m_DB << "SELECT id FROM records WHERE device=:device AND id >:recordid AND \
  (end>=:starttime AND  start<=:endtime)", 
@@ -625,7 +625,7 @@ BOOL IndexDB::SearchItems(astring deviceId, u32 startTime, u32 endTime, u32 reco
     	
         if (recordIds.size() > 0)
         {
-        	std::vector<s64>::iterator it = recordIds.begin();
+        	std::vector<long>::iterator it = recordIds.begin();
         	recordId = *it;
                Item.id = recordId;
                *m_DB << "SELECT start FROM records WHERE id=:id", use(recordId), 
@@ -648,10 +648,10 @@ BOOL IndexDB::SearchItems(astring deviceId, u32 startTime, u32 endTime, u32 reco
     return TRUE;
 }
 
-BOOL IndexDB::SearchHasItems(astring deviceId, u32 startTime, u32 endTime, u32 recordType)
+BOOL IndexDB::SearchHasItems(string deviceId, unsigned int startTime, unsigned int endTime, unsigned int recordType)
 {
-    s64 recordId = 0;
-    s64 recordLastId = 0;
+    long recordId = 0;
+    long recordLastId = 0;
 
     VdbRecordItem Item;
     int searchTime = startTime;
@@ -659,7 +659,7 @@ BOOL IndexDB::SearchHasItems(astring deviceId, u32 startTime, u32 endTime, u32 r
 
     while (1)
     {
-        std::vector<s64> recordIds;
+        std::vector<long> recordIds;
         
         Statement stmt = (*m_DB << "SELECT id FROM records WHERE device=:device AND id >:recordid AND \
  (end>=:starttime AND  start<=:endtime)", 
@@ -678,18 +678,18 @@ BOOL IndexDB::SearchHasItems(astring deviceId, u32 startTime, u32 endTime, u32 r
     return TRUE;
 }
 
- BOOL IndexDB::SearchNextItem(astring deviceId, s64 LastId, VdbRecordItem &pItem)
+ BOOL IndexDB::SearchNextItem(string deviceId, long LastId, VdbRecordItem &pItem)
 {
-    s64 recordId = -1;
+    long recordId = -1;
 
-    std::vector<s64> recordIds;
+    std::vector<long> recordIds;
     Statement stmt = (*m_DB << "SELECT id FROM records WHERE device=:device AND id>:id ", 
         use(deviceId), use(LastId), into(recordIds), limit(1)); 
     stmt.execute();
 	
     if (recordIds.size() > 0)
     {
-    	std::vector<s64>::iterator it = recordIds.begin();
+    	std::vector<long>::iterator it = recordIds.begin();
     	recordId = *it;
     	VDC_DEBUG("Find a record %d\n", recordId);
     }else
@@ -711,9 +711,9 @@ BOOL IndexDB::SearchHasItems(astring deviceId, u32 startTime, u32 endTime, u32 r
     return TRUE;
 }
 
- BOOL IndexDB::UpdateRecordEndtime(s64 recordId, u32 endTime)
+ BOOL IndexDB::UpdateRecordEndtime(long recordId, unsigned int endTime)
 {
-	astring end;
+	string end;
 	end = Time2String(endTime);
 	VDC_DEBUG("Update record ID %lld End\n", recordId);
 	
@@ -722,16 +722,16 @@ BOOL IndexDB::SearchHasItems(astring deviceId, u32 startTime, u32 endTime, u32 r
 	return TRUE;
 }
 
-BOOL IndexDB::GetRecordFilePath(VdbRecordItem &pItem, astring & strPath)
+BOOL IndexDB::GetRecordFilePath(VdbRecordItem &pItem, string & strPath)
 {
     *m_DB << "SELECT blockpath FROM records WHERE id=:id", use(pItem.id), 
         into(strPath), now;
      return TRUE;
 }
 
-BOOL IndexDB::RecordRLock(astring & strPath)
+BOOL IndexDB::RecordRLock(string & strPath)
 {
-	s32 ref = 0;
+	int ref = 0;
 	*m_DB << "SELECT ref FROM records WHERE blockpath=:path", 
 		use(strPath), into(ref), now;
 	VDC_DEBUG("%s Lock ref %d\n", strPath.c_str(), ref);
@@ -741,9 +741,9 @@ BOOL IndexDB::RecordRLock(astring & strPath)
 		use(strPath), now;
 	return TRUE;
 }
-BOOL IndexDB::RecordRUnLock(astring & strPath)
+BOOL IndexDB::RecordRUnLock(string & strPath)
 {
-	s32 ref = 0;
+	int ref = 0;
 	*m_DB << "SELECT ref FROM records WHERE blockpath=:path", 
 		use(strPath), into(ref), now;
 	 VDC_DEBUG("%s Lock ref %d\n", strPath.c_str(), ref);
@@ -756,30 +756,30 @@ BOOL IndexDB::RecordRUnLock(astring & strPath)
 		use(strPath), now;
 	return TRUE;
 }
- BOOL IndexDB::RecordWLock(astring & strPath)
+ BOOL IndexDB::RecordWLock(string & strPath)
 {
 	*m_DB << "UPDATE records SET writing=1 WHERE blockpath=:path", use(strPath), now;
 	return TRUE;
 }
- BOOL IndexDB::RecordWUnLock(astring & strPath)
+ BOOL IndexDB::RecordWUnLock(string & strPath)
 {
 	*m_DB << "UPDATE records SET writing=0 WHERE blockpath=:path", use(strPath), now;
 	return TRUE;
 }
 
 	/* The Task will merge type with real items, and pre record is based on the file */
-BOOL IndexDB::AddSchedItem(astring deviceId, u32 startTime, u32 endTime, RecordingType recordType)
+BOOL IndexDB::AddSchedItem(string deviceId, unsigned int startTime, unsigned int endTime, RecordingType recordType)
 {
-	astring start;
-	astring end;
-	s32 nType = recordType;
+	string start;
+	string end;
+	int nType = recordType;
 
 	start = Time2String(startTime);
 	end = Time2String(endTime);
 
 	/*First search if need merge*/
-	s64 recordId = -1;
-	std::vector<s64> schedIds;
+	long recordId = -1;
+	std::vector<long> schedIds;
 	Statement stmt = (*m_DB << "SELECT id FROM scheds WHERE device=:device "
 					"AND end>=:stime AND end<=:etime AND type=:type", 
 					use(deviceId), use(startTime), use(endTime), use(nType), into(schedIds), limit(1));
@@ -787,7 +787,7 @@ BOOL IndexDB::AddSchedItem(astring deviceId, u32 startTime, u32 endTime, Recordi
 
 	if (schedIds.size() > 0)
 	{
-		std::vector<s64>::iterator it = schedIds.begin();
+		std::vector<long>::iterator it = schedIds.begin();
 		recordId = *it;
 		VDC_DEBUG("Find a sched %d just update it\n", recordId);
 		*m_DB << "UPDATE scheds SET end=:enddate WHERE id=:id", use(endTime), use(recordId), now;
@@ -805,14 +805,14 @@ BOOL IndexDB::AddSchedItem(astring deviceId, u32 startTime, u32 endTime, Recordi
 bool IndexDB::ProcessOneRecord(VdbRecordItem &pItem)
 {
 	/* Check if there need keep the record  and update the record type */
-	s64 schedId = 0;
-	s64 schedLastId = 0;
+	long schedId = 0;
+	long schedLastId = 0;
 	bool bFound = false;
-	s32 recordType = 0;
+	int recordType = 0;
 
 	while (1)
 	{
-	    std::vector<s64> schedIds;
+	    std::vector<long> schedIds;
 	    
 	    Statement stmt = (*m_DB << "SELECT id FROM scheds "
 			"WHERE start<=:rend  AND end>=:rstart AND id >:lastid", use(pItem.end), 
@@ -821,10 +821,10 @@ bool IndexDB::ProcessOneRecord(VdbRecordItem &pItem)
 		
 	    if (schedIds.size() > 0)
 	    {
-		std::vector<s64>::iterator it = schedIds.begin();
+		std::vector<long>::iterator it = schedIds.begin();
 		schedId = *it;
 		bFound = true;
-		s32 tmpType = 0;
+		int tmpType = 0;
 
 		*m_DB << "SELECT type FROM scheds WHERE id=:id", use(schedId), 
 		   into(tmpType), now;
@@ -865,12 +865,12 @@ bool IndexDB::RemoveOldScheds()
 	{
 		delTime = 0;
 	}
-	s64 schedId = 0;
-	s64 schedLastId = 0;
+	long schedId = 0;
+	long schedLastId = 0;
 
 	while (1)
 	{
-	    std::vector<s64> schedIds;
+	    std::vector<long> schedIds;
 	    
 	    Statement stmt = (*m_DB << "SELECT id FROM scheds "
 			"WHERE end<=:curr  AND id >:lastid", use(delTime), 
@@ -879,7 +879,7 @@ bool IndexDB::RemoveOldScheds()
 		
 	    if (schedIds.size() > 0)
 	    {
-		std::vector<s64>::iterator it = schedIds.begin();
+		std::vector<long>::iterator it = schedIds.begin();
 		schedId = *it;
 		*m_DB << "DELETE FROM scheds WHERE id=:schedId", use(schedId), now;
 		 VDC_DEBUG("Del one %lld from scheds\n", schedId);
@@ -893,10 +893,10 @@ bool IndexDB::RemoveOldScheds()
 }
 
 /* The return vaule is sleep time of the thread */
-u32 IndexDB::MergeSingleStep()
+unsigned int IndexDB::MergeSingleStep()
 {
-	s64 recordId = 0;
-	s64 recordLastId = 0;
+	long recordId = 0;
+	long recordLastId = 0;
 
 	int i = 0;
 	VdbRecordItem item;
@@ -904,7 +904,7 @@ u32 IndexDB::MergeSingleStep()
 
 	while (1)
 	{
-	    std::vector<s64> recordIds;
+	    std::vector<long> recordIds;
 	    
 	    Statement stmt = (*m_DB << "SELECT id FROM records "
 			"WHERE processed<=0 AND ref<=0 "
@@ -913,7 +913,7 @@ u32 IndexDB::MergeSingleStep()
 		
 	    if (recordIds.size() > 0)
 	    {
-		std::vector<s64>::iterator it = recordIds.begin();
+		std::vector<long>::iterator it = recordIds.begin();
 		recordId = *it;
 		item.id = recordId;
 
