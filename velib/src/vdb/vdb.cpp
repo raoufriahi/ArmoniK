@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -12,7 +12,7 @@
 #include "license.hpp"
 
 
-VDB::VDB(astring & strPath)
+VDB::VDB(string & strPath)
 : m_IndexDB(strPath), /* m_EventDB(strPath), */ m_Mode(RECORDING_FULL_LOOP)
 {
 	this->m_pThread = new tthread::thread(VDB::Run, (void *)this);
@@ -66,14 +66,14 @@ BOOL VDB::UpdateDiskStatusMap(VDBDiskStatus &pMap)
 	return ret;
 }
 
-BOOL VDB::AddHdd(astring &strHdd, astring & strPath, s64 nSize)
+BOOL VDB::AddHdd(string &strHdd, string & strPath, long nSize)
 {
 	Lock();
 	BOOL ret =  m_IndexDB.AddHdd(strHdd, strPath, nSize);
 	UnLock();
 	return ret;
 }
-BOOL VDB::DelHdd(astring & strHdd)
+BOOL VDB::DelHdd(string & strHdd)
 {
 	Lock();
 	BOOL ret =  m_IndexDB.DelHdd(strHdd);
@@ -81,7 +81,7 @@ BOOL VDB::DelHdd(astring & strHdd)
 	return ret;
 }
 
-BOOL VDB::HddUpdateSize(astring &strHdd, s64 nSize)
+BOOL VDB::HddUpdateSize(string &strHdd, long nSize)
 {
 	Lock();
 	BOOL ret =  m_IndexDB.HddUpdateSize(strHdd, nSize);
@@ -90,7 +90,7 @@ BOOL VDB::HddUpdateSize(astring &strHdd, s64 nSize)
 }
 
 /* video search function, if startTime or endTime is 0, it mean all */
-BOOL VDB::SearchItems(astring deviceId, u32 startTime, u32 endTime, u32 recordType, 
+BOOL VDB::SearchItems(string deviceId, unsigned int startTime, unsigned int endTime, unsigned int recordType, 
 				RecordItemMap & pMap)
 {
 	Lock();
@@ -101,7 +101,7 @@ BOOL VDB::SearchItems(astring deviceId, u32 startTime, u32 endTime, u32 recordTy
 }
 
 /* video search function, if startTime or endTime is 0, it mean all */
-BOOL VDB::SearchHasItems(astring deviceId, u32 startTime, u32 endTime, u32 recordType)
+BOOL VDB::SearchHasItems(string deviceId, unsigned int startTime, unsigned int endTime, unsigned int recordType)
 {
 	Lock();
 	BOOL ret =  m_IndexDB.SearchHasItems(deviceId, startTime, endTime, 
@@ -110,7 +110,7 @@ BOOL VDB::SearchHasItems(astring deviceId, u32 startTime, u32 endTime, u32 recor
 	return ret;
 }
 
-BOOL VDB::SearchAItem(astring deviceId, u32 Time, VdbRecordItem &pItem)
+BOOL VDB::SearchAItem(string deviceId, unsigned int Time, VdbRecordItem &pItem)
 {
 	Lock();
 	BOOL ret =  m_IndexDB.SearchAItem(deviceId, Time, pItem);
@@ -118,7 +118,7 @@ BOOL VDB::SearchAItem(astring deviceId, u32 Time, VdbRecordItem &pItem)
 	return ret;
 }
 
-BOOL VDB::SearchAItemNear(astring deviceId, u32 Time, VdbRecordItem &pItem)
+BOOL VDB::SearchAItemNear(string deviceId, unsigned int Time, VdbRecordItem &pItem)
 {
 	Lock();
 	BOOL ret =  m_IndexDB.SearchAItemNear(deviceId, Time, pItem);
@@ -126,7 +126,7 @@ BOOL VDB::SearchAItemNear(astring deviceId, u32 Time, VdbRecordItem &pItem)
 	return ret;
 }
 
-BOOL VDB::SearchNextItem(astring deviceId, s64 LastId, VdbRecordItem &pItem)
+BOOL VDB::SearchNextItem(string deviceId, long LastId, VdbRecordItem &pItem)
 {
 	Lock();
 	BOOL ret =  m_IndexDB.SearchNextItem(deviceId, LastId, pItem);
@@ -134,7 +134,7 @@ BOOL VDB::SearchNextItem(astring deviceId, s64 LastId, VdbRecordItem &pItem)
 	return ret;
 }
 
-BOOL VDB::RequestAMFRead(VdbRecordItem &pItem, astring & strPath)
+BOOL VDB::RequestAMFRead(VdbRecordItem &pItem, string & strPath)
 {
 	Lock();
 	BOOL ret = FALSE;
@@ -147,7 +147,7 @@ BOOL VDB::RequestAMFRead(VdbRecordItem &pItem, astring & strPath)
 	return ret;	
 }
 
-BOOL VDB::FinishedAMFRead(VdbRecordItem &pItem, astring  &strPath)
+BOOL VDB::FinishedAMFRead(VdbRecordItem &pItem, string  &strPath)
 {
 	Lock();
 	BOOL ret = m_IndexDB.RecordRUnLock(strPath);
@@ -177,7 +177,7 @@ void VDB::Run1()
 }
 
 /* The Task will merge type with real items, and pre record is based on the file */
-BOOL VDB::AddSchedItem(astring deviceId, s64 startTime, s64 endTime, RecordingType recordType)
+BOOL VDB::AddSchedItem(string deviceId, long startTime, long endTime, RecordingType recordType)
 {
 	Lock();
 	BOOL ret =  m_IndexDB.AddSchedItem(deviceId, startTime, endTime, recordType);
@@ -185,9 +185,9 @@ BOOL VDB::AddSchedItem(astring deviceId, s64 startTime, s64 endTime, RecordingTy
 	return ret;
 }
 
-RecordSession * VDB::StartRecord(astring deviceId, u32 startTime, u32 recordType)
+RecordSession * VDB::StartRecord(string deviceId, unsigned int startTime, unsigned int recordType)
 {
-	astring strBlockPath;
+	string strBlockPath;
 	
 	Lock();
 	if (m_IndexDB.RequestABlockFile(strBlockPath) != TRUE)
@@ -217,7 +217,7 @@ RecordSession * VDB::StartRecord(astring deviceId, u32 startTime, u32 recordType
 		return NULL;
 	}
 	
-	s64 recordId = m_IndexDB.AddRecord(deviceId, recordType, startTime, strBlockPath);
+	long recordId = m_IndexDB.AddRecord(deviceId, recordType, startTime, strBlockPath);
 	m_IndexDB.RecordWLock(strBlockPath);
 	UnLock();
 	
@@ -226,8 +226,8 @@ RecordSession * VDB::StartRecord(astring deviceId, u32 startTime, u32 recordType
 
 BOOL VDB::FinishRecord(RecordSession * pRs)
 {
-	s64 recordId = pRs->GetRecordId(); 
-	u32 endTime = pRs->GetEndTime();
+	long recordId = pRs->GetRecordId(); 
+	unsigned int endTime = pRs->GetEndTime();
 	LicRecordUnRef();
    	Lock();
 	

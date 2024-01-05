@@ -1,42 +1,34 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __VDB_FILE_HPP__
-#define __VDB_FILE_HPP__
-#include "utility.hpp"
+#pragma once
 #include "vdbtype.hpp"
 
 class VE_LIBRARY_API VdbFile
 {
 public:
-    VdbFile(astring & strPath);
+    VdbFile(string & strPath);
     ~VdbFile();
 	
-public:
-	BOOL Open(s32 flags, s32 mode);
-	BOOL Lseek(s32 offset, s32 whence);
-	
-	
-public:
+	BOOL Open(int flags, int mode);
+	BOOL Lseek(int offset, int whence);
 	BOOL Close();
-	s32 Read(void * buf, s32 len);
-	s32 Write(void * buf, s32 len);
+
+	int Read(void * buf, int len);
+	int Write(void * buf, int len);
 	BOOL Fflush();
-	s32 Size();
-
-public:
-
+	int Size();
 
 private:
-    astring m_strPath;
+    string m_strPath;
 	VDB_HANDLE m_handle;
 };
 
-#endif /* __VDB_FILE_HPP__ */
+

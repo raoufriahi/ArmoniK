@@ -1,47 +1,40 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __VDB_HPP__
-#define __VDB_HPP__
-#include "utility.hpp"
-#include "debug.hpp"
-#include "utility/videotype.hpp"
-#include "recordsession.hpp"
-#include "pbsession.hpp"
-#include "indexdb.hpp"
-#include "veventdb.hpp"
+#pragma once
 
-using namespace UtilityLib;
+#include "debug.hpp"
+#include "recordsession.hpp"
+#include "indexdb.hpp"
 
 class VE_LIBRARY_API VDB
 {
 public:
-	typedef std::map<s32, RecordSession*> _MapSession;
-public:
+	typedef std::map<int, RecordSession*> _MapSession;
 
-	VDB(astring & strPath);
+	VDB(string & strPath);
 	~VDB();
 	
-public:
+
 	IndexDB  &GetIndexDB(){return m_IndexDB;}
 	//VEventDB &GetEventDB(){return m_EventDB;}
 
-public:
+
 	BOOL SetRecordingMode(RecordingMode mode);
 
 	void Lock();
 	void UnLock();
 
-	BOOL AddHdd(astring &strHdd, astring & strPath, s64 nSize);
-	BOOL HddUpdateSize(astring &strHdd, s64 nSize);
-	BOOL DelHdd(astring &strHdd);
+	BOOL AddHdd(string &strHdd, string & strPath, long nSize);
+	BOOL HddUpdateSize(string &strHdd, long nSize);
+	BOOL DelHdd(string &strHdd);
 
 	/* Disk map API */
 	BOOL GetDiskMap(VDBDiskMap &pMap);
@@ -49,24 +42,24 @@ public:
 	BOOL UpdateDiskStatusMap(VDBDiskStatus &pMap);
 
 	
-public:
+
 	/* Start and Stop Record */
-	RecordSession * StartRecord(astring deviceId, u32 startTime, u32 recordType);
+	RecordSession * StartRecord(string deviceId, unsigned int startTime, unsigned int recordType);
 	BOOL FinishRecord(RecordSession * pRs);
 		
-public:
+
 	/* video search function, if startTime or endTime is 0, it mean all */
-	BOOL SearchItems(astring deviceId, u32 startTime, u32 endTime, u32 recordType, 
+	BOOL SearchItems(string deviceId, unsigned int startTime, unsigned int endTime, unsigned int recordType, 
 					RecordItemMap & pMap);
-	BOOL SearchHasItems(astring deviceId, u32 startTime, u32 endTime, u32 recordType);
-	BOOL SearchAItem(astring deviceId, u32 Time, VdbRecordItem &pItem);
-	BOOL SearchAItemNear(astring deviceId, u32 Time, VdbRecordItem &pItem);
-    	BOOL SearchNextItem(astring deviceId, s64 LastId, VdbRecordItem &pItem);
-	BOOL RequestAMFRead(VdbRecordItem &pItem, astring & strPath);
-	BOOL FinishedAMFRead(VdbRecordItem &pItem, astring & strPath);
-public:
+	BOOL SearchHasItems(string deviceId, unsigned int startTime, unsigned int endTime, unsigned int recordType);
+	BOOL SearchAItem(string deviceId, unsigned int Time, VdbRecordItem &pItem);
+	BOOL SearchAItemNear(string deviceId, unsigned int Time, VdbRecordItem &pItem);
+    	BOOL SearchNextItem(string deviceId, long LastId, VdbRecordItem &pItem);
+	BOOL RequestAMFRead(VdbRecordItem &pItem, string & strPath);
+	BOOL FinishedAMFRead(VdbRecordItem &pItem, string & strPath);
+
 	/* The Task will merge type with real items, and pre record is based on the file */
-	BOOL AddSchedItem(astring deviceId, s64 startTime, s64 endTime, RecordingType recordType);
+	BOOL AddSchedItem(string deviceId, long startTime, long endTime, RecordingType recordType);
 	static void Run(void * pParam);
 	void Run1();
 	
@@ -80,4 +73,4 @@ private:
 	bool m_bExit;
 	
 };
-#endif /* __VDB_HPP__ */
+
