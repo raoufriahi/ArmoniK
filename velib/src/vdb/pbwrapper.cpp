@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
 #include "pbwrapper.hpp"
-#include "videotype.hpp"
 #include "vdb.hpp"
 
 #define PB_WRAPPER_DEBUG 1
@@ -17,7 +16,7 @@
 class PlaybackWrapperImpl 
 {
 public:
-	PlaybackWrapperImpl(VDB &pVdb, astring deviceId, u32 nPlaytime, 
+	PlaybackWrapperImpl(VDB &pVdb, string deviceId, unsigned int nPlaytime, 
 				PBCallbackFunctionPtr callback, 
 				BOOL eolLoop, void * pParam);
 	~PlaybackWrapperImpl();
@@ -26,7 +25,7 @@ public:
 	void UnLock(){m_Lock.unlock();}
 
 public:
-	BOOL SeekToTime(u32 seekTime);
+	BOOL SeekToTime(unsigned int seekTime);
 	BOOL StartPlay();
 	BOOL PausePlay();
 	BOOL QuitPlay();
@@ -47,9 +46,9 @@ public:
 private:
 	fast_mutex m_Lock;
 	VDB &m_pVdb;
-	astring m_deviceId; 
+	string m_deviceId; 
 	VdbRecordItem m_recordItem;
-	u32 m_nPlaytime; 
+	unsigned int m_nPlaytime; 
 	PBCallbackFunctionPtr m_callback;
 	void * m_pParam;
 
@@ -62,14 +61,14 @@ private:
 	BOOL m_Quit;
 	BOOL m_Playing;
 
-	s32 m_nLastSec;
-	s32 m_nLastSeekTime;
+	int m_nLastSec;
+	int m_nLastSeekTime;
 
 	BOOL m_eolLoop;
 	BOOL m_gotEol;
 };
 
-PlaybackWrapperImpl::PlaybackWrapperImpl(VDB &pVdb, astring deviceId, u32 nPlaytime, 
+PlaybackWrapperImpl::PlaybackWrapperImpl(VDB &pVdb, string deviceId, unsigned int nPlaytime, 
 				PBCallbackFunctionPtr callback, 
 				BOOL eolLoop, void * pParam)
 : m_pVdb(pVdb), m_deviceId(deviceId), m_nPlaytime(nPlaytime), 
@@ -85,7 +84,7 @@ PlaybackWrapperImpl::~PlaybackWrapperImpl()
 {
 	if (m_pbSession)
 	{
-	    	astring strBlockPath = m_pbSession->GetBlockPath();
+	    	string strBlockPath = m_pbSession->GetBlockPath();
 		m_pVdb.FinishedAMFRead(m_recordItem, strBlockPath);
 		delete m_pbSession;
 		m_pbSession = NULL;
@@ -98,9 +97,9 @@ PlaybackWrapperImpl::~PlaybackWrapperImpl()
 
 }
 
-BOOL PlaybackWrapperImpl::SeekToTime(u32 seekTime)
+BOOL PlaybackWrapperImpl::SeekToTime(unsigned int seekTime)
 {
-	astring strPath;
+	string strPath;
 
 	m_nLastSeekTime = seekTime;
 	Lock();
@@ -115,7 +114,7 @@ BOOL PlaybackWrapperImpl::SeekToTime(u32 seekTime)
 	{
 	    if (m_pbSession->SeekToTime(seekTime) == FALSE)
 	    {
-	    	astring strBlockPath = m_pbSession->GetBlockPath();
+	    	string strBlockPath = m_pbSession->GetBlockPath();
 		m_pVdb.FinishedAMFRead(m_recordItem, strBlockPath);
 		delete m_pbSession;
 		m_pbSession = NULL;
@@ -134,7 +133,7 @@ BOOL PlaybackWrapperImpl::SeekToTime(u32 seekTime)
 	    if (m_pbSession->SeekToTime(seekTime) == FALSE)
 	    {
 	    	/* Here can not happen */
-		astring strBlockPath = m_pbSession->GetBlockPath();
+		string strBlockPath = m_pbSession->GetBlockPath();
 		m_pVdb.FinishedAMFRead(m_recordItem, strBlockPath);
 		delete m_pbSession;
 		m_pbSession = NULL;
@@ -199,11 +198,11 @@ BOOL PlaybackWrapperImpl::SetDirection(BOOL bForward)
 BOOL PlaybackWrapperImpl::FeedAFrame(VideoFrame &pbFrame, 
 				BOOL bWaiting)
 {
-	s32 nDataType;
-	astring strPath;
-	s32 nLastSec = 0;
-	u32 nKeyFrame = 0;
-	s32 waiting;
+	int nDataType;
+	string strPath;
+	int nLastSec = 0;
+	unsigned int nKeyFrame = 0;
+	int waiting;
 	if (m_pbSession)
 	{
 	         if (m_pbSession->GetAFrame(pbFrame, waiting) == MF_WRTIE_REACH_END
@@ -266,7 +265,7 @@ BOOL PlaybackWrapperImpl::FeedAFrame(VideoFrame &pbFrame,
 
 BOOL PlaybackWrapperImpl::MakeUpSessionNear(int seekTime)
 {
-	astring strPath;
+	string strPath;
 	if (m_pVdb.SearchAItem(m_deviceId, seekTime, m_recordItem) == TRUE)
 	{
 	       if (m_pVdb.RequestAMFRead(m_recordItem, strPath) == TRUE)
@@ -311,10 +310,10 @@ BOOL PlaybackWrapperImpl::MakeUpSessionNear(int seekTime)
 
 BOOL PlaybackWrapperImpl::MakeUpSessionNext()
 {
-    	astring strPath;
+    	string strPath;
 	if (m_pbSession)
 	{
-		astring strBlockPath = m_pbSession->GetBlockPath();
+		string strBlockPath = m_pbSession->GetBlockPath();
 		m_pVdb.FinishedAMFRead(m_recordItem, strBlockPath);
 		delete m_pbSession;
 		m_pbSession = NULL;
@@ -346,7 +345,7 @@ BOOL PlaybackWrapperImpl::MakeUpSessionNext()
 
 BOOL PlaybackWrapperImpl::MakeUpSession(int seekTime)
 {
-	astring strPath;
+	string strPath;
 	if (m_pVdb.SearchAItem(m_deviceId, seekTime, m_recordItem) == TRUE)
 	{
 		if (m_pVdb.RequestAMFRead(m_recordItem, strPath) == FALSE)
@@ -392,7 +391,7 @@ void PlaybackWrapperImpl::run()
 }
 
 
-PlaybackWrapper::PlaybackWrapper(VDB &pVdb, astring deviceId, u32 nPlaytime,
+PlaybackWrapper::PlaybackWrapper(VDB &pVdb, string deviceId, unsigned int nPlaytime,
 				PBCallbackFunctionPtr callback, 
 				BOOL eolLoop, void * pParam)
 : m_pImpl(new PlaybackWrapperImpl(pVdb, deviceId, nPlaytime, 
@@ -409,7 +408,7 @@ PlaybackWrapper::~PlaybackWrapper()
 	}
 }
 
-BOOL PlaybackWrapper::SeekToTime(u32 seekTime)
+BOOL PlaybackWrapper::SeekToTime(unsigned int seekTime)
 {
 	return m_pImpl->SeekToTime(seekTime);
 }

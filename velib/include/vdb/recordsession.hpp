@@ -1,35 +1,34 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __RECORD_SESSION_HPP__
-#define __RECORD_SESSION_HPP__
-#include "utility.hpp"
+
+#pragma once
+
 #include "mediafile.hpp"
 
 class VE_LIBRARY_API RecordSession
 {
 public:
-	RecordSession(astring deviceId, astring &strBlockPath, u32 startTime, s64 recordId);
+	RecordSession(string deviceId, string &strBlockPath, unsigned int startTime, long recordId);
     ~RecordSession();
 public:
 	MFStatus PushAFrame(VideoFrame *pFrame);
-	u32 GetEndTime();
-	s64 GetRecordId();
-	astring & GetBlockPath();
+	unsigned int GetEndTime();
+	long GetRecordId();
+	string & GetBlockPath();
 
 private:
-	astring m_DeviceId;
-    astring m_StrBlockPath;
-    u32 m_startTime;
+	string m_DeviceId;
+    string m_StrBlockPath;
+    unsigned int m_startTime;
     MediaFile m_MediaFile;
-    s64 m_RecordId;
+    long m_RecordId;
 };
 
-#endif /* __RECORD_SESSION_HPP__ */
