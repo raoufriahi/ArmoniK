@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -14,7 +14,7 @@
 
 #include "utility.hpp"
 #include "debug.hpp"
-#include "cppkit/ck_string.h"
+//#include "cppkit/ck_string.h"
 #include "cppkit/ck_memory.h"
 #include "cppkit/ck_command_queue.h"
 #include "ffkit/av_muxer.h"
@@ -82,7 +82,7 @@ using namespace Poco;
 class HdfsRecSessionData
 {
 public:
-	HdfsRecSessionData(s32 deviceId, astring strName, VHdfsDB &pDB)
+	HdfsRecSessionData(int deviceId, string strName, VHdfsDB &pDB)
 		:m_pDB(pDB), m_DeviceId(deviceId), m_strName(strName), m_bGotInfoData(FALSE), 
 		m_pMuxer(NULL), m_currStartTime(0), m_pHdfsRec(pDB.GetHdfsRecWrapper()), 
 		m_currFrameCnt(0), m_inerval(60), m_handler(NULL), 
@@ -95,24 +95,24 @@ public:
 		FinishCurrRec(time(NULL));
 	}
 	MFStatus PushAFrame(VideoFrame *pFrame);
-	BOOL StartNewRec(s32 currTime);
-	BOOL FinishCurrRec(s32 currTime);
+	BOOL StartNewRec(int currTime);
+	BOOL FinishCurrRec(int currTime);
 	BOOL HandleAFrame(VideoFrame *pFrame);
 	BOOL RegSeqCallback(HDFSDataHandler pCallback, void * pParam);
 	BOOL UnRegSeqCallback(void * pParam);
 
 public:
-	s32 m_DeviceId;
+	int m_DeviceId;
 	VHdfsDB &m_pDB;
-	astring m_strName;
+	string m_strName;
 	codec_options m_options;
 	InfoFrame m_infoData;
 	BOOL m_bGotInfoData;
 	av_muxer *m_pMuxer;
-	s32 m_currStartTime;
+	int m_currStartTime;
 	HdfsRecWrapper &m_pHdfsRec;/* If a file is OK, post to here */
-	s32 m_currFrameCnt;/* If > 15(min) * 60(s) * 60(fps) */
-	s32 m_inerval;/* (s) */
+	int m_currFrameCnt;/* If > 15(min) * 60(s) * 60(fps) */
+	int m_inerval;/* (s) */
 
 	HDFSDataHandler m_handler;
 	void * m_pParam;
@@ -135,7 +135,7 @@ BOOL HdfsRecSessionData::UnRegSeqCallback(void * pParam)
 }
 
 /* Start a New record */
-BOOL HdfsRecSessionData::StartNewRec(s32 currTime)
+BOOL HdfsRecSessionData::StartNewRec(int currTime)
 {
 	ck_string fileName = "fake.mp4";
 	m_options.width = m_infoData.vWidth;
@@ -159,7 +159,7 @@ BOOL HdfsRecSessionData::StartNewRec(s32 currTime)
 }
 
 /* Finish current record */
-BOOL HdfsRecSessionData::FinishCurrRec(s32 currTime)
+BOOL HdfsRecSessionData::FinishCurrRec(int currTime)
 {
 	VDC_DEBUG("%s Finish Rec Start Time:%d inerval %d current Time %d\n", __FUNCTION__, 
 		m_currStartTime, m_inerval, currTime);
@@ -187,24 +187,24 @@ BOOL HdfsRecSessionData::FinishCurrRec(s32 currTime)
 
 	Poco::Path path("video");
 	path.append(m_strName);
-	astring strChannel1 = ck_string::from_int(m_DeviceId);
-	astring strChannel = "C" + strChannel1;
+	string strChannel1 = ck_string::from_int(m_DeviceId);
+	string strChannel = "C" + strChannel1;
 	//path.append(strChannel);
-	astring strDay = HdfsRecTime2Day(m_currStartTime);
+	string strDay = HdfsRecTime2Day(m_currStartTime);
 	path.append(strDay);
 	
-	astring strHour = HdfsRecTime2Hour(m_currStartTime);
+	string strHour = HdfsRecTime2Hour(m_currStartTime);
 	path.append(strHour);
 	
-	astring strMinute = HdfsRecTime2Minute(m_currStartTime);
+	string strMinute = HdfsRecTime2Minute(m_currStartTime);
 	path.append(strMinute);
 	
-	astring strStart = HdfsRecTime2String(m_currStartTime);
-	astring strEnd = HdfsRecTime2String(currTime);
+	string strStart = HdfsRecTime2String(m_currStartTime);
+	string strEnd = HdfsRecTime2String(currTime);
 	
-	astring strFileName = strChannel + "-" + strStart + "-" +  strEnd + ".mp4";
+	string strFileName = strChannel + "-" + strStart + "-" +  strEnd + ".mp4";
 	
-	astring strPath = path.toString(Path::PATH_UNIX);
+	string strPath = path.toString(Path::PATH_UNIX);
 	VDC_DEBUG("%s path %s  file %s size %d\n", __FUNCTION__, strPath.c_str(), strFileName.c_str(), pData->size());
 	HdfsCmd cmd;
 	
@@ -234,7 +234,7 @@ BOOL HdfsRecSessionData::FinishCurrRec(s32 currTime)
 BOOL HdfsRecSessionData::HandleAFrame(VideoFrame *pFrame)
 {
 	u8  *dataBuf = NULL;
-	u32 dataSize = 0;
+	unsigned int dataSize = 0;
 	
 	if (m_pMuxer == NULL)
 	{
@@ -273,8 +273,8 @@ BOOL HdfsRecSessionData::HandleAFrame(VideoFrame *pFrame)
 MFStatus HdfsRecSessionData::PushAFrame(VideoFrame *pFrame)
 {
 	u8  *dataBuf = NULL;
-	u32 dataSize = 0;
-	s32 currTime = time(NULL);
+	unsigned int dataSize = 0;
+	int currTime = time(NULL);
 	//VDC_DEBUG("HDFS Recording Size %d stream %d frame %d (%d, %d)\n", pFrame->dataLen,      
 	//	pFrame->streamType, pFrame->frameType, pFrame->secs, pFrame->msecs);
 	if (pFrame->frameType == VIDEO_FRM_I)
@@ -323,7 +323,7 @@ MFStatus HdfsRecSessionData::PushAFrame(VideoFrame *pFrame)
 	return MF_OK;
 }
 
-HdfsRecSession::HdfsRecSession(s32 deviceId, astring strName, VHdfsDB &pDB)
+HdfsRecSession::HdfsRecSession(int deviceId, string strName, VHdfsDB &pDB)
 : m_data(new HdfsRecSessionData(deviceId, strName, pDB))
 {
 
