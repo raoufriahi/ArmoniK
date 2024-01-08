@@ -8,9 +8,8 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
+
 #include "rapidmedia/rapidaudiodec.hpp"
-
-
 
 RapidAudioDec::RapidAudioDec(CodecType codec,  int bit_rate, int sample_rate, 
 	int channels, 
