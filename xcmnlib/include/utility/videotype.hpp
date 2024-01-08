@@ -1,30 +1,15 @@
-/** <!--
+/*
+ * Copyright (c) 2017-2024 UbVideo
  *
- *  Copyright (C) 2017 veyesys support@veyesys.com
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  If you would like this software to be made available to you under an 
- *  alternate commercial license please email support@veyesys.com 
- *  for more information.
- *
- * -->
+ * The computer program contained herein contains proprietary
+ * information which is the property of UbVideo.
+ * The program may be used and/or copied only with the written
+ * permission of UbVideo or in accordance with the
+ * terms and conditions stipulated in the agreement/contract under
+ * which the programs have been supplied.
  */
-#ifndef _V_VIDEO_TYPE_H_
-#define _V_VIDEO_TYPE_H_
+#pragma once
 #include "utility/type.hpp"
-#include <vector>
 #if 0
 #define MAKE_VE_RAW(a,b,c,d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -52,6 +37,8 @@
 #define VE_PIX_FMT_BGR     (('B'<<24)|('G'<<16)|('R'<<8))
 #define VE_PIX_FMT_BGR8    (VE_PIX_FMT_BGR|8)
 #endif
+#define MF_FILE_MAX_LENGTH 16 * 1024 * 1024
+#define VE_NUM_POINTERS 8
 typedef enum __VideoRawType
 {
 	VIDEO_RAW_VIDEO = 1,
@@ -62,17 +49,17 @@ typedef enum __VideoRawType
 
 typedef enum __CodecType
 {
-        CODEC_PCMU = 0, 
-        CODEC_PCMA = 8,
-        CODEC_G711A = 19,
-        CODEC_G711U = 20, 
-        CODEC_H264 = 96,
-        CODEC_H265 = 98,
-        CODEC_MPEG4 = 97,
-        CODEC_MJPEG = 26,
-        CODEC_AAC = 100,
-        CODEC_NONE = 254,
-        CODEC_LAST = 1000
+	CODEC_PCMU = 0, 
+	CODEC_PCMA = 8,
+	CODEC_G711A = 19,
+	CODEC_G711U = 20, 
+	CODEC_H264 = 96,
+	CODEC_H265 = 98,
+	CODEC_MPEG4 = 97,
+	CODEC_MJPEG = 26,
+	CODEC_AAC = 100,
+	CODEC_NONE = 254,
+	CODEC_LAST = 1000
 }CodecType;
 
 typedef enum __VideoHardwareCmd
@@ -88,9 +75,8 @@ struct __RawFrame;
 typedef struct __RawFrame {
 	VideoRawType type;
 	CodecType codec;
- 	u32 secs;       /* timestamp in seconds */
-	u32 msecs;      /* timestamp in mseconds */
-#define VE_NUM_POINTERS 8
+ 	unsigned int secs;       /* timestamp in seconds */
+	unsigned int msecs;      /* timestamp in mseconds */
 	char *data[VE_NUM_POINTERS];
 	int linesize[VE_NUM_POINTERS];
 	int width, height;
@@ -148,11 +134,11 @@ typedef struct __VideoFrame
 {
 	VideoStreamType streamType;
  	VideoFrameType frameType;
- 	u32 secs;       /* timestamp in seconds */
-	u32 msecs;      /* timestamp in mseconds */
-	u32 dataLen; /* the length of the payload data */
-	u8   *dataBuf;
-	u32 bufLen;/* the length of the buffer */
+ 	unsigned int secs;       /* timestamp in seconds */
+	unsigned int msecs;      /* timestamp in mseconds */
+	unsigned int dataLen; /* the length of the payload data */
+	unsigned char   *dataBuf;
+	unsigned int bufLen;/* the length of the buffer */
 }VideoFrame;
 
 typedef struct __VideoStreamInfo
@@ -165,12 +151,12 @@ typedef struct __VideoStreamInfo
 
 typedef struct __VideoFrameHeader
 {
-	u32 streamType; /* VideoStreamType */
- 	u32 frameType; /* VideoFrameType */
-	u32 seq;/* seq for frame lost */
- 	u32 secs;       /* timestamp in seconds */
-	u32 msecs;      /* timestamp in mseconds */
-	u32 dataLen;
+	unsigned int streamType; /* VideoStreamType */
+ 	unsigned int frameType; /* VideoFrameType */
+	unsigned int seq;/* seq for frame lost */
+ 	unsigned int secs;       /* timestamp in seconds */
+	unsigned int msecs;      /* timestamp in mseconds */
+	unsigned int dataLen;
 }VideoFrameHeader;
 
 typedef enum __VideoSeqType
@@ -182,53 +168,51 @@ typedef enum __VideoSeqType
 
 typedef struct __InfoFrameP /* All P frame use this */
 {
-	u8 video;/* CodecType */
-	u8 audio;/* CodecType */
-	u16 padding1;
+	unsigned char video;/* CodecType */
+	unsigned char audio;/* CodecType */
+	unsigned short padding1;
 }InfoFrameP;
 
 typedef struct __InfoFrameI /* All I frame use thie */
 {
-	u8 video;/* CodecType */
-	u8 audio;/* CodecType */
-	u16 padding0;
-	u16 vFps;
-	u32 vWidth;
-	u32 vHeight;
-	u16 aSampleRate;
-	u16 aSampleSize;
-	u16 aChannels;
-	u32 padding1;
-	u32 padding2;
-	u32 padding3;
-	u32 padding4;
-	u16 padding5;
+	unsigned char video;/* CodecType */
+	unsigned char audio;/* CodecType */
+	unsigned short padding0;
+	unsigned short vFps;
+	unsigned int vWidth;
+	unsigned int vHeight;
+	unsigned short aSampleRate;
+	unsigned short aSampleSize;
+	unsigned short aChannels;
+	unsigned int padding1;
+	unsigned int padding2;
+	unsigned int padding3;
+	unsigned int padding4;
+	unsigned short padding5;
 }InfoFrameI;
 
 
 typedef struct __InfoFrame
 {
-        CodecType video;
-        u32 vWidth;
-        u32 vHeight;
-        u32 vFps;
-        CodecType audio;
-        u32 aRate;
-        u32 aBitrate;
-        u32 aChannels;
-        u32 aBitspersample;
-        u32 padding1;
-        u32 padding2;
-        u32 padding3;
-        u32 padding4;
-        u32 padding5;
-        u32 padding6;
-        u32 padding7;
-        u32 padding8;
+	CodecType video;
+	unsigned int vWidth;
+	unsigned int vHeight;
+	unsigned int vFps;
+	CodecType audio;
+	unsigned int aRate;
+	unsigned int aBitrate;
+	unsigned int aChannels;
+	unsigned int aBitspersample;
+	unsigned int padding1;
+	unsigned int padding2;
+	unsigned int padding3;
+	unsigned int padding4;
+	unsigned int padding5;
+	unsigned int padding6;
+	unsigned int padding7;
+	unsigned int padding8;
 }InfoFrame;
 
-
-#define MF_FILE_MAX_LENGTH 16 * 1024 * 1024
 
 typedef enum
 {
@@ -273,38 +257,37 @@ typedef enum
 } DiskStatus;
 
 typedef struct __VdbRecordItem
-{	
-    s64 id;	
-    s32 start;	
-    s32 end;
-    u32 type;
+{
+    long id;
+    int start;
+    int end;
+    unsigned int type;
 } VdbRecordItem;
 
 typedef struct __VdbHasRecordItem
-{	
-    s64 id;	
-    s32 start;	
-    s32 end;
-    u32 type;
+{
+    long id;
+    int start;
+    int end;
+    unsigned int type;
     bool has;
 } VdbHasRecordItem;
 
 typedef struct __VdbDiskItem
-{	
-	s64 limit;	
-	s64 used;
-	astring hdd;
-	astring path;
-	s64 loading;//loading is for writing to different hdd when find block
+{
+	long limit;
+	long used;
+	string hdd;
+	string path;
+	long loading;//loading is for writing to different hdd when find block
 } VdbDiskItem;
 typedef struct __VdbDiskStatus
-{	
-	astring hdd;
-	astring path;
+{
+	string hdd;
+	string path;
 	DiskStatus status;
-	s64 freeSize;
-	s64 totalSize;
-    
+	long freeSize;
+	long totalSize;
 } VdbDiskStatus;
 
 typedef std::map<u64, VdbRecordItem> RecordItemMap;
@@ -317,20 +300,19 @@ typedef enum
 } VscEventType;
 
 typedef struct __VBlob
-{	
-	__VBlob(s32 a0, s32 a1, s32 b0, s32 b1)
+{
+	
+	__VBlob(int a0, int a1, int b0, int b1)
 	:x0(a0), y0(b0), x1(a1), y1(b1)
 	{
 	}
-	s32 x0;
-	s32 y0;
-	s32 x1;
-	s32 y1;
+	int x0;
+	int y0;
+	int x1;
+	int y1;
 } VBlob;
 typedef std::vector<VBlob> VBlobVec;
 
 
 typedef BOOL (*RMDataHandler)(void* pContext, VideoFrame& packet);
 typedef BOOL (*RMRawVideoHandler)(void* pContext, RawFrame& packet);
-
-#endif /* _V_VIDEO_TYPE_H_ */
