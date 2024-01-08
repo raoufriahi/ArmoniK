@@ -1,20 +1,14 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __V_PLAY_HPP__
-#define __V_PLAY_HPP__
-#include "utility.hpp"
-#include "debug.hpp"
-#include "utility/videotype.hpp"
-
-using namespace UtilityLib;
+#pragma once
 
 typedef BOOL (*VPlayDataHandler)(void* pData, VideoFrame& packet);
 typedef BOOL (*VPlayPBTimeCallback)(void* pData, int time);
@@ -53,25 +47,20 @@ public:
 
 	VPlay();
 	~VPlay();
-public:
-	static BOOL SetLicense(astring &strLicense);
-	static BOOL GetLicenseInfo(astring &strHostId, int &ch, astring &type, astring &startTime, 
-		astring &expireTime);
-public:
-	BOOL Init(BOOL bRealStream, string strUrl, string strUser, string strPass, 
-		BOOL bHWAccel = FALSE, VSCConnectType connectType = VSC_CONNECT_TCP);
-	BOOL Init(string strFile, bool bMJPEG, string strUser, 
-		string strPass, BOOL bHWAccel = FALSE);
-#ifdef WIN32
-	BOOL AttachWidget(HWND hWnd, int w, int h, RenderType render = RENDER_TYPE_D3D);
-#else
+
+	static BOOL SetLicense(string &strLicense);
+	static BOOL GetLicenseInfo(string &strHostId, int &ch, string &type, string &startTime, string &expireTime);
+	static size_t EncodeJPEG(RawFrame& pRaw, int dst_w, int dst_h, unsigned char* output, size_t outputSize);
+
+	BOOL Init(BOOL bRealStream, string strUrl, string strUser, string strPass, BOOL bHWAccel = FALSE, VSCConnectType connectType = VSC_CONNECT_TCP);
+	BOOL Init(string strFile, bool bMJPEG, string strUser, string strPass, BOOL bHWAccel = FALSE);
+
 	BOOL AttachWidget(HWND hWnd, int w, int h, RenderType render = RENDER_TYPE_SDL);
-#endif
 	BOOL UpdateWidget(HWND hWnd, int w, int h);
 	BOOL DetachWidget(HWND hWnd);
 	BOOL SetPbTimeCallback(HWND hWnd, void * pData, VPlayPBTimeCallback callback);
 	BOOL Control(VPlayCmd cmd, VPlayCmdParam param);
-	BOOL EnableMot(HWND hWnd, bool enable, astring strConf);
+	BOOL EnableMot(HWND hWnd, bool enable, string strConf);
 
 	BOOL StartGetData(void * pData, VPlayDataHandler callback);
 	BOOL StopGetData();
@@ -80,13 +69,9 @@ public:
 	BOOL PutRawData(VideoFrame& packet);
 	BOOL ShowAlarm(HWND hWnd);
 	BOOL GetStreamInfo(VideoStreamInfo &pInfo);
-
-public:
-	/*  */
-	static size_t EncodeJPEG(RawFrame& pRaw, int dst_w, int dst_h, u8* output, size_t outputSize);
-	
-
-public:
+    
+	VPlayData *GetVPlayData() { return m_data;}
+private:
     VPlayData * m_data;
 };
-#endif /* __V_PLAY_HPP__ */
+

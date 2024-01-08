@@ -8,27 +8,16 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
+#include "utility/videotype.hpp"
+#include "debug.hpp"
 #include "vplay.hpp"
 #include "license.hpp"
 #include "render_wrapper.hpp"
-#include "ffkit/av_muxer.h"
-#include "ffkit/av_demuxer.h"
-#include "ffkit/h264_decoder.h"
-#include "ffkit/fflocky.h"
-#include "ffkit/ffoptions.h"
-#include "cppkit/ck_memory.h"
-#include "cppkit/os/ck_large_files.h"
 #include "rapidmedia/rapidmedia.hpp"
 #include "curl/curl.h"
 #include "AVKit/JPEGEncoder.h"
 
 #define ENABLE_SDL_RENDER 1
-
-using namespace UtilityLib;
-using namespace std;
-using namespace cppkit;
-using namespace ffkit;
-
 /**
  * \brief A fast mutex used to synchronize access to gRenderNoVideoPic.
  *
@@ -75,7 +64,7 @@ class VPlayData
 {
 public:
 	/* First check the bMJPEG, if the bMJPEG is false then check the bFile */
-	VPlayData(VPlay &pPlay, bool bFile, bool bMJPEG, astring strFile, string strUser, 
+	VPlayData(VPlay &pPlay, bool bFile, bool bMJPEG, string strFile, string strUser, 
 		string strPass,  BOOL bHWAccel)
 	:m_vPlay(pPlay), m_bFile(bFile), m_strFile(strFile), m_bMJPEG(bMJPEG), m_strUser(strUser), 
 	 m_strPass(strPass), m_bHWAccel(bHWAccel)
@@ -162,9 +151,9 @@ public:
 
 	bool m_bFile;
 	bool m_bMJPEG;
-	astring m_strUser;
-	astring m_strPass;
-	astring m_strFile;
+	string m_strUser;
+	string m_strPass;
+	string m_strFile;
 	tthread::thread *m_pThread;
 	struct timeval m_lastTime;
 	bool m_bExit;
@@ -245,7 +234,7 @@ void VPlayData::Run1()
 	struct timeval current;
 	VideoFrame packet;
 	packet.bufLen = 1024 * 16;
-	packet.dataBuf = (u8 *)malloc(packet.bufLen);
+	packet.dataBuf = (unsigned char *)malloc(packet.bufLen);
 #ifdef VPLAY_DUMP_RAW
        FILE* fSink;    
        fopen_s(&fSink, "raw.264", "wb");
@@ -291,7 +280,7 @@ void VPlayData::Run1()
 				if (packet.bufLen < (sizeof(InfoFrameI) + frame->get_data_size())) {
 					free(packet.dataBuf);
 					packet.bufLen = (sizeof(InfoFrameI) + frame->get_data_size());
-					packet.dataBuf = (u8 *)malloc(packet.bufLen);
+					packet.dataBuf = (unsigned char *)malloc(packet.bufLen);
 				}
 				if (deMuxer->is_key() == true){
 					packet.frameType = VIDEO_FRM_I;
@@ -404,7 +393,7 @@ inline void VPlayData::on_frame(unsigned char *ptr, int len)
 	if (m_pktMJPEG.bufLen < (sizeof(InfoFrameI) + len)){
 		free(m_pktMJPEG.dataBuf);
 		m_pktMJPEG.bufLen = (sizeof(InfoFrameI) + len);
-		m_pktMJPEG.dataBuf = (u8 *)malloc(m_pktMJPEG.bufLen);
+		m_pktMJPEG.dataBuf = (unsigned char *)malloc(m_pktMJPEG.bufLen);
 	}
 
 #if 0
@@ -418,7 +407,7 @@ inline void VPlayData::on_frame(unsigned char *ptr, int len)
 	
 	m_pktMJPEG.streamType = VIDEO_STREAM_VIDEO;
 	m_pktMJPEG.frameType = VIDEO_FRM_I;
-	u8 * pHeader = m_pktMJPEG.dataBuf + sizeof(InfoFrameI);
+	unsigned char * pHeader = m_pktMJPEG.dataBuf + sizeof(InfoFrameI);
 	memcpy(pHeader, ptr, len);
 	InfoFrameI *pI = (InfoFrameI *)m_pktMJPEG.dataBuf;
 	m_pktMJPEG.dataLen = len + sizeof(InfoFrameI);
@@ -496,7 +485,7 @@ size_t VPlayData::MJPEGWriteData1(void *ptr, size_t size, size_t nmemb)
 
 	if (m_bSingleJpeg == true) {
 		if (m_jpeg_frame_position + nbytes > m_jpeg_buffer_len) {
-			u8 * tempbuf = (u8*)malloc((m_jpeg_frame_position + nbytes) * 2);
+			unsigned char * tempbuf = (unsigned char*)malloc((m_jpeg_frame_position + nbytes) * 2);
 			memcpy(tempbuf, m_jpeg_buffer, m_jpeg_buffer_len);
 			m_jpeg_buffer_len = (m_jpeg_frame_position + nbytes) * 2;
 			free(m_jpeg_buffer);
@@ -540,7 +529,7 @@ size_t VPlayData::MJPEGWriteData1(void *ptr, size_t size, size_t nmemb)
 	            m_jpeg_buffer[m_jpeg_frame_position] = b;
 	        }else
 	        {
-	        	u8 * tempbuf = (u8*)malloc(m_jpeg_buffer_len * 2);
+	        	unsigned char * tempbuf = (unsigned char*)malloc(m_jpeg_buffer_len * 2);
 			memcpy(tempbuf, m_jpeg_buffer, m_jpeg_buffer_len);
 			m_jpeg_buffer_len = m_jpeg_buffer_len * 2;
 			free(m_jpeg_buffer);
@@ -646,7 +635,7 @@ void VPlayData::RunMJPEG(void * pParam)
 void VPlayData::RunMJPEG1()
 {
 	m_pktMJPEG.bufLen = 1024 * 16;
-	m_pktMJPEG.dataBuf = (u8 *)malloc(m_pktMJPEG.bufLen);
+	m_pktMJPEG.dataBuf = (unsigned char *)malloc(m_pktMJPEG.bufLen);
 	m_jpeg_buffer_len = 2 * 1024 * 1024;
 	m_jpeg_buffer = (unsigned char *)malloc(m_jpeg_buffer_len);
 #ifdef VPLAY_DUMP_RAW
@@ -709,8 +698,8 @@ void VPlayData::RunMJPEG1()
 static BOOL VplayRMDataHandler(void* pContext, VideoFrame& packet)
 {
 	VPlay * pVPlay = (VPlay *)pContext;
-	if (pVPlay && pVPlay->m_data->dataHandler) {
-		pVPlay->m_data->dataHandler(pVPlay->m_data->pData, packet);
+	if (pVPlay && pVPlay->GetVPlayData()->dataHandler) {
+		pVPlay->GetVPlayData()->dataHandler(pVPlay->GetVPlayData()->pData, packet);
 	}
 	return TRUE;
 }
@@ -913,7 +902,7 @@ BOOL VPlay::UpdateWidget(HWND hWnd, int w, int h)
  *         - `false` if motion tracking could not be enabled or disabled for the specified window.
  *
  */
-BOOL VPlay::EnableMot(HWND hWnd, bool enable, astring strConf)
+BOOL VPlay::EnableMot(HWND hWnd, bool enable, string strConf)
 {
 #if ENABLE_SDL_RENDER
 	m_data->m_render->EnableMot(hWnd, enable, strConf);
@@ -1184,7 +1173,7 @@ BOOL VPlay::PutRawData(VideoFrame& packet)
  * If the license is not set or is invalid, certain features may be disabled or limited.
  * Please contact the VPlay support team for assistance with obtaining a valid license.
  */
-BOOL VPlay::SetLicense(astring &strLicense)
+BOOL VPlay::SetLicense(string &strLicense)
 {
 	return LicSetLicense(strLicense);
 }
@@ -1206,8 +1195,8 @@ BOOL VPlay::SetLicense(astring &strLicense)
  * \note The output parameters (strHostId, ch, type, startTime, expireTime) will be populated with
  *       the license information upon successful retrieval.
  */
-BOOL VPlay::GetLicenseInfo(astring &strHostId, int &ch, astring &type, 
-	                      astring &startTime, astring &expireTime)
+BOOL VPlay::GetLicenseInfo(string &strHostId, int &ch, string &type, 
+	                      string &startTime, string &expireTime)
 {
 	return LicGetLicenseInfo(strHostId, ch, type, startTime, expireTime);
 }
@@ -1236,7 +1225,7 @@ BOOL VPlay::GetLicenseInfo(astring &strHostId, int &ch, astring &type,
  *          encoded JPEG data; otherwise, the function may overwrite memory and cause undefined
  *          behavior.
  */
-size_t VPlay::EncodeJPEG(RawFrame& pRaw, int dst_w, int dst_h, u8* output, size_t outputSize)
+size_t VPlay::EncodeJPEG(RawFrame& pRaw, int dst_w, int dst_h, unsigned char* output, size_t outputSize)
 {
 	if (dst_w == 0 || dst_h == 0) {
 		dst_w = pRaw.width;

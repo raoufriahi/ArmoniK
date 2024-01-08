@@ -8,86 +8,10 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
+#include "utility/videotype.hpp"
 #include "vsmotalgo.hpp"
 #include "render_wrapper.hpp"
-#include "ffkit/av_muxer.h"
-#include "ffkit/av_demuxer.h"
-#include "ffkit/h264_decoder.h"
-#include "ffkit/fflocky.h"
-#include "ffkit/ffoptions.h"
-#include "cppkit/ck_memory.h"
-#include "cppkit/os/ck_large_files.h"
-#include "rapidmedia/rapidmedia.hpp"
-#include "curl/curl.h"
-#include "libyuv.h"
 #include "XSDK/TimeUtils.h"
-
-using namespace UtilityLib;
-using namespace std;
-using namespace cppkit;
-using namespace ffkit;
-using namespace XSDK;
-
-/**
- * \brief The VSMotAlgoData class represents the data used by the VSMotAlgo algorithm.
- */
-class VE_LIBRARY_API VSMotAlgoData
-{
-public:
-    /**
-     * \brief Constructs a VSMotAlgoData object.
-     *
-     * \param bFullFrame A boolean indicating whether to process the full frame or not.
-     */
-    VSMotAlgoData(bool bFullFrame);
-
-    /**
-     * \brief Destroys the VSMotAlgoData object.
-     */
-    ~VSMotAlgoData();
-
-    /**
-     * \brief Processes a frame.
-     *
-     * This function processes the provided frame.
-     *
-     * \param frame The RawFrame object representing the frame to be processed.
-     * \return A boolean indicating whether the frame was processed successfully or not.
-     */
-    bool ProcessFrame(RawFrame& frame);
-
-    /**
-     * \brief Gets the output of the algorithm.
-     *
-     * This function retrieves the algorithm's output, storing it in the provided output vector.
-     *
-     * \param pOutput The output vector to store the algorithm's output.
-     * \param w The width of the output.
-     * \param h The height of the output.
-     * \return A boolean indicating whether the output was retrieved successfully or not.
-     */
-    bool GetOutput(VBlobVec& pOutput, s32& w, s32& h);
-
-    /**
-     * \brief Sets the motion registration data.
-     *
-     * This function sets the motion registration data used by the algorithm.
-     *
-     * \param motReg The VVidMotReg object representing the motion registration data.
-     * \return A boolean indicating whether the motion registration data was set successfully or not.
-     */
-    bool SetMotReg(VVidMotReg& motReg);
-
-private:
-    s32 m_ProcWidth;          ///< The width of the processed frame.
-    s32 m_ProcHeight;         ///< The height of the processed frame.
-    bool m_bFullFrame;        ///< A flag indicating whether to process the full frame or not.
-    char* m_buf;              ///< A buffer used for internal processing.
-    u8* m_mot;                ///< A buffer used for motion processing.
-    struct timeval m_lastTime;///< The timestamp of the last processed frame.
-    VVidMotReg m_motReg;      ///< The motion registration data.
-};
-
 
 
 /*  Default size is 320 * 240 and the blob size is 8x8*/
@@ -97,7 +21,7 @@ VSMotAlgoData::VSMotAlgoData(bool bFullFrame)
 m_buf(NULL)
 {
 	m_buf = (char *)malloc(m_ProcWidth * m_ProcHeight * 3);
-	m_mot = (u8 *)malloc(m_ProcWidth * m_ProcHeight);
+	m_mot = (unsigned char *)malloc(m_ProcWidth * m_ProcHeight);
 	m_lastTime.tv_sec = 0;
 	m_lastTime.tv_usec = 0;
 }
@@ -191,7 +115,7 @@ bool VSMotAlgoData::ProcessFrame(RawFrame& frame)
  * \param h [out] A reference to a signed 32-bit integer that will be updated with the height of the output.
  * \return A boolean value indicating the success of retrieving the output data. True if successful, false otherwise.
  */
-bool VSMotAlgoData::GetOutput(VBlobVec &pOutput, s32 &w, s32 &h)
+bool VSMotAlgoData::GetOutput(VBlobVec &pOutput, int &w, int &h)
 {
     w = m_ProcWidth;
     h = m_ProcHeight;
@@ -265,7 +189,7 @@ bool VSMotAlgo::SetMotReg(VVidMotReg &motReg)
  * \param h A reference to a signed 32-bit integer variable to store the height of the output.
  * \return A boolean value indicating whether the output was successfully retrieved or not. `true` if successful, `false` otherwise.
  */
-bool VSMotAlgo::GetOutput(VBlobVec &pOutput, s32 &w, s32 &h)
+bool VSMotAlgo::GetOutput(VBlobVec &pOutput, int &w, int &h)
 {
     return m_data->GetOutput(pOutput, w, h);
 }
