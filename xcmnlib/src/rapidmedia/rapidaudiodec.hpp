@@ -1,36 +1,18 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __RAPID_AUDIO_DEC_HPP__
-#define __RAPID_AUDIO_DEC_HPP__
-
-#include "ffkit/ffoptions.h"
-#include "ffkit/av_demuxer.h"
-#include "ffkit/av_packet.h"
-#include "ffkit/av_packet_factory.h"
-#include "cppkit/ck_types.h"
-#include "cppkit/ck_memory.h"
+#pragma once
 #include "rapidmedia/rapiddec.hpp"
-#include "utility/videotype.hpp"
-
-extern "C"
-{
-#include "libavformat/avformat.h"
-#include "libswscale/swscale.h"
-}
-
-using namespace ffkit;
-using namespace cppkit;
-using namespace std;
 
 const int AUDIO_DECODE_ATTEMPTS = 1;
+static const size_t DEFAULT_PADDING = 16;
 
 class RapidAudioDec :public RapidDec
 {
@@ -55,4 +37,3 @@ private:
 	int m_decodeAttempts;
 };
 
-#endif /* __RAPID_Audio_DEC_HPP__ */

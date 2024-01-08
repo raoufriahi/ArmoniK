@@ -1,23 +1,16 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
 #include "rapidmedia/rapidaudiodec.hpp"
-#include "cppkit/ck_exception.h"
-
-extern "C"
-{
-#include "libavutil/opt.h"
-}
 
 
-static const size_t DEFAULT_PADDING = 16;
 
 RapidAudioDec::RapidAudioDec(CodecType codec,  int bit_rate, int sample_rate, 
 	int channels, 
