@@ -211,7 +211,7 @@ bool TryCheckDevice(std::string ip, std::string port)
 	{
 		return false;
 	}	
-	s8 *GetCap = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+	const s8 *GetCap = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" "
 "xmlns:sch=\"http://www.onvif.org/ver10/schema\" "
 "xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" "
@@ -231,7 +231,7 @@ bool TryCheckDevice(std::string ip, std::string port)
 	"Host: %s\r\n"
 	"Content-Type: application/soap+xml; charset=utf-8\r\n"		
 	"Connection: close\r\n"
-	"Content-Length: %u\r\n"
+	"Content-Length: %lu\r\n"
 	"\r\n"
 	"%s", ip.c_str(), strlen((s8 *)GetCap), (s8 *)GetCap);
 
