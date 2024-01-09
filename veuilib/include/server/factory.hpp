@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -38,7 +38,6 @@ typedef enum
     FACTORY_CAMERA_REC_OFF,
     FACTORY_CAMERA_HDFS_REC_ON,
     FACTORY_CAMERA_HDFS_REC_OFF,
-
     FACTORY_CAMERA_LAST
 } FactoryCameraChangeType;
 
@@ -47,7 +46,7 @@ class VE_LIBRARY_API FactoryCameraChangeData
 {
 public:
 	FactoryCameraChangeType type;
-	astring id;
+	string id;
 	//VidCamera cCam;
 };
 
@@ -55,28 +54,28 @@ typedef BOOL (*FactoryCameraChangeNotify)(void* pParam,
 		FactoryCameraChangeData data);
 
 typedef BOOL (*FactoryUserChangeNotify)(void* pParam, 
-		astring strUser, astring strPasswd);
+		string strUser, string strPasswd);
 
 typedef std::list<LPCamera> CameraList;
 typedef std::list<CameraParam> CameraParamList;
-typedef std::map<astring, LPCamera> CameraMap;
-typedef std::map<astring, CameraParam> CameraParamMap;
-typedef std::map<astring, bool> CameraOnlineMap;
-typedef std::map<astring, bool> CameraRecMap;
+typedef std::map<string, LPCamera> CameraMap;
+typedef std::map<string, CameraParam> CameraParamMap;
+typedef std::map<string, bool> CameraOnlineMap;
+typedef std::map<string, bool> CameraRecMap;
 typedef std::map<void *, FactoryCameraChangeNotify> CameraChangeNofityMap;
 typedef std::map<void *, FactoryUserChangeNotify> UserChangeNofityMap;
 
 class Factory;
-class VE_LIBRARY_API FactoryHddTask:public QThread
+class VE_LIBRARY_API FactoryHddTask
 {
-	Q_OBJECT
+
 public:
 	FactoryHddTask(Factory &pFactory);
 	~FactoryHddTask();
-public:
 	void run();
 private:
 	Factory &m_Factory;
+	std::thread workerThread; 
 };
 
 /* Fatory is Qthread for callback in Qt GUI */
@@ -89,63 +88,63 @@ public:
 public:
 	/* Init function */
 	BOOL Init();
-	s32 InitAddCamera(CameraParam & pParam, astring strCamId);
+	s32 InitAddCamera(CameraParam & pParam, string strCamId);
 	ConfDB &GetConfDB(){return m_Conf;};
 	
 public:
 	BOOL RegCameraChangeNotify(void * pData, FactoryCameraChangeNotify callback);
 	BOOL UnRegCameraChangeNotify(void * pData);
 	BOOL CallCameraChange(FactoryCameraChangeData data);
-	static BOOL RecChangeHandler(astring strId, bool bRec, void * pParam);
-	BOOL RecChangeHandler1(astring strId, bool bRec);
+	static BOOL RecChangeHandler(string strId, bool bRec, void * pParam);
+	BOOL RecChangeHandler1(string strId, bool bRec);
 
 public:
 	BOOL RegUserChangeNotify(void * pData, FactoryUserChangeNotify callback);
 	BOOL UnRegUserChangeNotify(void * pData);
-	BOOL CallUserChange(astring strUser, astring strPasswd);
+	BOOL CallUserChange(string strUser, string strPasswd);
 	
 public:
-	BOOL GetLicense(astring &strLicense, astring &strHostId, 
-							int &ch, astring &type, astring &startTime, astring &expireTime);
-	BOOL SetLicense(astring &strLicense);
+	BOOL GetLicense(string &strLicense, string &strHostId, 
+							int &ch, string &type, string &startTime, string &expireTime);
+	BOOL SetLicense(string &strLicense);
 	BOOL InitLicense();
 
-	BOOL GetExportPath(astring &strPath);
-	BOOL SetExportPath(astring &strPath);
+	BOOL GetExportPath(string &strPath);
+	BOOL SetExportPath(string &strPath);
 
 	BOOL GetEventDBConf(VidEventDBConf &pConf);
 
 public:
-	bool AuthUser(astring &strUser, astring &strPasswd);
-	bool GetAdminPasswd(astring &strPasswd);
-	bool SetAdminPasswd(astring strPasswd);
+	bool AuthUser(string &strUser, string &strPasswd);
+	bool GetAdminPasswd(string &strPasswd);
+	bool SetAdminPasswd(string strPasswd);
 public:
 	BOOL GetCameraOnlineMap(CameraOnlineMap &pMap);
 	BOOL GetCameraRecMap(CameraRecMap &pMap);
 	bool GetCameraList(VidCameraList & pCameraList);
 
        /* Camera function */
-	astring AddCamera(CameraParam & pParam);
-	BOOL GetCameraRtspUrl(astring & strUrl, astring strCamId);
-	BOOL DelCamera(astring strCamId);
-	BOOL GetCamera(astring strId, VidCamera & pCam);
-	BOOL PtzAction(astring strCamId, FPtzAction action, float speed);
-	BOOL UpdateRecSched(astring strCamId, VidCamera &pCam);
-	BOOL FireAlarm(astring strCamId, s64 nStartTime);
+	string AddCamera(CameraParam & pParam);
+	BOOL GetCameraRtspUrl(string & strUrl, string strCamId);
+	BOOL DelCamera(string strCamId);
+	BOOL GetCamera(string strId, VidCamera & pCam);
+	BOOL PtzAction(string strCamId, FPtzAction action, float speed);
+	BOOL UpdateRecSched(string strCamId, VidCamera &pCam);
+	BOOL FireAlarm(string strCamId, s64 nStartTime);
 
 public:
 	/* Disk function */
-	BOOL AddHdd(astring strHdd, astring  strPath, s64 nSize);
-	BOOL DelHdd(astring  strHdd);
-	BOOL HddUpdateSize(astring strHdd, s64 nSize);
+	BOOL AddHdd(string strHdd, string  strPath, s64 nSize);
+	BOOL DelHdd(string  strHdd);
+	BOOL HddUpdateSize(string strHdd, s64 nSize);
 	BOOL GetDiskMap(VDBDiskMap &pMap);
 	BOOL GetDiskStatus(VDBDiskStatus &pStatus);
 	BOOL UpdateDiskStatusMap(VDBDiskStatus &pStatus);
 
 	/* Search function */
-	BOOL SearchItems(astring strCamId, u32 startTime, u32 endTime, u32 recordType, 
+	BOOL SearchItems(string strCamId, u32 startTime, u32 endTime, u32 recordType, 
 					RecordItemMap &map);
-	BOOL SearchHasItems(astring strCamId, u32 startTime, u32 endTime, 
+	BOOL SearchHasItems(string strCamId, u32 startTime, u32 endTime, 
 					u32 recordType);
 
 	VDB & GetVdb();
@@ -153,19 +152,19 @@ public:
 
 
 public:
-	BOOL GetStreamInfo(astring strCamId, VideoStreamInfo &pInfo);
-	BOOL GetCamStreamList(astring strCamId, VidStreamList &pList);
+	BOOL GetStreamInfo(string strCamId, VideoStreamInfo &pInfo);
+	BOOL GetCamStreamList(string strCamId, VidStreamList &pList);
 	/* Data */
-	BOOL RegDataCallback(astring strCamId, CameraDataCallbackFunctionPtr pCallback, void * pParam);
-	BOOL UnRegDataCallback(astring strCamId, void * pParam);
-	BOOL GetInfoFrame(astring strCamId, InfoFrame &pFrame);
-	BOOL GetiFrame(astring strCamId, VideoFrame& frame);
-	BOOL RegSubDataCallback(astring strCamId, CameraDataCallbackFunctionPtr pCallback, void * pParam);
-	BOOL UnRegSubDataCallback(astring strCamId, void * pParam);
-	BOOL GetSubInfoFrame(astring strCamId, InfoFrame &pFrame);
+	BOOL RegDataCallback(string strCamId, CameraDataCallbackFunctionPtr pCallback, void * pParam);
+	BOOL UnRegDataCallback(string strCamId, void * pParam);
+	BOOL GetInfoFrame(string strCamId, InfoFrame &pFrame);
+	BOOL GetiFrame(string strCamId, VideoFrame& frame);
+	BOOL RegSubDataCallback(string strCamId, CameraDataCallbackFunctionPtr pCallback, void * pParam);
+	BOOL UnRegSubDataCallback(string strCamId, void * pParam);
+	BOOL GetSubInfoFrame(string strCamId, InfoFrame &pFrame);
 
-	BOOL GetCameraOnline(astring strCamId, BOOL &bStatus);
-	BOOL SetSystemPath(astring strPath);
+	BOOL GetCameraOnline(string strCamId, BOOL &bStatus);
+	BOOL SetSystemPath(string strPath);
 
 public:
 	void run();
