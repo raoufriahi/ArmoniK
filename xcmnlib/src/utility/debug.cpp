@@ -1,38 +1,24 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
 #include "utility/debug.hpp"
 #include "utility/libcli.h"
+
 Debug * Debug::gDebug = NULL;
 tthread::thread * Debug::gThread = NULL;
 
 #define MAX_LOG_LEN	2048
 
-static void internalNetInit()
-{
-#ifdef WIN32
-	/* Start up the windows networking */
-	WORD version_wanted = MAKEWORD(1,1);
-	WSADATA wsaData;
-
-	if ( WSAStartup(version_wanted, &wsaData) != 0 ) {
-		printf("Couldn't initialize Winsock 1.1\n");
-		return;
-	}
-#endif
-}
-
 void Debug::run(void * pParam)
 {
-	if (pParam)
-	{
+	if (pParam) {
 		Debug * pDebug = (Debug *)pParam;
 		pDebug->run1();
 	}
@@ -44,8 +30,7 @@ void Debug::run1()
 	char on = 1;
 	
 	// listen to a socket
-	if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-	{
+	if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("socket");
 		return ;
 	}
@@ -54,46 +39,32 @@ void Debug::run1()
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr.sin_port = htons(m_nPort);
-	if (::bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0)
-	{
+	if (::bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 		perror("bind");
 		return ;
 	}
-	if (listen(s, 50) < 0)
-	{
+	if (listen(s, 50) < 0) {
 		perror("listen");
 		return ;
 	}
 	//printf("Listening on %d\n", m_nPort);
 	//printf("Login with x/x, enable with 'x'\n"); 
-	while ((x = accept(s, NULL, 0)))
-	{
-
+	while ((x = accept(s, NULL, 0))) {
 		cli_loop(cli, x);
-#ifdef WIN32
-		closesocket(x);
-#else
 		close(x);
-#endif
 	}
-
 	return ;	
 }
 
 void Debug::init(s32 nPort, std::string strLoggerPath)
 {
-	if (gDebug != NULL)
-	{
+	if (gDebug != NULL) {
 		return;
 	}
-	internalNetInit();
 	gDebug = new Debug(nPort, strLoggerPath);
-		   gDebug->setup();
-	
-		   gThread = new tthread::thread(Debug::run, (void *)gDebug);
-	
+	gDebug->setup();	   
+	gThread = new tthread::thread(Debug::run, (void *)gDebug);
 	return;
-	
 }
 
 spd::logger & Debug::getLogger()
@@ -108,80 +79,75 @@ spd::logger& Debug::logger()
 
 void Debug::RapidLog(RapidLogLevel level, const char* format, ... )
 {
-		/* Output to log */
-		char str[MAX_LOG_LEN]="";
-		int len;
-		va_list args;
-		va_start(args, format);
-		len = vsnprintf(str, MAX_LOG_LEN-1, format, args);
-		if (len >2)
-		{
-			str[len -1] = '\0';
-		}
-		logger().debug(str);
-		va_end(args);
+	/* Output to log */
+	char str[MAX_LOG_LEN]="";
+	int len;
+	va_list args;
+	va_start(args, format);
+	len = vsnprintf(str, MAX_LOG_LEN-1, format, args);
+	if (len >2) {
+		str[len -1] = '\0';
+	}
+	logger().debug(str);
+	va_end(args);
 
-		std::string prefix;
-		prefix = currentDateTime(time(NULL));
-		prefix += " [V]: ";
+	std::string prefix;
+	prefix = currentDateTime(time(NULL));
+	prefix += " [V]: ";
 
-		/* Output to console */
-		va_list vl2;
-		va_start(vl2, format);
-		printf("%s", prefix.c_str());
-		vprintf(format, vl2);
-		va_end(vl2);
+	/* Output to console */
+	va_list vl2;
+	va_start(vl2, format);
+	printf("%s", prefix.c_str());
+	vprintf(format, vl2);
+	va_end(vl2);
 }
 void Debug::RapidNetLog(RapidLogLevel level, const char* format, ... )
 {
-	{
-		std::string prefix;
-		prefix = currentDateTime(time(NULL));
-		prefix += " [V]: ";
-		va_list vl;
-		/* Output to telnet */
-		va_start(vl, format);
-		cli_print(gDebug->cli, prefix.c_str());
-		cli_vabufprint(gDebug->cli, format, vl);
-		va_end(vl);
-	}
+
+	std::string prefix;
+	prefix = currentDateTime(time(NULL));
+	prefix += " [V]: ";
+	va_list vl;
+	/* Output to telnet */
+	va_start(vl, format);
+	cli_print(gDebug->cli, prefix.c_str());
+	cli_vabufprint(gDebug->cli, format, vl);
+	va_end(vl);
+
 }
 
 void Debug::DebugPrint( const char* format, ... )
 {
-	{
-		std::string prefix;
-		prefix = currentDateTime(time(NULL));
-		prefix += " [V]: ";
-		va_list vl;
-		/* Output to telnet */
-		va_start(vl, format);
-		cli_print(gDebug->cli, prefix.c_str());
-		cli_vabufprint(gDebug->cli, format, vl);
-		va_end(vl);
+	std::string prefix;
+	prefix = currentDateTime(time(NULL));
+	prefix += " [V]: ";
+	va_list vl;
+	/* Output to telnet */
+	va_start(vl, format);
+	cli_print(gDebug->cli, prefix.c_str());
+	cli_vabufprint(gDebug->cli, format, vl);
+	va_end(vl);
 
-		/* Output to console */
-		va_list vl2;
-		va_start(vl2, format);
-		printf("%s", prefix.c_str());
-		vprintf(format, vl2);
-		va_end(vl2);
-	}
+	/* Output to console */
+	va_list vl2;
+	va_start(vl2, format);
+	printf("%s", prefix.c_str());
+	vprintf(format, vl2);
+	va_end(vl2);
 
-	{
-		/* Output to log */
-		char str[MAX_LOG_LEN]="";
-		int len;
-		va_list args;
-		va_start(args, format);
-		len = vsnprintf(str, MAX_LOG_LEN-1, format, args);
-		if (len >2)
-		{
-			str[len -1] = '\0';
-		}
-		logger().debug(str);
-		va_end(args);
+	/* Output to log */
+	char str[MAX_LOG_LEN]="";
+	int len;
+	va_list args;
+	va_start(args, format);
+	len = vsnprintf(str, MAX_LOG_LEN-1, format, args);
+	if (len >2) {
+		str[len -1] = '\0';
 	}
+	logger().debug(str);
+	va_end(args);
+	
 }
 
 void Debug::setup()
@@ -212,10 +178,9 @@ int Debug::check_enable(const char *password)
 
 int Debug::test(struct cli_def *cli, const char *command, char *argv[], int argc)
 {
-	int i;
 	cli_print(cli, "called %s with \"%s\"", __FUNCTION__, command);
 	cli_print(cli, "%d arguments:", argc);
-	for (i = 0; i < argc; i++)
+	for (int i = 0; i < argc; i++)
 		cli_print(cli, "        %s", argv[i]);
 
 	return CLI_OK;

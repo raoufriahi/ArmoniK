@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -39,8 +39,7 @@ int EpollWrapper::EpollCreate(int iFDSize)
 {
 	m_iEpollEventSize = iFDSize;
 	m_iEpollFD = epoll_create(m_iEpollEventSize);
-	if(m_iEpollFD < 0)
-	{
+	if(m_iEpollFD < 0) {
 		return -1;
 	}
 
@@ -49,22 +48,17 @@ int EpollWrapper::EpollCreate(int iFDSize)
 	//m_stOneEpollEvent.events = EPOLLIN | EPOLLERR | EPOLLHUP;
 	m_stOneEpollEvent.data.ptr = NULL;
 	m_stOneEpollEvent.data.fd  = -1;
-
 	return 0;
 }
 
 bool EpollWrapper::FDIsSet(int iFD, int iEpollEventNumber, unsigned int &uiEpollEvent)
 {
-	int i;
-	for(i = 0; i < iEpollEventNumber; ++i)
-	{
-		if (iFD == m_lastEpollEvent[i].data.fd)
-		{
+	for(int i = 0; i < iEpollEventNumber; ++i) {
+		if (iFD == m_lastEpollEvent[i].data.fd) {
 			uiEpollEvent = m_lastEpollEvent[i].events;
 			return true;
 		}
 	}
-
 	return false;
 }
 
@@ -73,21 +67,16 @@ int EpollWrapper::EpollWait(int iTimeout)
 	int iEpollTimeout = iTimeout;
 	int iEpollEventNumber;
 
-	if (iEpollTimeout <= 0)
-	{
+	if (iEpollTimeout <= 0) {
 		iEpollTimeout = m_iEpollWaitingTime;
 	}
 	
-	
 	iEpollEventNumber = epoll_wait(m_iEpollFD, &m_lastEpollEvent[0], m_iEpollEventSize, iEpollTimeout);
-	if(iEpollEventNumber < 0)
-	{
-		if (errno != EINTR)
-		{
+	if(iEpollEventNumber < 0) {
+		if (errno != EINTR) {
 			printf("%s epoll_wait Err!Errno=%d,ErrStr=%s\n", __FUNCTION__, 
 										errno, strerror(errno));
 		}
-		
 		return -1;
 	}
 	return iEpollEventNumber;
@@ -95,56 +84,38 @@ int EpollWrapper::EpollWait(int iTimeout)
 	int i;
 	int iFD;
 	unsigned int uiEpollEvent;
-	for(i = 0; i < iEpollEventNumber; ++i)
-	{
+	for(i = 0; i < iEpollEventNumber; ++i) {
 		iFD = m_lastEpollEvent[i].data.fd;
 		uiEpollEvent = m_lastEpollEvent[i].events;
 		
-		if(IsReadEvent(uiEpollEvent))
-		{
+		if(IsReadEvent(uiEpollEvent)) {
 			NotifyReadEvent(iFD);
 		}
-		else if(IsWriteEvent(uiEpollEvent))
-		{
+		else if(IsWriteEvent(uiEpollEvent)) {
 			NotifyWriteEvent(iFD);
 		}
-		else if(IsErrorEvent(uiEpollEvent, iFD))
-		{
+		else if(IsErrorEvent(uiEpollEvent, iFD)) {
 			NotifyErrorEvent(iFD);
 		}
 	}
-
 	return 0;
 #endif
 }
 
 int EpollWrapper::EpollAdd(int iFD)
 {
-	int iRet = 0;
 	m_stOneEpollEvent.data.fd = iFD;
-	iRet = epoll_ctl(m_iEpollFD, EPOLL_CTL_ADD, iFD, &m_stOneEpollEvent);
-	if(iRet < 0)
-	{
-		return -1;
-	}
-	return 0;
+	return epoll_ctl(m_iEpollFD, EPOLL_CTL_ADD, iFD, &m_stOneEpollEvent) < 0? -1:0;
 }
 
 int EpollWrapper::EpollDelete(int iFD)
 {
-	int iRet = 0;
-	iRet = epoll_ctl(m_iEpollFD, EPOLL_CTL_DEL, iFD, &m_stOneEpollEvent);
-	if(iRet < 0)
-	{
-		return -1;
-	}
-	return 0;
+	return epoll_ctl(m_iEpollFD, EPOLL_CTL_DEL, iFD, &m_stOneEpollEvent) < 0? -1:0;
 }
 
 bool EpollWrapper::IsErrorEvent(unsigned int uiEvent, int iFD)
 {
-	if((EPOLLERR | EPOLLHUP) & uiEvent)
-	{
+	if((EPOLLERR | EPOLLHUP) & uiEvent) {
 		printf("ErrorEvent: FD = %d, event = %u, error = %d, hup = %d, errno = %d\n", 
 			iFD, uiEvent, uiEvent & EPOLLERR, uiEvent & EPOLLHUP, errno);
 		return true;
@@ -154,20 +125,12 @@ bool EpollWrapper::IsErrorEvent(unsigned int uiEvent, int iFD)
 
 bool EpollWrapper::IsReadEvent(unsigned int uiEvent)
 {
-	if((EPOLLIN) & uiEvent)
-	{
-		return true;
-	}
-	return false;
+	return ((EPOLLIN) & uiEvent)? true:false;
 }
 
 bool EpollWrapper::IsWriteEvent(unsigned int uiEvent)
 {
-	if((EPOLLOUT) & uiEvent)
-	{
-		return true;
-	}
-	return false;
+	return ((EPOLLOUT) & uiEvent)? true:false;
 }
 
 int EpollWrapper::NotifyErrorEvent(int iFD)
@@ -188,20 +151,12 @@ int EpollWrapper::NotifyWriteEvent(int iFD)
 	return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 int EpollWrapper::SetNonBlock(int iFD)
 {
-#ifdef WIN32
-	unsigned int uiNonBlock = 1;
-	ioctlsocket(iFD, FIONBIO, &uiNonBlock);
-#else
-	int iFlags;
-	iFlags = fcntl(iFD, F_GETFL, 0);
+	int iFlags = fcntl(iFD, F_GETFL, 0);
 	iFlags |= O_NONBLOCK;
 	//iFlags |= O_NDELAY;
 	fcntl(iFD, F_SETFL, iFlags);
-#endif
 	return 0;
 }
 
@@ -209,7 +164,6 @@ int EpollWrapper::SetNagleOff(int iFD)
 {
     /* Disable the Nagle (TCP No Delay) algorithm */ 
     int flag = 1; 
-
     setsockopt(iFD, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(flag));
     return 0;
 }

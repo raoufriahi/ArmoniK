@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __RapidRTSP_H__
-#define __RapidRTSP_H__
+#pragma once
 
 #include "ros.h"
 #include <thread>
@@ -18,6 +17,7 @@
 #include "Poco/URI.h"
 #include "Poco/String.h"
 #include "h5slib.hpp"
+using namespace std; 
 #ifdef __cplusplus
 extern "C"
 {
@@ -31,10 +31,10 @@ extern "C"
 /*
 * rapidrtsp result of call ...
 */
-#define RapidRTSP_OK						(0)
+#define RapidRTSP_OK					(0)
 #define RapidRTSP_FAIL					(-1)
 #define RapidRTSP_INVALID_PARAM			(-2)
-#define RapidRTSP_NOT_ENOUGH_MEM			(-3)
+#define RapidRTSP_NOT_ENOUGH_MEM		(-3)
 
 
 /*
@@ -87,24 +87,17 @@ typedef void (*fRapidRTSP_DATA_HANDLE)(void *pdata, unsigned int dataSize,
 class CRapidRTSP
 {
 public:
-	CRapidRTSP(std::string streamUrl, int transport, 
-				std::string userName, std::string userPwd, 
-				bool bEnableAudio);
+	CRapidRTSP(string streamUrl, int transport, string userName, string userPwd, bool bEnableAudio);
 	virtual ~CRapidRTSP();
-public:
-	void set_data_handle(fRapidRTSP_DATA_HANDLE handle, 
-				void *context);
+	void set_data_handle(fRapidRTSP_DATA_HANDLE handle, void *context);
 	virtual int start(){return true;}
+
 protected:
-	std::string m_userName;
-	std::string m_userPwd;
-
-	std::string m_streamUrl;
-	/* the full url will include the user & password */
-	std::string m_streamFullUrl;
-
+	string m_userName;
+	string m_userPwd;
+	string m_streamUrl;
+	string m_streamFullUrl; /* the full url will include the user & password */
 	bool m_bEnableAudio;
-
 	fRapidRTSP_DATA_HANDLE m_dataHandle;
 	void *m_dataContext;
 	VSCConnectType m_connectType;
@@ -113,14 +106,12 @@ protected:
 class CRapidRTSPFFMPEG :public CRapidRTSP
 {
 public:
-	CRapidRTSPFFMPEG(std::string streamUrl, int transport, 
-				std::string userName, std::string userPwd, 
-				bool bEnableAudio);
+	CRapidRTSPFFMPEG(string streamUrl, int transport, string userName, string userPwd, bool bEnableAudio);
 	~CRapidRTSPFFMPEG();
-public:
+
 	static int  CheckInterruptCallback(void *param);
 	int CheckInterruptCallback1();
-public:
+
 	static void  proc(void *param);
 	void proc1();
 	virtual int start();
@@ -129,27 +120,23 @@ private:
 	std::thread *m_pThread;
 	CRapidRTSPAVInfo m_AVinfo;
 	AVFormatContext *m_pContext;
-	bool m_bExit;
 	RapidRTSPState m_nState;
-	s64 m_nStartConnectTime;
 	
 	struct timeval m_currVidTime;
-	s64 m_LastVidPts;
+	long m_LastVidPts;
+	long m_nStartConnectTime;
 	unsigned int m_VidFlag; 
+	bool m_bExit;
 	double m_ConnectingStart;
-
-	/* Last receive time */
-	double m_nLastGetDataTime;
+	double m_nLastGetDataTime; /* Last receive time */
 };
 
 class CRapidRTSPLive555 :public CRapidRTSP , public H5SCallback
 {
 public:
-	CRapidRTSPLive555(std::string streamUrl, int transport, 
-				std::string userName, std::string userPwd, 
-				bool bEnableAudio);
+	CRapidRTSPLive555(string streamUrl, int transport, string userName, string userPwd, bool bEnableAudio);
 	~CRapidRTSPLive555();
-public:
+
 	virtual int start();
 	virtual bool   onH5SData(unsigned char* buffer, int size, unsigned long long secs, 
 			unsigned long long msecs, H5SCodecType codec, H5SStreamType stream, 
@@ -162,8 +149,8 @@ private:
 	CRapidRTSPAVInfo m_AVinfo;
 	std::mutex  m_Mutex;
 	std::mutex  m_MutexData;
-	s64 m_lastRecv;
-	s64 m_currRecv;
+	long m_lastRecv;
+	long m_currRecv;
 	bool m_bExit ;
 	bool m_bStarted;
 	std::thread * m_pWatchThread;
@@ -171,8 +158,3 @@ private:
 };
 
 typedef struct CRapidRTSP stCRapidRTSP, *lpCRapidRTSP;
-
-
-#endif
-
-
