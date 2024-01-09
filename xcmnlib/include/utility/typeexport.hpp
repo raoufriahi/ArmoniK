@@ -20,3 +20,4 @@
 	#define VE_LIBRARY_API
 #endif
 
+#define UB_LIBRARY_API
