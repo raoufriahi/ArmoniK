@@ -9,8 +9,7 @@
  * which the programs have been supplied.
  */
 
-#ifndef __VSC_FACTORY_H_
-#define __VSC_FACTORY_H_
+#pragma once
 #include "config/confdb.hpp"
 #include "server/camera.hpp"
 #include "vdb.hpp"
@@ -27,6 +26,7 @@
 #include "config/videnv.hpp"
 
 using namespace XSDK;
+class Factory;
 
 typedef enum
 {
@@ -42,7 +42,7 @@ typedef enum
 } FactoryCameraChangeType;
 
 
-class VE_LIBRARY_API FactoryCameraChangeData
+class UB_LIBRARY_API FactoryCameraChangeData
 {
 public:
 	FactoryCameraChangeType type;
@@ -65,8 +65,8 @@ typedef std::map<string, bool> CameraRecMap;
 typedef std::map<void *, FactoryCameraChangeNotify> CameraChangeNofityMap;
 typedef std::map<void *, FactoryUserChangeNotify> UserChangeNofityMap;
 
-class Factory;
-class VE_LIBRARY_API FactoryHddTask
+
+class UB_LIBRARY_API FactoryHddTask
 {
 
 public:
@@ -79,31 +79,28 @@ private:
 };
 
 /* Fatory is Qthread for callback in Qt GUI */
-class VE_LIBRARY_API Factory: public QThread
+class UB_LIBRARY_API Factory: public QThread
 {
     Q_OBJECT
 public:
     Factory(VidEnv &pEnv);
     ~Factory();
-public:
+
 	/* Init function */
 	BOOL Init();
 	s32 InitAddCamera(CameraParam & pParam, string strCamId);
 	ConfDB &GetConfDB(){return m_Conf;};
 	
-public:
 	BOOL RegCameraChangeNotify(void * pData, FactoryCameraChangeNotify callback);
 	BOOL UnRegCameraChangeNotify(void * pData);
 	BOOL CallCameraChange(FactoryCameraChangeData data);
 	static BOOL RecChangeHandler(string strId, bool bRec, void * pParam);
 	BOOL RecChangeHandler1(string strId, bool bRec);
 
-public:
 	BOOL RegUserChangeNotify(void * pData, FactoryUserChangeNotify callback);
 	BOOL UnRegUserChangeNotify(void * pData);
 	BOOL CallUserChange(string strUser, string strPasswd);
 	
-public:
 	BOOL GetLicense(string &strLicense, string &strHostId, 
 							int &ch, string &type, string &startTime, string &expireTime);
 	BOOL SetLicense(string &strLicense);
@@ -114,11 +111,10 @@ public:
 
 	BOOL GetEventDBConf(VidEventDBConf &pConf);
 
-public:
 	bool AuthUser(string &strUser, string &strPasswd);
 	bool GetAdminPasswd(string &strPasswd);
 	bool SetAdminPasswd(string strPasswd);
-public:
+
 	BOOL GetCameraOnlineMap(CameraOnlineMap &pMap);
 	BOOL GetCameraRecMap(CameraRecMap &pMap);
 	bool GetCameraList(VidCameraList & pCameraList);
@@ -132,7 +128,6 @@ public:
 	BOOL UpdateRecSched(string strCamId, VidCamera &pCam);
 	BOOL FireAlarm(string strCamId, s64 nStartTime);
 
-public:
 	/* Disk function */
 	BOOL AddHdd(string strHdd, string  strPath, s64 nSize);
 	BOOL DelHdd(string  strHdd);
@@ -151,7 +146,6 @@ public:
 	VidEnv & GetEnv(){return m_env;}
 
 
-public:
 	BOOL GetStreamInfo(string strCamId, VideoStreamInfo &pInfo);
 	BOOL GetCamStreamList(string strCamId, VidStreamList &pList);
 	/* Data */
@@ -166,7 +160,6 @@ public:
 	BOOL GetCameraOnline(string strCamId, BOOL &bStatus);
 	BOOL SetSystemPath(string strPath);
 
-public:
 	void run();
 
 private:
@@ -176,16 +169,13 @@ private:
 
 	XMutex m_cMutex;
 
-private:
 	CameraChangeNofityMap m_CameraChange;
 	UserChangeNofityMap m_UserChange;
 
-private:
 	VDB *m_pVdb;
 	VHdfsDB *m_pVHdfsdb;
 	FactoryHddTask *m_HddTask;
 
-private:
 	ConfDB m_Conf;
 	//SysDB m_SysPath;
 	VidEnv &m_env;
@@ -193,5 +183,3 @@ private:
 
 typedef Factory* LPFactory;
 
-
-#endif // __VSC_FACTORY_H_
