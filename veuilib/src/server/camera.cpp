@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
+
 
 #include "server/camera.hpp"
 
@@ -16,7 +17,7 @@ CameraParam::CameraParam()
 {
 	Poco::UUIDGenerator uuidCreator;
 	
-	astring strId  = uuidCreator.createRandom().toString();
+	string strId  = uuidCreator.createRandom().toString();
 	m_Conf.set_ntype(VID_ONVIF_S);
 	m_Conf.set_strid(strId);
 	m_Conf.set_strname("Camera");
@@ -28,7 +29,7 @@ CameraParam::CameraParam()
 
 	m_Conf.set_strrtspurl("rtsp://192.168.0.1:554/Streaming");
 
-	astring filePath = "camera.mp4";
+	string filePath = "camera.mp4";
 
 	m_Conf.set_strfile(filePath.c_str());
 
@@ -40,7 +41,7 @@ CameraParam::CameraParam()
 	m_Conf.set_strprofiletoken1("quality_h264");
 	m_Conf.set_strprofiletoken1("second_h264");
 	m_Conf.set_bhdfsrecord(false);
-	astring *pSched = m_Conf.add_crecsched();
+	string *pSched = m_Conf.add_crecsched();
 	*pSched = REC_SCHED_ALL_DAY;
 	
 	m_bOnvifUrlGetted = false;
@@ -51,7 +52,7 @@ CameraParam::CameraParam()
 	m_Online = false;
 	m_OnlineUrl = false;
 
-	astring IP = m_Conf.strip();
+	string IP = m_Conf.strip();
 	m_strUrl = "rtsp://" + IP + ":" + "554" + "/Streaming";
 	m_strUrlSubStream = "rtsp://" + IP + ":" + "554" + "/Streaming";
 
@@ -59,21 +60,35 @@ CameraParam::CameraParam()
 
 BOOL CameraParam::UpdateDefaultUrl()
 {
-	astring IP = m_Conf.strip();
-	m_strUrl = "rtsp://" + IP + ":" + "554" + "/Streaming";
-	m_strUrlSubStream = "rtsp://" + IP + ":" + "554" + "/Streaming";
+    // Use std::ostringstream to construct URLs more efficiently
+    std::ostringstream streamUrl, subStreamUrl;
 
-	return TRUE;
+    // Get the IP address as a string
+    std::string IP = m_Conf.strip();
+
+    // Construct the main URL
+    streamUrl << "rtsp://" << IP << ":554/Streaming";
+    m_strUrl = streamUrl.str();
+
+    // Construct the substream URL
+    subStreamUrl << "rtsp://" << IP << ":554/Streaming";
+    m_strUrlSubStream = subStreamUrl.str();
+
+    return TRUE;
 }
+
+
 
 CameraParam::CameraParam(VidCamera &pData)
 {
-	m_Conf = pData;
-	
-	m_bOnvifUrlGetted = FALSE;
-	m_bHasSubStream = FALSE;
-	m_Online = FALSE;
-	m_OnlineUrl = FALSE;
+   // Copy configuration from VidCamera
+    m_Conf = pData;
+
+    // Initialize flags and variables
+    m_bOnvifUrlGetted = FALSE;
+    m_bHasSubStream = FALSE;
+    m_Online = FALSE;
+    m_OnlineUrl = FALSE;
 }
 
 std::string Replace(std::string &str, const char *string_to_replace, const char *new_string)
@@ -99,14 +114,14 @@ BOOL CameraParam::CheckOnline()
     {
     	return TRUE;
     }
-    astring IP = m_Conf.strip();
-    astring Port = m_Conf.strport();
-    astring User = m_Conf.struser();
-    astring Password = m_Conf.strpasswd();
-    astring OnvifAddress = m_Conf.stronvifaddress();
+    string IP = m_Conf.strip();
+    string Port = m_Conf.strport();
+    string User = m_Conf.struser();
+    string Password = m_Conf.strpasswd();
+    string OnvifAddress = m_Conf.stronvifaddress();
 
-    astring OnvifCameraService = "http://" + IP + ":" + Port + OnvifAddress;
-	astring url = "rtsp://" + IP + ":" + "554" + "/";
+    string OnvifCameraService = "http://" + IP + ":" + Port + OnvifAddress;
+	string url = "rtsp://" + IP + ":" + "554" + "/";
      VDC_DEBUG( "%s  TryCheckDevice Begin \n", __FUNCTION__);
      if (TryCheckDevice(IP, Port) == false)
      {
@@ -125,15 +140,15 @@ BOOL CameraParam::CheckOnline()
 BOOL CameraParam::UpdateUrlOnvif()
 {
 	BOOL bGotUrl = FALSE;
-	astring IP = m_Conf.strip();
-	astring Port = m_Conf.strport();
-	astring User = m_Conf.struser();
-	astring Password = m_Conf.strpasswd();
-	astring OnvifAddress = m_Conf.stronvifaddress();
+	string IP = m_Conf.strip();
+	string Port = m_Conf.strport();
+	string User = m_Conf.struser();
+	string Password = m_Conf.strpasswd();
+	string OnvifAddress = m_Conf.stronvifaddress();
 
-	astring OnvifCameraService = "http://" + IP + ":" + Port + OnvifAddress;
-	astring url = "rtsp://" + IP + ":" + "554" + "/";
-	astring urlSubStream = "rtsp://" + IP + ":" + "554" + "/";
+	string OnvifCameraService = "http://" + IP + ":" + Port + OnvifAddress;
+	string url = "rtsp://" + IP + ":" + "554" + "/";
+	string urlSubStream = "rtsp://" + IP + ":" + "554" + "/";
 	VVidOnvifProfileMap profileMap;
 
 	if (VVidOnvifC::GetProfiles(User, Password, OnvifCameraService, profileMap) == true)
@@ -148,7 +163,7 @@ BOOL CameraParam::UpdateUrlOnvif()
 	
 	if (profileMap.size() > 0)
 	{
-		astring strToken;
+		string strToken;
 	    	VDC_DEBUG( "%s m_toKenPro size %d \n",__FUNCTION__, profileMap.size());
 		if (m_Conf.bprofiletoken() == true)
 		{
@@ -177,7 +192,7 @@ BOOL CameraParam::UpdateUrlOnvif()
 
 	if (profileMap.size() > 1)
 	{
-		astring strToken;
+		string strToken;
 	    	VDC_DEBUG( "%s m_toKenPro size %d \n",__FUNCTION__, profileMap.size());
 		if (m_Conf.bprofiletoken() == true)
 		{
@@ -219,7 +234,7 @@ BOOL CameraParam::UpdateUrlOnvif()
 
 	/* rtsp://admin:12345@192.168.1.1:554/Streaming/Channels/1\
 	?transportmode=unicast&profile=Profile_1 */
-	//astring urlWithUser = "rtsp://" + User + ":" + Password + "@";
+	//string urlWithUser = "rtsp://" + User + ":" + Password + "@";
 	//Replace(strUrl, "rtsp://", urlWithUser.c_str());
 
 	if (bGotUrl == true)
@@ -243,7 +258,7 @@ BOOL CameraParam::UpdateUrl()
 	|| m_Conf.ntype()== VID_MJPEG)
     {
 	Poco::URI rtspUrl(m_Conf.strrtspurl());
-	astring strRtsp;
+	string strRtsp;
 	if (rtspUrl.empty() != true)
 	{
 		strRtsp = rtspUrl.getScheme() + "://" + rtspUrl.getHost() + ":" + std::to_string(rtspUrl.getPort()) + rtspUrl.getPathAndQuery();
@@ -335,7 +350,7 @@ bool Camera::UpdateRecSched(VidCamera &pCam)
 {
 	m_cSchedMap.clear();
 
-	astring strSched = pCam.strsched();
+	string strSched = pCam.strsched();
 
 	if (RecordSchedWeek::CheckStringForSched(strSched) == false)
 	{
@@ -359,7 +374,7 @@ BOOL Camera::GetCameraParam(CameraParam &pParam)
 	return TRUE;
 }
 
-CameraStatus Camera::CheckCamera(astring strUrl, astring strUrlSubStream, 
+CameraStatus Camera::CheckCamera(string strUrl, string strUrlSubStream, 
 		BOOL bHasSubStream, BOOL bOnline, 
 		BOOL bOnlineUrl, VidStreamList cStreamlist)
 {
@@ -437,13 +452,13 @@ CameraStatus Camera::CheckCamera(astring strUrl, astring strUrlSubStream,
 		return TRUE;
 	}
 
-	astring IP = m_param.m_Conf.strip();
-	astring Port = m_param.m_Conf.strport();
-	astring User = m_param.m_Conf.struser();
-	astring Password = m_param.m_Conf.strpasswd();
-	astring OnvifAddress = m_param.m_Conf.stronvifaddress();
+	string IP = m_param.m_Conf.strip();
+	string Port = m_param.m_Conf.strport();
+	string User = m_param.m_Conf.struser();
+	string Password = m_param.m_Conf.strpasswd();
+	string OnvifAddress = m_param.m_Conf.stronvifaddress();
 
-	astring OnvifCameraService = "http://" + IP + ":" + Port + OnvifAddress;
+	string OnvifCameraService = "http://" + IP + ":" + Port + OnvifAddress;
 
 	m_ptz.Init(User, Password, OnvifCameraService);
 
@@ -462,7 +477,7 @@ CameraStatus Camera::CheckCamera(astring strUrl, astring strUrlSubStream,
 	return true;
 }
 
-BOOL Camera::FireAlarm(s64 nStartTime)
+BOOL Camera::FireAlarm(long nStartTime)
 {	
 	return m_cRecordWrapper.FireAlarm(nStartTime);
 }
