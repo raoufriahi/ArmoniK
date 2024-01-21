@@ -1,91 +1,128 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
 
-#ifndef __VSC_CAMERA_H_
-#define __VSC_CAMERA_H_
+#pragma once
 
-#define NOMINMAX
-#ifdef WIN32
-//#include <Windows.h>
-//#include <Winbase.h>
-#endif 
-
-#include <algorithm>
-
-#include "utility.hpp"
-#include "config/conf.hpp"
 #include "vdb.hpp"
-#include "vhdfsdb.hpp"
 #include "hdfsrecsession.hpp"
 #include "vplay.hpp"
-#include "debug.hpp"
-#include "config/vidconf.pb.h"
 #include "Poco/UUIDGenerator.h"
-#include "recordwrapper.hpp"
-#include "Poco/URI.h"
-#include "Poco/String.h"
-#include "config/confdb.hpp"
-
 #include "vvidonvif/vvidonvifc.hpp"
 
-using namespace UtilityLib;
-using namespace std;
-//using namespace Poco;
-
+/**
+ * \brief Enumeration representing PTZ (Pan-Tilt-Zoom) actions.
+ *
+ * This enumeration defines various PTZ actions that can be performed, such as moving
+ * the camera up, down, left, right, zooming in, zooming out, stopping PTZ movement, etc.
+ */
 typedef enum
 {
-	F_PTZ_UP = 1,
-	F_PTZ_DOWN,
-	F_PTZ_LEFT,
-	F_PTZ_RIGHT,
-	F_PTZ_ZOOM_IN,
-	F_PTZ_ZOOM_OUT,
-	F_PTZ_STOP,
-	F_PTZ_LAST
+    F_PTZ_UP       = 1,  /**< Move the PTZ camera upwards. */
+    F_PTZ_DOWN     = 2,  /**< Move the PTZ camera downwards. */
+    F_PTZ_LEFT     = 3,  /**< Move the PTZ camera to the left. */
+    F_PTZ_RIGHT    = 4,  /**< Move the PTZ camera to the right. */
+    F_PTZ_ZOOM_IN  = 5,  /**< Zoom in the PTZ camera. */
+    F_PTZ_ZOOM_OUT = 6,  /**< Zoom out the PTZ camera. */
+    F_PTZ_STOP     = 7,  /**< Stop PTZ movement. */
+    F_PTZ_LAST     = 8   /**< Placeholder for the last PTZ action. */
 } FPtzAction;
 
+/**
+ * \brief Enumeration representing camera status changes.
+ *
+ * This enumeration defines various camera status changes, such as transitioning from
+ * off to on, on to off, no change in status, etc.
+ */
 typedef enum
 {
-	DEV_OFF2ON = 1,
-	DEV_ON2OFF,
-	DEV_NO_CHANGE,
-	DEV_LAST
+    DEV_OFF2ON      = 1,  /**< Transition from off to on state. */
+    DEV_ON2OFF      = 2,  /**< Transition from on to off state. */
+    DEV_NO_CHANGE   = 3,  /**< No change in camera status. */
+    DEV_LAST        = 4   /**< Placeholder for the last camera status change. */
 } CameraStatus;
 
 
-/* Camera video data callback */
-#ifdef WIN32__
-/* Compressed data callback */
-typedef void (__cdecl * CameraDataCallbackFunctionPtr)(VideoFrame& frame, void * pParam);
-/* Raw data callback */
-typedef void (__cdecl * CameraRawCallbackFunctionPtr)(RawFrame& frame, void * pParam);
-/* Video Seq callback */
-typedef void (__cdecl * CameraSeqCallbackFunctionPtr)(VideoSeqFrame& frame, void * pParam);
-/* Camera Delete function */
-typedef void (__cdecl * CameraDelCallbackFunctionPtr)(void * pParam);
 
-#else
-/* Compressed data callback */
-typedef void ( * CameraDataCallbackFunctionPtr)(VideoFrame& frame, void * pParam);
-/* Raw data callback */
-typedef void ( * CameraRawCallbackFunctionPtr)(RawFrame& frame, void * pParam);
-/* Video Seq callback */
-typedef void ( * CameraSeqCallbackFunctionPtr)(VideoSeqFrame& frame, void * pParam);
-/* Camera Delete function */
-typedef void ( * CameraDelCallbackFunctionPtr)(void * pParam);
-#endif
-typedef std::map<void *, CameraDataCallbackFunctionPtr> CameraDataCallbackMap;
-typedef std::map<void *, CameraRawCallbackFunctionPtr> CameraRawCallbackMap;
-typedef std::map<void *, CameraSeqCallbackFunctionPtr> CameraSeqCallbackMap;
-typedef std::map<void *, CameraDelCallbackFunctionPtr> CameraDelCallbackMap;
+/**
+ * \brief Callback function for camera video data.
+ *
+ * This function pointer type is used to define a callback for receiving compressed video data.
+ *
+ * \param frame     Reference to a VideoFrame object containing the video data.
+ * \param pParam    A pointer to user-defined parameters associated with the callback.
+ */
+typedef void (*CameraDataCallbackFunctionPtr)(VideoFrame& frame, void* pParam);
+
+/**
+ * \brief Callback function for camera raw data.
+ *
+ * This function pointer type is used to define a callback for receiving raw video data.
+ *
+ * \param frame     Reference to a RawFrame object containing the raw video data.
+ * \param pParam    A pointer to user-defined parameters associated with the callback.
+ */
+typedef void (*CameraRawCallbackFunctionPtr)(RawFrame& frame, void* pParam);
+
+/**
+ * \brief Callback function for camera video sequence data.
+ *
+ * This function pointer type is used to define a callback for receiving video sequence data.
+ *
+ * \param frame     Reference to a VideoSeqFrame object containing the video sequence data.
+ * \param pParam    A pointer to user-defined parameters associated with the callback.
+ */
+typedef void (*CameraSeqCallbackFunctionPtr)(VideoSeqFrame& frame, void* pParam);
+
+/**
+ * \brief Callback function for camera deletion.
+ *
+ * This function pointer type is used to define a callback for handling camera deletion.
+ *
+ * \param pParam    A pointer to user-defined parameters associated with the callback.
+ */
+typedef void (*CameraDelCallbackFunctionPtr)(void* pParam);
+
+
+/**
+ * \brief Map for associating a pointer with a camera data callback function.
+ *
+ * This map is used to associate a void pointer with a callback function for handling camera data.
+ * The void pointer serves as an identifier or key for the associated callback function.
+ */
+typedef std::map<void*, CameraDataCallbackFunctionPtr> CameraDataCallbackMap;
+
+/**
+ * \brief Map for associating a pointer with a camera raw data callback function.
+ *
+ * This map is used to associate a void pointer with a callback function for handling raw camera data.
+ * The void pointer serves as an identifier or key for the associated callback function.
+ */
+typedef std::map<void*, CameraRawCallbackFunctionPtr> CameraRawCallbackMap;
+
+/**
+ * \brief Map for associating a pointer with a camera video sequence callback function.
+ *
+ * This map is used to associate a void pointer with a callback function for handling camera video sequence data.
+ * The void pointer serves as an identifier or key for the associated callback function.
+ */
+typedef std::map<void*, CameraSeqCallbackFunctionPtr> CameraSeqCallbackMap;
+
+/**
+ * \brief Map for associating a pointer with a camera deletion callback function.
+ *
+ * This map is used to associate a void pointer with a callback function for handling camera deletion.
+ * The void pointer serves as an identifier or key for the associated callback function.
+ */
+typedef std::map<void*, CameraDelCallbackFunctionPtr> CameraDelCallbackMap;
+
 
 class VE_LIBRARY_API CameraParam
 {
@@ -108,13 +145,11 @@ public:
 		return *this;
 	}
 
-public:
 	BOOL UpdateUrl();
 	BOOL UpdateUrlOnvif();
 	BOOL CheckOnline();
 	BOOL UpdateDefaultUrl();
 
-public:
 	VidCamera m_Conf;
 	BOOL m_bOnvifUrlGetted;
 	astring m_strUrl;
@@ -149,11 +184,9 @@ public:
 					RecChangeFunctionPtr pCallback, void *pCallbackParam);
 	~Camera();
 
-public:
 	/* Below api is for a new thread to do some network task whitch may be blocked */
 	BOOL GetCameraParam(CameraParam &pParam);
 
-public:	
 	BOOL StartData();
 	BOOL StopData();
 	
@@ -165,20 +198,17 @@ public:
 		BOOL bHasSubStream, BOOL bOnline, BOOL bOnlineUrl, 
 		VidStreamList cStreamlist);
 
-public:
 	/* Data  */
 	static BOOL DataHandler(void* pData, VideoFrame& frame);
 	BOOL DataHandler1(VideoFrame& frame);
 	static BOOL SubDataHandler(void* pData, VideoFrame& frame);
 	BOOL SubDataHandler1(VideoFrame& frame);
 
-public:
 	void Lock(){m_Lock.lock();}
 	void UnLock(){m_Lock.unlock();}
 	void SubLock(){m_SubLock.lock();}
 	void SubUnLock(){m_SubLock.unlock();}
 
-public:
 	/* Data  callback*/
 	BOOL RegDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam);
 	BOOL UnRegDataCallback(void * pParam);
@@ -218,35 +248,27 @@ private:
 	CameraDelCallbackMap m_DelMap;
 	VideoFrame m_iFrameCache;
 
-private:
 	CameraParam m_param;
 	fast_mutex m_Lock;
 	fast_mutex m_SubLock;
 
-private:
 	VDB &m_pVdb;
 	RecordSession *m_pRecord;
 	RecordSchedWeekMap m_cSchedMap;
 	RecordWrapper m_cRecordWrapper;
 	
-private:
 	VVidOnvifCPtz m_ptz;
 	BOOL m_ptzInited;
 
 	InfoFrame m_infoData;
 	BOOL m_bGotInfoData;
 	s32 m_nDataRef;
-
-private:
 	InfoFrame m_infoSubData;
 	BOOL m_bGotInfoSubData;
 	s32 m_nSubDataRef;
-
-private:
 	ConfDB &m_pConfDB;
 };
 
 typedef CameraParam* LPCameraParam;
 typedef Camera* LPCamera;
 
-#endif // __VSC_CAMERA_H_
