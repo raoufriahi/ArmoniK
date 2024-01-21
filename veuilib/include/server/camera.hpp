@@ -533,42 +533,38 @@ public:
 	BOOL FireAlarm(long nStartTime);
 
 private:
-	VPlay *m_pvPlay;
-	VPlay *m_pvPlaySubStream;
-	VPlay &m_vPlay;
-	VPlay &m_vPlaySubStream;
+	VPlay *m_pvPlay;             ///< Pointer to the main video player object.
+	VPlay *m_pvPlaySubStream;    ///< Pointer to the substream video player object.
+	VPlay &m_vPlay;              ///< Reference to the main video player object.
+	VPlay &m_vPlaySubStream;     ///< Reference to the substream video player object.
 
-	CameraDataCallbackMap m_DataMap;
-	CameraDataCallbackMap m_SubDataMap;
-    CameraParam m_param;
-	CameraDelCallbackMap m_DelMap;
+	CameraDataCallbackMap m_DataMap;    ///< Map for storing callbacks related to main data events
+	CameraDataCallbackMap m_SubDataMap; ///< Map for storing callbacks related to substream data events.
+    CameraParam m_param;                ///< Object representing camera parameters.
+	CameraDelCallbackMap m_DelMap;      ///< Map for storing callbacks related to camera deletion events.
+	VideoFrame m_iFrameCache;           ///< Cache for storing the main video frame.
 
-	VideoFrame m_iFrameCache;
+	fast_mutex m_Lock;        ///< Mutex for thread synchronization of main data access.
+	fast_mutex m_SubLock;     ///< Mutex for thread synchronization of substream data access.
+	VDB &m_pVdb;              ///< Reference to the VDB (Video Database) object.
+	RecordSession *m_pRecord; ///< Pointer to the record session object.
 
-	fast_mutex m_Lock;
-	fast_mutex m_SubLock;
+	RecordSchedWeekMap m_cSchedMap;  ///< Map for storing the recording schedule for each day of the week.
+	RecordWrapper m_cRecordWrapper;  ///< Wrapper for handling recording-related functionality.
+	VVidOnvifCPtz m_ptz;             ///< Object for handling PTZ (Pan-Tilt-Zoom) control using ONVIF protocol.     
+    ConfDB &m_pConfDB;               ///< Reference to the configuration database object.
 
-	VDB &m_pVdb;
-	RecordSession *m_pRecord;
 
-	RecordSchedWeekMap m_cSchedMap;
-	RecordWrapper m_cRecordWrapper;
+	BOOL m_ptzInited;        ///< indicating whether PTZ (Pan-Tilt-Zoom) control is initialized.
+    BOOL m_bGotInfoData;     ///< Flag indicating whether information data is successfully obtained.
+	BOOL m_bGotInfoSubData;  ///< Flag indicating whether substream information data is successfully obtained.
+    BOOL m_bStarted;         ///< Flag indicating whether the camera data streaming is started.
+	BOOL m_bSubStarted;      ///< Flag indicating whether the substream data streaming is started.
 	
-	VVidOnvifCPtz m_ptz;
-
-	BOOL m_ptzInited;
-    BOOL m_bGotInfoData;
-	BOOL m_bGotInfoSubData;
-    BOOL m_bStarted;
-	BOOL m_bSubStarted;
-	
-	InfoFrame m_infoData;
-	InfoFrame m_infoSubData;
-
-	int m_nDataRef;
-	int m_nSubDataRef;
-
-	ConfDB &m_pConfDB;
+	InfoFrame m_infoData;     ///< Information frame for main video data.
+	InfoFrame m_infoSubData;  ///< Information frame for substream video data.
+	int m_nDataRef;           ///< Reference count for main video data.
+	int m_nSubDataRef;        ///< Reference count for substream video data.
 };
 
 
