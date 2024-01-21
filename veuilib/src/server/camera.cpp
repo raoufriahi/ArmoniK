@@ -519,28 +519,27 @@ BOOL Camera::GetSubInfoFrame(InfoFrame &pFrame)
 	return TRUE;
 }
 
- BOOL Camera::UnRegDataCallback(void * pParam)
+BOOL Camera::UnRegDataCallback(void * pParam)
 {
-	Lock();
-	m_DataMap.erase(pParam);
-	UnLock();
-	StopData();
+	Lock(); // Acquire lock for thread safety
+	m_DataMap.erase(pParam);  // Remove callback associated with pParam from the map
+	UnLock(); // Release lock
+	StopData(); // Stop data streaming if there are no remaining registered callbacks
 	return TRUE;
 }
 
- BOOL Camera::RegSubDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam)
+BOOL Camera::RegSubDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam)
 {
-	Lock();
-	m_SubDataMap[pParam] = pCallback;
-	UnLock();
-	if (m_param.m_bHasSubStream == FALSE)
-	{
-		StartData();
-	}else
-	{
-		StartSubData();
-	}
-	return TRUE;
+	Lock(); // Acquire lock for thread safety
+    m_SubDataMap[pParam] = pCallback; // Register the callback associated with pParam
+    UnLock(); // Release lock
+    // Start data streaming based on the presence of a substream
+    if (m_param.m_bHasSubStream == FALSE) {
+        StartData();
+    } else {
+        StartSubData();
+    }
+    return TRUE;
 }
 
  BOOL Camera::UnRegSubDataCallback(void * pParam)
