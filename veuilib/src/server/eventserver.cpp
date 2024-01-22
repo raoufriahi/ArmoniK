@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
@@ -111,11 +111,11 @@ BOOL VEventServerSearchTask::ProcessSearchCmd(VVidEventSearchCmd &pCmd)
 		return FALSE;
 	}
 
-	s64 recordId = 0;
-	s64 recordLastId = 0;
+	long recordId = 0;
+	long recordLastId = 0;
 	while (1)
 	{
-	    std::vector<s64> recordIds;
+	    std::vector<long> recordIds;
 	    
 	    Statement stmt = (*m_DB << "SELECT id FROM events WHERE strDevice=:strDevice AND id >:recordid AND \
 	(nTime>=:starttime AND  nTime<=:endtime)", 
@@ -129,7 +129,7 @@ BOOL VEventServerSearchTask::ProcessSearchCmd(VVidEventSearchCmd &pCmd)
 			VDC_DEBUG( "%s  %d recordLastId %d \n",__FUNCTION__, __LINE__, 
 					recordLastId);	   
 			VEventData sEvent;
-			std::vector<s64>::iterator it = recordIds.begin();
+			std::vector<long>::iterator it = recordIds.begin();
 			recordId = *it;
 			sEvent.strDevice = pCmd.strId;
 #if 1
@@ -355,8 +355,8 @@ void VEventServerDbTask::run()
 		}
 		try
 		{
-			s64 handled = 0;
-			astring strComment = "Add your comments ...";
+			long handled = 0;
+			string strComment = "Add your comments ...";
 			*m_pSqlSession << "INSERT INTO events VALUES(NULL, :strId, :strDevice, :strDeviceName, "
 				":strType, :nTime, :strEvttime, :strDesc, :bHandled, :strComments)", 
 			use(sData.strId), use(sData.strDevice), use(sData.strDeviceName), use(sData.strType), 
@@ -409,7 +409,7 @@ BOOL VEventServer::UnRegSearchEventNotify(void * pData)
 	return m_SearchTask.UnRegEventNotify(pData);
 }
 
-BOOL VEventServer::SearchEvent(astring strId, s64 nStart, s64 nEnd, void *pData)
+BOOL VEventServer::SearchEvent(string strId, long nStart, long nEnd, void *pData)
 {
 	VVidEventSearchCmd cmd;
 	cmd.strId = strId;
@@ -421,7 +421,7 @@ BOOL VEventServer::SearchEvent(astring strId, s64 nStart, s64 nEnd, void *pData)
 	return m_SearchTask.PushCmd(cmd);
 }
 
-BOOL VEventServer::HandleEvent(astring strId)
+BOOL VEventServer::HandleEvent(string strId)
 {
 	VVidEventSearchCmd cmd;
 	cmd.strId = strId;

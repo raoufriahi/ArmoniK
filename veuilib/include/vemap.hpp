@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __V_EMAP_HPP__
-#define __V_EMAP_HPP__
+#pragma once
 #include "utility.hpp"
 #include "debug.hpp"
 #include "videotype.hpp"
@@ -20,8 +19,7 @@
 
 using namespace UtilityLib;
 
-
-class VE_LIBRARY_API VEMap : public QWidget
+class UB_LIBRARY_API VEMap : public QWidget
 {
 	Q_OBJECT
 public:
@@ -32,5 +30,3 @@ public:
 	
 };
 
-
-#endif /* __V_EMAP_HPP__ */

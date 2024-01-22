@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef __V_EVENT_HPP__
-#define __V_EVENT_HPP__
+#pragma once
 #include "utility.hpp"
 #include "debug.hpp"
 #include "videotype.hpp"
@@ -43,6 +42,3 @@ private:
 	Factory &m_pFactory;
 	VEventServer &m_pEventServer;
 };
-
-
-#endif /* __V_EVENT_HPP__ */
