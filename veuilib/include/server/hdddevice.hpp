@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef _HDD_H_
-#define _HDD_H_
+#pragma once
+
 
 #include "utility.hpp"
 #include "leveldb/db.h"
@@ -18,10 +18,6 @@
 #include <QtCore/QStorageInfo>
 #include <QtCore/QFileInfoList>
 #include <QtCore/QDir>
-
-#ifdef WIN32
-#include "winbase.h"
-#endif
 
 using namespace UtilityLib;
 
@@ -35,34 +31,10 @@ enum HddDriveType {
 	HddRamDrive
 };
 
-#ifdef WIN32
-inline HddDriveType HddGetDriveType(const QString &drive)
-{
-    UINT type = GetDriveType((WCHAR *)drive.utf16());
-    switch (type) {
-    case DRIVE_REMOVABLE:
-        return HddRemovableDrive;
-    case DRIVE_FIXED:
-        return HddInternalDrive;
-    case DRIVE_REMOTE:
-        return HddRemoteDrive;
-    case DRIVE_CDROM:
-        return HddCdromDrive;
-    case DRIVE_RAMDISK:
-        return HddRamDrive;
-    case DRIVE_UNKNOWN:
-    case DRIVE_NO_ROOT_DIR:
-    	default:
-        return HddUnknownDrive;
-    };
-}
-#else /* Linux */
-inline HddDriveType HddGetDriveType(const QString &drive)
+inline HddDriveType HddGetDriveType(const string &drive)
 {
 	return HddInternalDrive;
 }
 
-#endif 
 
 
-#endif /* _HDD_H_ */
