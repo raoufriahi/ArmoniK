@@ -804,7 +804,8 @@ bool LinkHandler::ProcessSysDiskListReq(Link::LinkCmd &req, CivetServer *pServer
 		
 		R_LOG(logRINFO,"%s Total %lld M Left %lld M \n",__FUNCTION__, totalSize, leftSize);  
 		QString strQtHdd = disk.rootPath();
-		HddDriveType diskType = HddGetDriveType(strQtHdd);
+		
+		HddDriveType diskType = HddGetDriveType(strQtHdd.toStdString());
 		
 		R_LOG(logRINFO,"%s Type %d \n",__FUNCTION__,  diskType);
 		
