@@ -467,8 +467,7 @@ CameraStatus Camera::CheckCamera(string strUrl, string strUrlSubStream,
 
  BOOL Camera::PtzAction(FPtzAction action, float speed)
 {
-	if (m_param.m_Online == FALSE || m_ptzInited == FALSE)
-	{
+	if (m_param.m_Online == FALSE || m_ptzInited == FALSE) {
 		VDC_DEBUG( "%s PTZ Camera is Offline\n",__FUNCTION__);
 		return TRUE;
 	}
@@ -485,27 +484,22 @@ BOOL Camera::FireAlarm(long nStartTime)
 BOOL Camera::GetInfoFrame(InfoFrame &pFrame)
 {
 	Lock();
-	if (m_bGotInfoData == TRUE)
-	{
+	if (m_bGotInfoData == TRUE) {
 		memcpy(&pFrame, &m_infoData, sizeof(InfoFrame));
 		UnLock();
 		return TRUE;
 	}
-	
 	UnLock();
 	return FALSE;
 }
 BOOL Camera::GetSubInfoFrame(InfoFrame &pFrame)
 {
 	Lock();
-	
-	if (m_bGotInfoSubData == TRUE)
-	{
+	if (m_bGotInfoSubData == TRUE) {
 		memcpy(&pFrame, &m_infoSubData, sizeof(InfoFrame));
 		UnLock();
 		return TRUE;
 	}
-	
 	UnLock();
 	return FALSE;
 }
@@ -542,13 +536,12 @@ BOOL Camera::RegSubDataCallback(CameraDataCallbackFunctionPtr pCallback, void * 
     return TRUE;
 }
 
- BOOL Camera::UnRegSubDataCallback(void * pParam)
+BOOL Camera::UnRegSubDataCallback(void * pParam)
 {
 	Lock();
 	m_SubDataMap.erase(pParam);
 	UnLock();
-	if (m_param.m_bHasSubStream == FALSE)
-	{
+	if (m_param.m_bHasSubStream == FALSE) {
 		StopData();
 	}else
 	{
@@ -575,10 +568,8 @@ BOOL Camera::UnRegDelCallback(void * pParam)
 BOOL Camera::StartData()
 {
 	Lock();
-	if (m_param.m_OnlineUrl == TRUE)
-	{
-		if (m_nDataRef == 0)
-		{
+	if (m_param.m_OnlineUrl == TRUE) {
+		if (m_nDataRef == 0) {
 			m_vPlay.StartGetData(this, (VPlayDataHandler)Camera::DataHandler);
 		}
 		m_nDataRef ++;
@@ -587,13 +578,12 @@ BOOL Camera::StartData()
 	UnLock();
 	return TRUE;
 }
- BOOL Camera::StopData()
+BOOL Camera::StopData()
 {
 	Lock();
 	m_nDataRef --;
 	printf("%s m_nDataRef %d\n", __FUNCTION__, m_nDataRef);
-	if (m_nDataRef <= 0)
-	{
+	if (m_nDataRef <= 0) {
 		m_nDataRef = 0;
 		m_vPlay.StopGetData();
 	}
@@ -605,10 +595,8 @@ BOOL Camera::StartData()
  BOOL Camera::StartSubData()
 {
 	Lock();
-	if (m_param.m_OnlineUrl == TRUE)
-	{
-		if (m_nSubDataRef == 0)
-		{
+	if (m_param.m_OnlineUrl == TRUE) {
+		if (m_nSubDataRef == 0) {
 			m_vPlaySubStream.StartGetData(this, (VPlayDataHandler)Camera::SubDataHandler);
 		}
 		m_nSubDataRef ++;
@@ -620,8 +608,7 @@ BOOL Camera::StartData()
 {
 	Lock();
 	m_nSubDataRef --;
-	if (m_nSubDataRef <= 0)
-	{
+	if (m_nSubDataRef <= 0) {
 		m_nSubDataRef = 0;
 		m_vPlaySubStream.StopGetData();
 	}
@@ -632,11 +619,8 @@ BOOL Camera::StartData()
 
 BOOL Camera::DataHandler(void* pData, VideoFrame& frame)
 {
-    int dummy = errno;
     LPCamera pThread = (LPCamera)pData;
-
-    if (pThread)
-    {
+    if (pThread) {
         return pThread->DataHandler1(frame);
     }
 }
@@ -646,8 +630,7 @@ BOOL Camera::DataHandler(void* pData, VideoFrame& frame)
 BOOL Camera::GetiFrame(VideoFrame& frame)
 {
 	Lock();
-	if (m_iFrameCache.dataBuf == NULL)
-	{
+	if (m_iFrameCache.dataBuf == NULL) {
 		UnLock();
 		return false;
 	}
@@ -672,19 +655,15 @@ BOOL Camera::DataHandler1(VideoFrame& frame)
 	//VDC_DEBUG( "%s  %d\n",__FUNCTION__, frame.dataLen);
 	Lock();
 	/* Frist cache the info frame */
-	if (frame.streamType == VIDEO_STREAM_INFO)
-	{
+	if (frame.streamType == VIDEO_STREAM_INFO) {
 		memcpy(&m_infoData, frame.dataBuf, sizeof(InfoFrame));
 		m_bGotInfoData = TRUE;
 	}
 
 	/* Cache all the I frame */
-	if (frame.frameType == VIDEO_FRM_I)
-	{
-		if (m_iFrameCache.bufLen < frame.dataLen)
-		{
-			if (m_iFrameCache.dataBuf)
-			{
+	if (frame.frameType == VIDEO_FRM_I) {
+		if (m_iFrameCache.bufLen < frame.dataLen) {
+			if (m_iFrameCache.dataBuf) {
 				free(m_iFrameCache.dataBuf);
 				m_iFrameCache.dataBuf = NULL;
 			}
@@ -702,12 +681,10 @@ BOOL Camera::DataHandler1(VideoFrame& frame)
 	/* 1. Send to network client */
 	CameraDataCallbackMap::iterator it = m_DataMap.begin();
 
-	for(; it!=m_DataMap.end(); ++it)
-	{
+	for(; it!=m_DataMap.end(); ++it) {
 	    void *pParam = (*it).first;
 	    CameraDataCallbackFunctionPtr pFunc = (*it).second;
-	    if (pFunc)
-	    {
+	    if (pFunc) {
 	        pFunc(frame, pParam);
 	    }
 	}
@@ -715,8 +692,7 @@ BOOL Camera::DataHandler1(VideoFrame& frame)
 	m_cRecordWrapper.PushAFrame(frame);
 
 	/* Call the Sub DataHandler if there has no sub stream */
-	if (m_param.m_bHasSubStream == FALSE)
-	{
+	if (m_param.m_bHasSubStream == FALSE) {
 		SubDataHandler1(frame);
 	}
 	UnLock();
@@ -725,11 +701,9 @@ BOOL Camera::DataHandler1(VideoFrame& frame)
 
 BOOL Camera::SubDataHandler(void* pData, VideoFrame& frame)
 {
-    int dummy = errno;
     LPCamera pThread = (LPCamera)pData;
 
-    if (pThread)
-    {
+    if (pThread){
         return pThread->SubDataHandler1(frame);
     }
 }
@@ -738,8 +712,7 @@ BOOL Camera::SubDataHandler1(VideoFrame& frame)
 {
 	SubLock();
 	/* Frist cache the info frame */
-	if (frame.streamType == VIDEO_STREAM_INFO)
-	{
+	if (frame.streamType == VIDEO_STREAM_INFO) {
 		memcpy(&m_infoSubData, frame.dataBuf, sizeof(InfoFrame));
 		m_bGotInfoSubData = TRUE;
 	}
@@ -751,8 +724,7 @@ BOOL Camera::SubDataHandler1(VideoFrame& frame)
 	{
 	    void *pParam = (*it).first;
 	    CameraDataCallbackFunctionPtr pFunc = (*it).second;
-	    if (pFunc)
-	    {
+	    if (pFunc) {
 	        pFunc(frame, pParam);
 	    }
 	}
@@ -763,8 +735,7 @@ BOOL Camera::SubDataHandler1(VideoFrame& frame)
 
 BOOL Camera::GetCameraOnline()
 {
-    BOOL online = true;
-	return m_param.m_Online;
+  	return m_param.m_Online;
 }
 
 BOOL Camera::GetStreamInfo(VideoStreamInfo &pInfo)
