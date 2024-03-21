@@ -35,76 +35,10 @@ public:
     void UnLock();
 
 private:
+
     std::mutex m_Lock;
     leveldb::DB* m_pDb;
     leveldb::Options m_Options;
 };
-
-
-void SysDB::Lock()
-{
-    m_Lock.lock();
-}
-void SysDB::UnLock()
-{
-    m_Lock.unlock();
-}
-
-inline bool SysDB::GetSystemPath(string &strPath)
-{
-    leveldb::Slice key("videoSystemPath");
-    leveldb::Slice sysValue;
-
-    leveldb::Iterator* it = m_pDb->NewIterator(leveldb::ReadOptions());
-    if(it == nullptr) {
-      VDC_DEBUG( "System Config is not init\n");
-      return false;
-    }
-
-    it->Seek(key);
-    if (it->Valid()) {
-        sysValue = it->value();
-    }
-    else {
-        VDC_DEBUG( "System Config is not init\n");
-        return false;
-    }
-
-    if (sysValue.size() == 0) {
-        VDC_DEBUG( "System Config is not init\n");
-        delete it;
-        return false;
-    }
-
-    strPath = sysValue.ToString();
-    // Check for any errors found during the scan
-    assert(it->status().ok());
-    delete it;
-    return true;
-}
-
-inline bool SysDB::SetSystemPath(string &strPath)
-{
-    leveldb::WriteOptions writeOptions;
-    leveldb::Slice sysKey("videoSystemPath");
-    leveldb::Slice sysValue(strPath);
-
-    m_pDb->Put(writeOptions, sysKey, sysValue);
-    return true;
-}
-
-
-inline bool SysDB::Open(string & pPath)
-{
-    m_Options.create_if_missing = true;
-    leveldb::Status status = leveldb::DB::Open(m_Options, pPath, &m_pDb);
-    if (false == status.ok()) {
-        cerr << "Unable to open/create test database "<< pPath << endl;
-        cerr << status.ToString() << endl;
-        VDC_DEBUG( "Unable to open/create sys database %s\n", pPath.c_str());
-        return false;
-    }
-    return true;
-}
 
 typedef SysDB* LPSysDB;
