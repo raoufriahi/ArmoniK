@@ -1,16 +1,15 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
 
-#ifndef _SYS_DB_H_
-#define _SYS_DB_H_
+#pragma once
 
 #include "utility.hpp"
 #include "leveldb/db.h"
@@ -22,106 +21,90 @@ using namespace UtilityLib;
 class VE_LIBRARY_API SysDB
 {
 public:
-    SysDB()
-    {
+    SysDB(){ 
 
     }
-    ~SysDB()
-    {
-
+    ~SysDB(){
     }
 
-    s32 Open(astring & pPath);
+    bool Open(string &pPath);
+    bool GetSystemPath(string &strPath);
+    bool SetSystemPath(string &strPath);
 
-public:
-    BOOL GetSystemPath(astring &strPath);
-    BOOL SetSystemPath(astring &strPath);
-
-public:
-    void Lock()
-    {
-        m_Lock.lock();
-    }
-    void UnLock()
-    {
-        m_Lock.unlock();
-    }
-
+    void Lock();
+    void UnLock();
 
 private:
-    fast_mutex m_Lock;
-
-private:
+    std::mutex m_Lock;
     leveldb::DB* m_pDb;
     leveldb::Options m_Options;
 };
 
-typedef SysDB* LPSysDB;
 
+void SysDB::Lock()
+{
+    m_Lock.lock();
+}
+void SysDB::UnLock()
+{
+    m_Lock.unlock();
+}
 
-using namespace std;
-
-inline BOOL SysDB::GetSystemPath(astring &strPath)
+inline bool SysDB::GetSystemPath(string &strPath)
 {
     leveldb::Slice key("videoSystemPath");
-
-
-    leveldb::Iterator* it = m_pDb->NewIterator(leveldb::ReadOptions());
-
-    it->Seek(key);
     leveldb::Slice sysValue;
 
-    if (it->Valid())
-    {
-        sysValue = it->value();
-    }else
-    {
-        VDC_DEBUG( "System Config is not init\n");
-        return FALSE;
+    leveldb::Iterator* it = m_pDb->NewIterator(leveldb::ReadOptions());
+    if(it == nullptr) {
+      VDC_DEBUG( "System Config is not init\n");
+      return false;
     }
 
-    if (sysValue.size() == 0)
-    {
+    it->Seek(key);
+    if (it->Valid()) {
+        sysValue = it->value();
+    }
+    else {
+        VDC_DEBUG( "System Config is not init\n");
+        return false;
+    }
+
+    if (sysValue.size() == 0) {
         VDC_DEBUG( "System Config is not init\n");
         delete it;
-        return FALSE;
+        return false;
     }
 
     strPath = sysValue.ToString();
-
     // Check for any errors found during the scan
     assert(it->status().ok());
     delete it;
-
-    return TRUE;
+    return true;
 }
 
-inline BOOL SysDB::SetSystemPath(astring &strPath)
+inline bool SysDB::SetSystemPath(string &strPath)
 {
     leveldb::WriteOptions writeOptions;
-
     leveldb::Slice sysKey("videoSystemPath");
     leveldb::Slice sysValue(strPath);
 
     m_pDb->Put(writeOptions, sysKey, sysValue);
-
-    return TRUE;
+    return true;
 }
 
 
-inline s32 SysDB::Open(astring & pPath)
+inline bool SysDB::Open(string & pPath)
 {
     m_Options.create_if_missing = true;
     leveldb::Status status = leveldb::DB::Open(m_Options, pPath, &m_pDb);
-    if (false == status.ok())
-    {
+    if (false == status.ok()) {
         cerr << "Unable to open/create test database "<< pPath << endl;
         cerr << status.ToString() << endl;
         VDC_DEBUG( "Unable to open/create sys database %s\n", pPath.c_str());
-
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 
-#endif /* _SYS_DB_H_ */
+typedef SysDB* LPSysDB;

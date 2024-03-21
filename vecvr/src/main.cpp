@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 	
 	pFactory->RegUserChangeNotify(pWebServer, WebServerUserChangeNotify);
 
-	pFactory->start();
+	pFactory->join();
 
 	/* Init media server */
 	VEMediaServer::InitMediaServer();

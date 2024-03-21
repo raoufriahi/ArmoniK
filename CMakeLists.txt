@@ -24,8 +24,8 @@ add_definitions( -fPIC                  -DUSE_WEBSOCKET             -DLINUX_OS
                  -DLINUX 
                  )      
 #add_definitions(-DENABLE_RTMP2RTSP -DENABLE_RTSP2RTMP -DENABLE_HLS)
-add_subdirectory(xcmnlib)
-add_subdirectory(onvif)
-add_subdirectory(velib)
+# add_subdirectory(xcmnlib)
+# add_subdirectory(onvif)
+# add_subdirectory(velib)
 add_subdirectory(vecvr)
 # add_subdirectory(veuilib)

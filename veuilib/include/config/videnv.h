@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2017-2018 Heimdall
+ * Copyright (c) 2017-2024 UbVideo
  *
  * The computer program contained herein contains proprietary
- * information which is the property of Heimdall.
+ * information which is the property of UbVideo.
  * The program may be used and/or copied only with the written
- * permission of Heimdall or in accordance with the
+ * permission of UbVideo or in accordance with the
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef _VID_ENV_H_
-#define _VID_ENV_H_
+#pragma once
 
 #include "utility.hpp"
 #include "config/conf.hpp"
@@ -27,12 +26,7 @@ using namespace UtilityLib;
 using namespace XSDK;
 using namespace Poco::Util;
 
-#ifdef _WIN32
-#define VID_PATH_SPLIT "\\"
-#else
 #define VID_PATH_SPLIT "/"
-#endif
-
 
 
 //XGuard guard(m_cMutex);
@@ -112,11 +106,8 @@ protected:
 public:
 	bool Init()
 	{
-#ifndef _WIN32
 		Poco::Environment::set("QT_QPA_FONTDIR", GetAppDir() + "/lib/fonts/");
 		Poco::Environment::set("QT_QPA_PLATFORM_PLUGIN_PATH", GetAppDir() + "/plugins/platforms/");
-#endif
-		//PrintEnv();
 		return true;
 	}
 	
@@ -130,25 +121,17 @@ public:
 		return m_syshomedir + VID_PATH_SPLIT;
 	}
 
-	astring GetAppConfPath(astring strApp)
+	string GetAppConfPath(astring strApp)
 	{
-#ifdef _WIN32
-#ifndef _WIN64
-		astring strPath = "vidstor\\" + strApp + "\\";
-#else
-		astring strPath = "vidstor64\\" + strApp + "\\";
-#endif
-#else
-		astring strPath = "vidstor/" + strApp + "/";
-#endif
-		 return GetConfDir() + strPath;
+		return GetConfDir() + "vidstor/" + strApp + "/";
 	}
 	
 	bool PrintEnv()
 	{
 		{
 			/* application */
-			const char* const properties[] = { "application.path"
+			const char* const properties[] = { 
+				  "application.path"
 				, "application.name"
 				, "application.baseName"
 				, "application.dir"
@@ -228,6 +211,3 @@ private:
 
 typedef VidEnv* LPVidEnv;
 
-
-
-#endif /* _VID_ENV_H_ */

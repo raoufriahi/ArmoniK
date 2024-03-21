@@ -10,15 +10,14 @@
  */
 
 #pragma once
+#include "define.h"
 #include "config/confdb.hpp"
-#include "server/camera.hpp"
-#include "vdb.hpp"
+#include "camera.h"
+#include "vdb.h"
 #include "vhdfsdb.hpp"
 #include "vplay.hpp"
 #include "config/sysdb.hpp"
 #include "server/hdddevice.hpp"
-#include <QThread>
-#include <qdebug.h>
 #include "Poco/Path.h"
 #include "Poco/File.h"
 #include "config/vidconf.pb.h"
@@ -28,18 +27,6 @@
 using namespace XSDK;
 class Factory;
 
-typedef enum
-{
-    FACTORY_CAMERA_ADD = 1,
-    FACTORY_CAMERA_DEL,
-    FACTORY_CAMERA_ONLINE,
-    FACTORY_CAMERA_OFFLINE,
-    FACTORY_CAMERA_REC_ON,
-    FACTORY_CAMERA_REC_OFF,
-    FACTORY_CAMERA_HDFS_REC_ON,
-    FACTORY_CAMERA_HDFS_REC_OFF,
-    FACTORY_CAMERA_LAST
-} FactoryCameraChangeType;
 
 
 class UB_LIBRARY_API FactoryCameraChangeData
@@ -79,16 +66,15 @@ private:
 };
 
 /* Fatory is Qthread for callback in Qt GUI */
-class UB_LIBRARY_API Factory: public QThread
+class UB_LIBRARY_API Factory: public std::thread
 {
-    Q_OBJECT
 public:
     Factory(VidEnv &pEnv);
     ~Factory();
 
 	/* Init function */
 	BOOL Init();
-	s32 InitAddCamera(CameraParam & pParam, string strCamId);
+	int InitAddCamera(CameraParam & pParam, string strCamId);
 	ConfDB &GetConfDB(){return m_Conf;};
 	
 	BOOL RegCameraChangeNotify(void * pData, FactoryCameraChangeNotify callback);

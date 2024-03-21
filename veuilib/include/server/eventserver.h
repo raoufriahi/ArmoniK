@@ -11,14 +11,12 @@
 
 #pragma once
 #include "config/confdb.hpp"
-#include "server/camera.hpp"
+#include "camera.h"
 #include "vdb.hpp"
 #include "vhdfsdb.hpp"
 #include "vplay.hpp"
 #include "config/sysdb.hpp"
-#include "server/factory.hpp"
-#include <QThread>
-#include <qdebug.h>
+#include "factory.h"
 #include "Poco/Path.h"
 #include "Poco/File.h"
 #include "config/vidconf.pb.h"
@@ -34,10 +32,6 @@
 #include "Poco/DateTime.h"
 #include "Poco/Data/SessionFactory.h"
 #include "Poco/Data/SQLite/Connector.h"
-
-//#include <soci.h>
-//#include <firebird/soci-firebird.h>
-//#include <exception>
 
 
 using Poco::Data::Statement;
@@ -69,9 +63,8 @@ typedef std::map<u64, VEventData> EventItemMap;
 typedef void (*FunctionEventNotify)(VEventData data, void* pParam);
 typedef std::map<void *, FunctionEventNotify> FunctionEventNotifyMap;
 
-class UB_LIBRARY_API VEventServerDbTask: public QThread
+class UB_LIBRARY_API VEventServerDbTask: public std::thread 
 {
-	Q_OBJECT
 public:
 	VEventServerDbTask(Factory &pFactory);
 	~VEventServerDbTask();
@@ -95,9 +88,8 @@ private:
 
 //TODO VEventServerMetaDbTask for the Meta Data for the VA 
 
-class UB_LIBRARY_API VEventServerCallbackTask: public QThread
+class UB_LIBRARY_API VEventServerCallbackTask: public std::thread
 {
-	Q_OBJECT
 public:
 	VEventServerCallbackTask(Factory &pFactory);
 	~VEventServerCallbackTask();
@@ -132,9 +124,8 @@ typedef struct __VVidEventSearchCmd
 	void * pData;/* Who send this cmd */
 }VVidEventSearchCmd;
 
-class UB_LIBRARY_API VEventServerSearchTask: public QThread
+class UB_LIBRARY_API VEventServerSearchTask: public std::thread
 {
-	Q_OBJECT
 public:
 	VEventServerSearchTask(Factory &pFactory, VEventServerDbTask &pDbTask);
 	~VEventServerSearchTask();
@@ -157,9 +148,8 @@ private:
 };
 
 
-class UB_LIBRARY_API VEventServer: public QObject
+class UB_LIBRARY_API VEventServer: public std::thread
 {
-	Q_OBJECT
 public:
 	VEventServer(Factory &pFactory);
 	~VEventServer();

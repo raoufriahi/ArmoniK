@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023 Heimdall
+ * Copyright (c) 2017-2024 Heimdall
  *
  * The computer program contained herein contains proprietary
  * information which is the property of Heimdall.
@@ -8,9 +8,7 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#ifndef _CONF_H_
-#define _CONF_H_
-
+#pragma once
 #include "utility.hpp"
 #include "config/confver.hpp"
 

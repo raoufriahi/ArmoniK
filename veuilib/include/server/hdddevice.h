@@ -10,26 +10,15 @@
  */
 #pragma once
 
-
+#include "define.h"
 #include "utility.hpp"
 #include "leveldb/db.h"
 #include "config/conf.hpp"
 #include "debug.hpp"
-#include <QtCore/QStorageInfo>
-#include <QtCore/QFileInfoList>
-#include <QtCore/QDir>
 
 using namespace UtilityLib;
 
-/* This is same with QStorageInfo define */
-enum HddDriveType {
-	HddUnknownDrive = 0,
-	HddInternalDrive,
-	HddRemovableDrive,
-	HddRemoteDrive,
-	HddCdromDrive,
-	HddRamDrive
-};
+
 
 inline HddDriveType HddGetDriveType(const string &drive)
 {
