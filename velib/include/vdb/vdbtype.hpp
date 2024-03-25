@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "utility.hpp"
+#include "utility/utility.hpp"
 
 #define VDB_HANDLE int32_t
 #define VDB_INVALID -1

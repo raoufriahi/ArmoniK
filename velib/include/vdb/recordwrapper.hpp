@@ -10,7 +10,7 @@
  */
 #ifndef __RECORD_WRAPPER_HPP__
 #define __RECORD_WRAPPER_HPP__
-#include "utility.hpp"
+#include "utility/utility.hpp"
 #include "mediafile.hpp"
 
 #define VDB_DAYS_IN_WEEK 7

@@ -9,7 +9,7 @@
  * which the programs have been supplied.
  */
 
-#include "server/eventserver.hpp"
+#include "server/eventserver.h"
 
 VEventServerCallbackTask::VEventServerCallbackTask(Factory &pFactory)
 :m_Factory(pFactory)

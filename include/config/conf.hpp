@@ -9,7 +9,7 @@
  * which the programs have been supplied.
  */
 #pragma once
-#include "utility.hpp"
+#include "utility/utility.hpp"
 #include "config/confver.hpp"
 
 #define LINK_PROTO_WS_PATH         "/linkproto"    /**< This macro defines the path used for establishing a WebSocket connection for the link protocol.*/
@@ -212,4 +212,4 @@ typedef enum
 
 #pragma pack(pop)
 
-#endif /* _CONF_H_ */
+
