@@ -11,20 +11,12 @@
 
 #pragma once
 
-#include "utility/utility.hpp"
 #include "leveldb/db.h"
 #include "config/conf.hpp"
 #include "utility/debug.hpp"
-
 #include "config/vidconf.pb.h"
-
-#include "XSDK/XMutex.h"
-#include "XSDK/XGuard.h"
-//raouf #include "simplecrypt.hpp"
+//RRI #include "simplecrypt.hpp"
 #include "vdb/recordwrapper.hpp"
-
-using namespace UtilityLib;
-using namespace XSDK;
 
 
 class VE_LIBRARY_API ConfDB
@@ -60,8 +52,6 @@ public:
 
 private:
     std::mutex m_cMutex;
-
-private:
     leveldb::DB* m_pDb;
     leveldb::Options m_Options;
 };

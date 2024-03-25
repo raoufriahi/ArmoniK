@@ -11,12 +11,8 @@
 
 #pragma once
 
-#include "utility/utility.hpp"
 #include "leveldb/db.h"
-#include "config/conf.hpp"
 #include "utility/debug.hpp"
-
-using namespace UtilityLib;
 
 class VE_LIBRARY_API SysDB
 {
