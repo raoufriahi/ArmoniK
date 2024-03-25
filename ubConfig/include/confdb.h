@@ -30,45 +30,36 @@ using namespace XSDK;
 class VE_LIBRARY_API ConfDB
 {
 public:
-	ConfDB()
-	{
+	ConfDB()   { }
+	~ConfDB()  { }
 
-	}
-	~ConfDB()
-	{
+	bool  Open(string  pPath);
 
-	}
-
-	s32 Open(astring  pPath);
-public:
-	bool CameraRecordTemplSet(astring strCameraId, astring strTempl);
-	bool FindCamera(astring strCameraId);
-	bool DeleteCamera(astring strCameraId);
+	bool CameraRecordTemplSet(string strCameraId, string strTempl);
+	bool FindCamera(string strCameraId);
+	bool DeleteCamera(string strCameraId);
 	bool AddCamera(VidCamera &pAddCam);
-	bool GetCameraConf(astring strCameraId, VidCamera &pCam);
-public:
+	bool GetCameraConf(string strCameraId, VidCamera &pCam);
 
-	BOOL GetHdfsRecordConf(VidHDFSConf &pData);
-	BOOL UpdateHdfsRecordConf(VidHDFSConf &pData);
+	bool GetHdfsRecordConf(VidHDFSConf &pData);
+	bool UpdateHdfsRecordConf(VidHDFSConf &pData);
 
-	BOOL GetCameraListConf(VidCameraList &pData);
-	BOOL UpdateCameraListConf(VidCameraList &pData);
+	bool GetCameraListConf(VidCameraList &pData);
+	bool UpdateCameraListConf(VidCameraList &pData);
 
-	BOOL GetLicense(astring &strLicense);
-	BOOL SetLicense(astring &strLicense);
+	bool GetLicense(string &strLicense);
+	bool SetLicense(string &strLicense);
 
-
-
-	BOOL GetCmnParam(astring &strKey, astring &strParam);
-	BOOL SetCmnParam(astring &strKey, astring &strParam);
+	bool GetCmnParam(string &strKey, string &strParam);
+	bool SetCmnParam(string &strKey, string &strParam);
 
 	bool GetStorServerConf(VidStorServerConf &pData);
 	bool SetStorServerConf(VidStorServerConf &pData);
-public:
-	bool GetRecSched(astring strId, RecordSchedWeek &pSched);
+
+	bool GetRecSched(string strId, RecordSchedWeek &pSched);
 
 private:
-    XMutex m_cMutex;
+    std::mutex m_cMutex;
 
 private:
     leveldb::DB* m_pDb;

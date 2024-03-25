@@ -8,6 +8,10 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
+
+#include <iostream>
+#include <thread>
+#include <mutex>
 #include "confdb.h"
 using namespace std;
 
@@ -34,58 +38,48 @@ void VSCStorServerConfDefault(VidStorServerConf &pData)
 	return;
 }
 
-s32 ConfDB::Open(astring  pPath)
+bool ConfDB::Open(string  pPath)
 {
 	m_Options.create_if_missing = true;
 	leveldb::Status status = leveldb::DB::Open(m_Options, pPath, &m_pDb);
-	if (false == status.ok())
-	{
-	    //cerr << "Unable to open/create test database "<< pPath << endl;
-	    //cerr << status.ToString() << endl;
+	if (false == status.ok()) {
 	    VDC_DEBUG( "Unable to open/create test database %s\n", pPath.c_str());
-
-	    return FALSE;
+	    return false;
 	}
 
-	astring fakeKey = "fakeKey";
-	astring fakeValue = "fakeValue";
+	string fakeKey = "fakeKey";
+	string fakeValue = "fakeValue";
 	SetCmnParam(fakeKey, fakeValue);
-    	return TRUE;
+    return true;
 }
 
 
-bool ConfDB::FindCamera(astring strCameraId)
+bool ConfDB::FindCamera(string strCameraId)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
+
 	VidCameraList cameraList;
 	GetCameraListConf(cameraList);
-	int cameraSize = cameraList.cvidcamera_size();
 
-	for (s32 i = 0; i < cameraList.cvidcamera_size(); i ++)
-	{
+	for (int i = 0; i < cameraList.cvidcamera_size(); i ++) {
 		const VidCamera &cam = cameraList.cvidcamera(i);
-		if (cam.strid() == strCameraId)
-		{
+		if (cam.strid() == strCameraId) {
 			return true;
 		}
 	}
-
 	return false;
 }
 
-bool ConfDB::DeleteCamera(astring strCameraId)
+bool ConfDB::DeleteCamera(string strCameraId)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
+
 	VidCameraList cameraList;
 	VidCameraList cameraListNew;
 	GetCameraListConf(cameraList);
-	int cameraSize = cameraList.cvidcamera_size();
-
-	for (s32 i = 0; i < cameraList.cvidcamera_size(); i ++)
-	{
+	for (int i = 0; i < cameraList.cvidcamera_size(); i ++) {
 		const VidCamera &cam = cameraList.cvidcamera(i);
-		if (cam.strid() != strCameraId)
-		{
+		if (cam.strid() != strCameraId) {
 			VidCamera *pCam = cameraListNew.add_cvidcamera();
 			*pCam = cam;
 		}
@@ -96,7 +90,7 @@ bool ConfDB::DeleteCamera(astring strCameraId)
 	
 bool ConfDB::AddCamera(VidCamera &pAddCam)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 	
 	VidCameraList cameraList;
 	GetCameraListConf(cameraList);
@@ -108,57 +102,46 @@ bool ConfDB::AddCamera(VidCamera &pAddCam)
 	return true;
 }
 
-bool ConfDB::GetCameraConf(astring strCameraId, VidCamera &pCam)
+bool ConfDB::GetCameraConf(string strCameraId, VidCamera &pCam)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 	
 	VidCameraList cameraList;
 	GetCameraListConf(cameraList);
-	int cameraSize = cameraList.cvidcamera_size();
-
-	for (s32 i = 0; i < cameraList.cvidcamera_size(); i ++)
-	{
+	for (int i = 0; i < cameraList.cvidcamera_size(); i ++) {
 		const VidCamera &cam = cameraList.cvidcamera(i);
-		if (cam.strid() == strCameraId)
-		{
+		if (cam.strid() == strCameraId) {
 			pCam = cam;
 			return true;
 		}
 	}
-
 	return false;
 }
 
-bool ConfDB::CameraRecordTemplSet(astring strCameraId, astring strTempl)
+bool ConfDB::CameraRecordTemplSet(string strCameraId, string strTempl)
 {
-	XGuard guard(m_cMutex);
-	
+	std::lock_guard<std::mutex> lock(m_cMutex);
+
 	return true;
 }
 
-  BOOL ConfDB::GetLicense(astring &strLicense)
+bool ConfDB::GetLicense(string &strLicense)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 
 	VSCConfLicenseKey sLicKey;
 	
-
 	leveldb::Slice key((char *)&sLicKey, sizeof(sLicKey));
-
-	leveldb::Status s = m_pDb->Get(leveldb::ReadOptions(), 
-					key,  &strLicense);
-	if (s.ok() == false)
-	{
+	leveldb::Status Status = m_pDb->Get(leveldb::ReadOptions(), key, &strLicense);
+	if (!Status.ok()) {
 		strLicense = "";
-		return FALSE;
+		return false;
 	}
-
-	return TRUE;
-
+	return true;
 }
-  BOOL ConfDB::SetLicense(astring &strLicense)
+bool ConfDB::SetLicense(string &strLicense)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 	
 	VSCConfLicenseKey sLic;
 	leveldb::WriteOptions writeOptions;
@@ -166,218 +149,185 @@ bool ConfDB::CameraRecordTemplSet(astring strCameraId, astring strTempl)
 	leveldb::Slice licKey((char *)&sLic, sizeof(sLic));
 	leveldb::Slice licValue(strLicense);
 	m_pDb->Put(writeOptions, licKey, licValue);
-	return TRUE;
+
+	return true;
     
 }
 
-BOOL ConfDB::GetCmnParam(astring &strKey, astring &strParam)
+bool ConfDB::GetCmnParam(string &strKey, string &strParam)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 	
 	leveldb::Slice key(strKey);
-
-	leveldb::Status s = m_pDb->Get(leveldb::ReadOptions(), 
-					key,  &strParam);
-	if (s.ok() == false)
-	{
+	leveldb::Status Status = m_pDb->Get(leveldb::ReadOptions(), key, &strParam);
+	if (!Status.ok()) {
 		strParam = "";
-		return FALSE;
+		return false;
 	}
-
-	return TRUE;
+	return true;
 }
 
-BOOL ConfDB::SetCmnParam(astring &strKey, astring &strParam)
+bool ConfDB::SetCmnParam(string &strKey, string &strParam)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 	
 	leveldb::WriteOptions writeOptions;
 
 	leveldb::Slice licKey(strKey);
 	leveldb::Slice licValue(strParam);
 	m_pDb->Put(writeOptions, licKey, licValue);
-	return TRUE;
+	return true;
 }
 
 
 
-BOOL ConfDB::GetHdfsRecordConf(VidHDFSConf &pData)
+bool ConfDB::GetHdfsRecordConf(VidHDFSConf &pData)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 	
 	VSCConfHdfsRecordKey sKey;
-
-	//pData.ParseFromString();
-	//pData.SerializeToString();
+    string strValue;
 
 	leveldb::Slice key((char *)&sKey, sizeof(sKey));
 
-	astring strValue;
-	leveldb::Status s = m_pDb->Get(leveldb::ReadOptions(), 
-					key,  &strValue);
-	if (s.ok() == false)
-	{
+	
+	leveldb::Status Status = m_pDb->Get(leveldb::ReadOptions(), key, &strValue);
+	if (!Status.ok()) {
 		strValue = "fake";
 	}
 
-	if (pData.ParseFromString(strValue) == false)
-	{
+	if (pData.ParseFromString(strValue) == false) {
 		VDC_DEBUG( "Hdfs Record Config is not init\n");
 		VSCHdfsRecordDefault(pData);
 		UpdateHdfsRecordConf(pData);
-		return TRUE;
+		return true;
 	}
-
-	return TRUE;
-
+	return true;
 }
 
 /* HDFS record  */
-BOOL ConfDB::UpdateHdfsRecordConf(VidHDFSConf &pData)
+bool ConfDB::UpdateHdfsRecordConf(VidHDFSConf &pData)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 	
 	VSCConfHdfsRecordKey sKey;
+    string strOutput;
 
 	leveldb::WriteOptions writeOptions;
-
 	leveldb::Slice sysKey((char *)&sKey, sizeof(sKey));
-
-	astring strOutput;
-	if (pData.SerializeToString(&strOutput) != TRUE)
-	{
-		return FALSE;
+	
+	if (pData.SerializeToString(&strOutput) != true) {
+		return false;
 	}
-	leveldb::Slice sysValue(strOutput);
 
+	leveldb::Slice sysValue(strOutput);
 	m_pDb->Put(writeOptions, sysKey, sysValue);
 
-	return TRUE;
+	return true;
 }
 
-BOOL ConfDB::GetCameraListConf(VidCameraList &pData)
+bool ConfDB::GetCameraListConf(VidCameraList &pData)
 {
-	XGuard guard(m_cMutex);
+	std::lock_guard<std::mutex> lock(m_cMutex);
 	
 	VSCConfCameraKey sKey;
+    string strValue;
 
 	leveldb::Slice key((char *)&sKey, sizeof(sKey));
 
-	astring strValue;
-	leveldb::Status s = m_pDb->Get(leveldb::ReadOptions(), 
-					key,  &strValue);
-	if (s.ok() == false)
-	{
+	leveldb::Status Status = m_pDb->Get(leveldb::ReadOptions(), key, &strValue);
+	if (!Status.ok()) {
 		strValue = "fake";
 	}
 
-	if (pData.ParseFromString(strValue) == false)
-	{
+	if (pData.ParseFromString(strValue) == false) {
 		VidCameraList listDefault;
 		pData = listDefault;
 		VDC_DEBUG( "Camera List Config is not init\n");
-		return TRUE;
+		return true;
 	}
-
-	return TRUE;
-
+	return true;
 }
-BOOL ConfDB::UpdateCameraListConf(VidCameraList &pData)
+bool ConfDB::UpdateCameraListConf(VidCameraList &pData)
 {
-	XGuard guard(m_cMutex);
-	
-	VSCConfCameraKey sKey;
+	std::lock_guard<std::mutex> lock(m_cMutex);
 
+	VSCConfCameraKey sKey;
 	leveldb::WriteOptions writeOptions;
+    string strOutput;
 
 	leveldb::Slice sysKey((char *)&sKey, sizeof(sKey));
-
-	astring strOutput;
-	if (pData.SerializeToString(&strOutput) != TRUE)
-	{
-		return FALSE;
+	if (pData.SerializeToString(&strOutput) != true) {
+		return false;
 	}
-	leveldb::Slice sysValue(strOutput);
 
+	leveldb::Slice sysValue(strOutput);
 	m_pDb->Put(writeOptions, sysKey, sysValue);
 
-	return TRUE;
+	return true;
 }
 
 bool ConfDB::GetStorServerConf(VidStorServerConf &pData)
 {
+    std::lock_guard<std::mutex> lock(m_cMutex);
+
 	VSCConfStorServerKey sKey;
-	
-	XGuard guard(m_cMutex);
+	string strValue;
 
 	leveldb::Slice key((char *)&sKey, sizeof(sKey));
-
-	astring strValue;
-	leveldb::Status s = m_pDb->Get(leveldb::ReadOptions(), 
-					key,  &strValue);
-	if (s.ok() == false)
-	{
+	leveldb::Status Status = m_pDb->Get(leveldb::ReadOptions(), key, &strValue);
+	if (!Status.ok()) {
 		strValue = "fake";
 	}
 
-	if (pData.ParseFromString(strValue) == false)
-	{
+	if (pData.ParseFromString(strValue) == false) {
 		VSCStorServerConfDefault(pData);
 		VDC_DEBUG( "Stor Server Config is not init\n");
-		return true;
+		return false;
 	}
-
 	return true;
 }
 bool ConfDB::SetStorServerConf(VidStorServerConf &pData)
 {
-	VSCConfStorServerKey sKey;
+    std::lock_guard<std::mutex> lock(m_cMutex);
 
-	XGuard guard(m_cMutex);
+	VSCConfStorServerKey sKey;
+    string strOutput;
 
 	leveldb::WriteOptions writeOptions;
-
 	leveldb::Slice sysKey((char *)&sKey, sizeof(sKey));
 
-	astring strOutput;
-	if (pData.SerializeToString(&strOutput) != TRUE)
-	{
-		return FALSE;
+	if (pData.SerializeToString(&strOutput) != true) {
+		return false;
 	}
-	leveldb::Slice sysValue(strOutput);
 
+	leveldb::Slice sysValue(strOutput);
 	m_pDb->Put(writeOptions, sysKey, sysValue);
 
 	return true;
 }
 
-bool ConfDB::GetRecSched(astring strId, RecordSchedWeek &pSched)
+bool ConfDB::GetRecSched(string strId, RecordSchedWeek &pSched)
 {
-	XGuard guard(m_cMutex);
-	
-	if (strId == REC_SCHED_OFF)
-	{
+	std::lock_guard<std::mutex> lock(m_cMutex);
+
+	if (strId == REC_SCHED_OFF) {
 		pSched = RecordSchedWeek::CreateOff();
 		return true;
 	}
-
-	if (strId == REC_SCHED_ALL_DAY)
-	{
+	if (strId == REC_SCHED_ALL_DAY) {
 		pSched = RecordSchedWeek::CreateAllDay();
 		return true;
 	}
-
-	if (strId == REC_SCHED_WORK_DAY)
-	{
+	if (strId == REC_SCHED_WORK_DAY) {
 		pSched = RecordSchedWeek::CreateWorkDay();
 		return true;
 	}
-
 	return false;
 }
 
 #if 0
-BOOL ConfDB::GetSystemConf(VSCConfData &pSys)
+bool ConfDB::GetSystemConf(VSCConfData &pSys)
 {
     VSCConfSystemKey sSysKey;
 
@@ -401,10 +351,10 @@ BOOL ConfDB::GetSystemConf(VSCConfData &pSys)
         memset(&pSys, 0, sizeof(VSCConfData));
         SysConfDataDefault(pSys);
         UpdateSysData(pSys);
-        astring strLicense = " ";
+        string strLicense = " ";
         SetLicense(strLicense);//set the default license
         /* Call get system again */
-        return TRUE;
+        return true;
     }
 
     memcpy(&pSys, sysValue.data(), sizeof(VSCConfData));
@@ -433,11 +383,11 @@ BOOL ConfDB::GetSystemConf(VSCConfData &pSys)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 
 }
 
-BOOL ConfDB::GetVmsConf(VSCVmsData &pVms)
+bool ConfDB::GetVmsConf(VSCVmsData &pVms)
 {
     VSCConfVmsKey sVmsKey;
 
@@ -462,7 +412,7 @@ BOOL ConfDB::GetVmsConf(VSCVmsData &pVms)
         VmsConfDataDefault(pVms);
         UpdateVmsData(pVms);
         /* Call get system again */
-        return TRUE;
+        return true;
     }
 
     memcpy(&pVms, sysValue.data(), sizeof(VSCVmsData));
@@ -471,11 +421,11 @@ BOOL ConfDB::GetVmsConf(VSCVmsData &pVms)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 
 }
 
-BOOL ConfDB::GetViewConf(VSCViewData &pView)
+bool ConfDB::GetViewConf(VSCViewData &pView)
 {
     VSCConfViewKey sViewKey;
 
@@ -500,7 +450,7 @@ BOOL ConfDB::GetViewConf(VSCViewData &pView)
         ViewConfDataDefault(pView);
         UpdateViewData(pView);
         /* Call get system again */
-        return TRUE;
+        return true;
     }
 
     memcpy(&pView, sysValue.data(), sizeof(VSCViewData));
@@ -509,12 +459,12 @@ BOOL ConfDB::GetViewConf(VSCViewData &pView)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 
 }
 
 
-BOOL ConfDB::GetVGroupConf(VSCVGroupData &pVGroup)
+bool ConfDB::GetVGroupConf(VSCVGroupData &pVGroup)
 {
     VSCConfVGroupKey sVGroupKey;
 
@@ -539,7 +489,7 @@ BOOL ConfDB::GetVGroupConf(VSCVGroupData &pVGroup)
 		VGroupConfDataDefault(pVGroup);
 		UpdateVGroupData(pVGroup);
         /* Call get system again */
-        return TRUE;
+        return true;
     }
 
 	memcpy(&pVGroup, sysValue.data(), sizeof(VSCVGroupData));
@@ -548,11 +498,11 @@ BOOL ConfDB::GetVGroupConf(VSCVGroupData &pVGroup)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 
 }
 
-BOOL ConfDB::GetUserConf(VSCUserData &pData)
+bool ConfDB::GetUserConf(VSCUserData &pData)
 {
     VSCConfUserKey sKey;
 
@@ -577,7 +527,7 @@ BOOL ConfDB::GetUserConf(VSCUserData &pData)
 	VSCUserDataItemDefault(pData.data.conf);
 	UpdateUserData(pData);
         /* Call get system again */
-        return TRUE;
+        return true;
     }
 
 	memcpy(&pData, sysValue.data(), sizeof(VSCUserData));
@@ -586,11 +536,11 @@ BOOL ConfDB::GetUserConf(VSCUserData &pData)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 
 }
 
-BOOL ConfDB::GetTourConf(VSCTourData &pData)
+bool ConfDB::GetTourConf(VSCTourData &pData)
 {
     VSCConfTourKey sKey;
 
@@ -615,7 +565,7 @@ BOOL ConfDB::GetTourConf(VSCTourData &pData)
 	VSCTourDataDefault(pData.data.conf);
 	UpdateTourData(pData);
         /* Call get system again */
-        return TRUE;
+        return true;
     }
 
 	memcpy(&pData, sysValue.data(), sizeof(VSCTourData));
@@ -624,12 +574,12 @@ BOOL ConfDB::GetTourConf(VSCTourData &pData)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 
 }
 
 
-BOOL ConfDB::GetEmapConf(VSCEmapData &pData)
+bool ConfDB::GetEmapConf(VSCEmapData &pData)
 {
     VSCConfEmapKey sKey;
 
@@ -654,7 +604,7 @@ BOOL ConfDB::GetEmapConf(VSCEmapData &pData)
 	VSCEmapDataDefault(pData.data.conf);
 	UpdateEmapData(pData);
         /* Call get system again */
-        return TRUE;
+        return true;
     }
 
 	memcpy(&pData, sysValue.data(), sizeof(VSCEmapData));
@@ -663,7 +613,7 @@ BOOL ConfDB::GetEmapConf(VSCEmapData &pData)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 
 }
 
@@ -679,17 +629,17 @@ s32 ConfDB::UpdateSysData(VSCConfData &pSysData)
 
     m_pDb->Put(writeOptions, sysKey, sysValue);
 
-    return TRUE;
+    return true;
 }
 
 s32 ConfDB::GetSysData(VSCConfData &pSysData)
 {
     GetSystemConf(pSysData);
 
-    return TRUE;
+    return true;
 }
 
-BOOL ConfDB::UpdateDeviceData(u32 nId, VSCDeviceData &pData)
+bool ConfDB::UpdateDeviceData(u32 nId, VSCDeviceData &pData)
 {
     VSCConfDeviceKey sChKey(nId);
     leveldb::WriteOptions writeOptions;
@@ -698,10 +648,10 @@ BOOL ConfDB::UpdateDeviceData(u32 nId, VSCDeviceData &pData)
     leveldb::Slice chValue((char *)&pData, sizeof(VSCDeviceData));
     m_pDb->Put(writeOptions, chKey, chValue);
 
-    return TRUE;
+    return true;
 }
 
-BOOL ConfDB::GetDeviceData(u32 nId, VSCDeviceData &pData)
+bool ConfDB::GetDeviceData(u32 nId, VSCDeviceData &pData)
 {
     VSCConfDeviceKey sChKey(nId);
 
@@ -723,7 +673,7 @@ BOOL ConfDB::GetDeviceData(u32 nId, VSCDeviceData &pData)
         VDC_DEBUG( "Device Can not find !!!\n");
 
         delete it;
-        return FALSE;
+        return false;
     }
 
     memcpy(&pData, sysValue.data(), sizeof(VSCDeviceData));
@@ -732,10 +682,10 @@ BOOL ConfDB::GetDeviceData(u32 nId, VSCDeviceData &pData)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 }
 
-BOOL ConfDB::UpdateVIPCData(u32 nId, VSCVIPCData &pData)
+bool ConfDB::UpdateVIPCData(u32 nId, VSCVIPCData &pData)
 {
     VSCConfVIPCKey sChKey(nId);
     leveldb::WriteOptions writeOptions;
@@ -744,10 +694,10 @@ BOOL ConfDB::UpdateVIPCData(u32 nId, VSCVIPCData &pData)
     leveldb::Slice chValue((char *)&pData, sizeof(VSCDeviceData));
     m_pDb->Put(writeOptions, chKey, chValue);
 
-    return TRUE;
+    return true;
 }
 
-BOOL ConfDB::GetVIPCData(u32 nId, VSCVIPCData &pData)
+bool ConfDB::GetVIPCData(u32 nId, VSCVIPCData &pData)
 {
     VSCConfVIPCKey sChKey(nId);
 
@@ -769,7 +719,7 @@ BOOL ConfDB::GetVIPCData(u32 nId, VSCVIPCData &pData)
         VDC_DEBUG( "Device Can not find !!!\n");
 
         delete it;
-        return FALSE;
+        return false;
     }
 
     memcpy(&pData, sysValue.data(), sizeof(VSCVIPCData));
@@ -778,7 +728,7 @@ BOOL ConfDB::GetVIPCData(u32 nId, VSCVIPCData &pData)
     assert(it->status().ok());
     delete it;
 
-    return TRUE;
+    return true;
 }
 
 
@@ -787,7 +737,7 @@ s32 ConfDB::GetVmsData(VSCVmsData &pVmsData)
 {
 	GetVmsConf(pVmsData);
 	
-	return TRUE;
+	return true;
 }
 s32 ConfDB::UpdateVmsData(VSCVmsData &pVmsData)
 {
@@ -800,14 +750,14 @@ s32 ConfDB::UpdateVmsData(VSCVmsData &pVmsData)
 
     m_pDb->Put(writeOptions, sysKey, sysValue);
 
-    return TRUE;
+    return true;
 }
 
 s32 ConfDB::GetViewData(VSCViewData &pViewData)
 {
 	GetViewConf(pViewData);
 	
-	return TRUE;
+	return true;
 }
 s32 ConfDB::UpdateViewData(VSCViewData &pViewData)
 {
@@ -820,7 +770,7 @@ s32 ConfDB::UpdateViewData(VSCViewData &pViewData)
 
     m_pDb->Put(writeOptions, sysKey, sysValue);
 
-    return TRUE;
+    return true;
 }
 
 /* Camera Group  */
@@ -828,7 +778,7 @@ s32 ConfDB::GetVGroupData(VSCVGroupData &pGroupData)
 {
 	GetVGroupConf(pGroupData);
 	
-	return TRUE;
+	return true;
 }
 /* Camera Group  */
 s32 ConfDB::UpdateVGroupData(VSCVGroupData &pVGroupData)
@@ -842,7 +792,7 @@ s32 ConfDB::UpdateVGroupData(VSCVGroupData &pVGroupData)
 
     m_pDb->Put(writeOptions, sysKey, sysValue);
 
-    return TRUE;
+    return true;
 }
 
 /* HDFS record  */
@@ -850,7 +800,7 @@ s32 ConfDB::GetHdfsRecordData(VSCHdfsRecordData &pData)
 {
 	GetHdfsRecordConf(pData);
 	
-	return TRUE;
+	return true;
 }
 
 /* User  */
@@ -858,7 +808,7 @@ s32 ConfDB::GetUserData(VSCUserData &pData)
 {
 	GetUserConf(pData);
 	
-	return TRUE;
+	return true;
 }
 
 s32 ConfDB::UpdateUserData(VSCUserData &pData)
@@ -872,7 +822,7 @@ s32 ConfDB::UpdateUserData(VSCUserData &pData)
 
     m_pDb->Put(writeOptions, sysKey, sysValue);
 
-    return TRUE;
+    return true;
 }
 
 /* Tour  */
@@ -880,7 +830,7 @@ s32 ConfDB::GetTourData(VSCTourData &pData)
 {
 	GetTourConf(pData);
 	
-	return TRUE;
+	return true;
 }
 
 s32 ConfDB::UpdateTourData(VSCTourData &pData)
@@ -894,7 +844,7 @@ s32 ConfDB::UpdateTourData(VSCTourData &pData)
 
     m_pDb->Put(writeOptions, sysKey, sysValue);
 
-    return TRUE;
+    return true;
 }
 
 
@@ -903,7 +853,7 @@ s32 ConfDB::GetEmapData(VSCEmapData &pData)
 {
 	GetEmapConf(pData);
 	
-	return TRUE;
+	return true;
 }
 s32 ConfDB::UpdateEmapData(VSCEmapData &pData)
 {
@@ -916,13 +866,13 @@ s32 ConfDB::UpdateEmapData(VSCEmapData &pData)
 
     m_pDb->Put(writeOptions, sysKey, sysValue);
 
-    return TRUE;
+    return true;
 }
 
 /* Emap file Get & Set */
-  BOOL ConfDB::GetEmapFile(astring &strFile)
+  bool ConfDB::GetEmapFile(string &strFile)
 {
-	BOOL ret = FALSE;
+	bool ret = false;
 	VSCConfEmapFileKey sMapKey;
 	
 
@@ -938,7 +888,7 @@ s32 ConfDB::UpdateEmapData(VSCEmapData &pData)
 	{
 		sysValue = it->value();
 		strFile = sysValue.ToString();
-		ret = TRUE;
+		ret = true;
 	}
 	
 	// Check for any errors found during the scan
@@ -949,7 +899,7 @@ s32 ConfDB::UpdateEmapData(VSCEmapData &pData)
 
 }
 
-  BOOL ConfDB::SetEmapFile(astring &strFile)
+  bool ConfDB::SetEmapFile(string &strFile)
 {
 	VSCConfEmapFileKey sMapKey;
 	leveldb::WriteOptions writeOptions;
@@ -957,7 +907,7 @@ s32 ConfDB::UpdateEmapData(VSCEmapData &pData)
 	leveldb::Slice Key((char *)&sMapKey, sizeof(sMapKey));
 	leveldb::Slice Value(strFile);
 	m_pDb->Put(writeOptions, Key, Value);
-	return TRUE;
+	return true;
     
 }
 
@@ -965,7 +915,7 @@ s32 ConfDB::AddDevice(VSCDeviceData &pData, u32 nId)
 {
     if (nId > CONF_MAP_MAX)
     {
-        return FALSE;
+        return false;
     }
     VSCConfData SysData;
     GetSysData(SysData);
@@ -979,14 +929,14 @@ s32 ConfDB::AddDevice(VSCDeviceData &pData, u32 nId)
     UpdateDeviceData(nId, pData);
 
 
-    return TRUE;
+    return true;
 }
 
 s32 ConfDB::DelDevice(u32 nId)
 {
     if (nId > CONF_MAP_MAX)
     {
-        return FALSE;
+        return false;
     }
 
     VSCConfData SysData;
@@ -996,14 +946,14 @@ s32 ConfDB::DelDevice(u32 nId)
 
     UpdateSysData(SysData);
 
-    return TRUE;
+    return true;
 }
 
 s32 ConfDB::AddVIPC(VSCVIPCData &pData, u32 nId)
 {
     if (nId > CONF_MAP_MAX)
     {
-        return FALSE;
+        return false;
     }
     VSCConfData SysData;
     GetSysData(SysData);
@@ -1017,14 +967,14 @@ s32 ConfDB::AddVIPC(VSCVIPCData &pData, u32 nId)
     UpdateVIPCData(nId, pData);
 
 
-    return TRUE;
+    return true;
 }
 
 s32 ConfDB::DelVIPC(u32 nId)
 {
     if (nId > CONF_MAP_MAX)
     {
-        return FALSE;
+        return false;
     }
 
     VSCConfData SysData;
@@ -1034,7 +984,7 @@ s32 ConfDB::DelVIPC(u32 nId)
 
     UpdateSysData(SysData);
 
-    return TRUE;
+    return true;
 }
 
 #endif
