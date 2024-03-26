@@ -662,388 +662,559 @@ bool ClientConfDB::GetViewConf(string strId, VidView &pView)
 }
 
 
+/**
+ * \brief Searches for a tour with the specified ID in the client configuration database.
+ * 
+ * This function searches for a tour with the specified ID in the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the search operation.
+ * 
+ * \param strTourId The ID of the tour to search for.
+ * \return true if the tour with the specified ID is found in the database, false otherwise.
+ * 
+ */
 bool ClientConfDB::FindTour(string strTourId)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidTourList tourList;
-	GetTourListConf(tourList);
-	int tourSize = tourList.cvidtour_size();
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	for (int i = 0; i < tourList.cvidtour_size(); i ++)
-	{
-		const VidTour &tour = tourList.cvidtour(i);
-		if (tour.strid() == strTourId)
-		{
-			return true;
-		}
-	}
+    VidTourList tourList; /**< List of tours from the database */
+    GetTourListConf(tourList); /**< Retrieves the list of tours from the database */
 
-	return false;
+    // Iterates through the tour list to find the specified tour ID
+    for (int i = 0; i < tourList.cvidtour_size(); i ++) {
+        const VidTour &tour = tourList.cvidtour(i); /**< Current tour in the iteration */
+        // Checks if the ID of the current tour matches the specified tour ID
+        if (tour.strid() == strTourId) {
+            return true; /**< Returns true if the tour is found */
+        }
+    }
+    return false; /**< Returns false if the tour is not found */
 }
+
+
+/**
+ * \brief Deletes a tour with the specified ID from the client configuration database.
+ * 
+ * This function deletes a tour with the specified ID from the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the deletion operation.
+ * 
+ * \param strTourId The ID of the tour to delete.
+ * \return true if the tour with the specified ID is successfully deleted, false otherwise.
+ * 
+ */
 bool ClientConfDB::DeleteTour(string strTourId)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	VidTourList tourList;
-	VidTourList tourListNew;
-	GetTourListConf(tourList);
-	int tourSize = tourList.cvidtour_size();
+    VidTourList tourList; /**< List of tours from the database */
+    VidTourList tourListNew; /**< Updated list of tours after deletion */
 
-	for (int i = 0; i < tourList.cvidtour_size(); i ++)
-	{
-		const VidTour &tour = tourList.cvidtour(i);
-		if (tour.strid() != strTourId)
-		{
-			VidTour *pAddTour = tourListNew.add_cvidtour();
-			*pAddTour = tour;
-		}
-	}
+    GetTourListConf(tourList); /**< Retrieves the list of tours from the database */
 
-	UpdateTourListConf(tourListNew);
-	return true;
+    // Iterates through the tour list to filter out the tour to be deleted
+    for (int i = 0; i < tourList.cvidtour_size(); i ++) {
+        const VidTour &tour = tourList.cvidtour(i); /**< Current tour in the iteration */
+        // Checks if the ID of the current tour matches the specified tour ID
+        if (tour.strid() != strTourId) {
+            VidTour *pAddTour = tourListNew.add_cvidtour(); /**< Adds the tour to the new tour list if its ID does not match the specified tour ID */
+            *pAddTour = tour; /**< Copies the tour to the new tour list */
+        }
+    }
+
+    UpdateTourListConf(tourListNew); /**< Updates the client configuration database with the new tour list */
+
+    return true; /**< Returns true indicating successful deletion */
 }
 
+/**
+ * \brief Adds a new tour to the client configuration database.
+ * 
+ * This function adds a new tour to the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the addition operation.
+ * 
+ * \param pTour A reference to the tour object to be added.
+ * \return true if the tour is successfully added to the database, false otherwise.
+ * 
+ */
 bool ClientConfDB::AddTour(VidTour &pTour)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidTourList tourList;
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	GetTourListConf(tourList);
-	
-	VidTour *pAddTour = tourList.add_cvidtour();
-	*pAddTour = pTour;
-	UpdateTourListConf(tourList);
+    VidTourList tourList; /**< List of tours from the database */
 
-	return true;
+    GetTourListConf(tourList); /**< Retrieves the list of tours from the database */
+
+    VidTour *pAddTour = tourList.add_cvidtour(); /**< Adds a new tour entry to the tour list */
+    *pAddTour = pTour; /**< Copies the provided tour object to the newly added tour entry */
+
+    UpdateTourListConf(tourList); /**< Updates the client configuration database with the modified tour list */
+
+    return true; /**< Returns true indicating successful addition */
 }
 
-
-
+/**
+ * \brief Retrieves the tour list configuration from the client configuration database.
+ * 
+ * This function retrieves the tour list configuration from the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the retrieval operation.
+ * 
+ * \param pData Reference to the VidTourList object where the tour list configuration will be stored.
+ * \return true if the tour list configuration is successfully retrieved, false otherwise.
+ */
 bool ClientConfDB::GetTourListConf(VidTourList &pData)
 {
-	VSCConfTourKey sKey;
-	string strValue;
-	
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    VSCConfTourKey sKey; /**< Configuration key for the tour list */
+    string strValue; /**< String to store the retrieved tour list configuration */
 
-	leveldb::Slice key((char *)&sKey, sizeof(sKey));
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	leveldb::Status s = m_pDb->Get(leveldb::ReadOptions(), 
-					key,  &strValue);
-	if (s.ok() == false)
-	{
-		strValue = "fake";
-	}
+    leveldb::Slice key((char *)&sKey, sizeof(sKey)); /**< Creates a leveldb slice for the configuration key */
 
-	if (pData.ParseFromString(strValue) == false)
-	{
-		VidTourList listDefault;
-		pData = listDefault;
-		//VDC_DEBUG( "Tour List Config is not init\n");
-		return true;
-	}
+    // Retrieves the tour list configuration from the database
+    leveldb::Status Status = m_pDb->Get(leveldb::ReadOptions(), key, &strValue);
+    if (Status.ok() == false) {
+        strValue = "fake"; /**< Sets a default value if the retrieval fails */
+    }
 
-	return true;
+    // Parses the retrieved string into a VidTourList object
+    if (pData.ParseFromString(strValue) == false) {
+        VidTourList listDefault; /**< Default tour list configuration */
+        pData = listDefault; /**< Assigns the default tour list configuration if parsing fails */
+        VDC_DEBUG("Tour List Config is not init\n"); /**< Debug message indicating that tour list configuration is not initialized */
+        return false; /**< Returns false indicating failure */
+    }
 
+    return true; /**< Returns true indicating success */
 }
+
+/**
+ * \brief Updates the tour list configuration in the client configuration database.
+ * 
+ * This function updates the tour list configuration in the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the update operation.
+ * 
+ * \param pData Reference to the VidTourList object containing the updated tour list configuration.
+ * \return true if the tour list configuration is successfully updated, false otherwise.
+ * 
+ */
 bool ClientConfDB::UpdateTourListConf(VidTourList &pData)
 {
-	VSCConfTourKey sKey;
+    VSCConfTourKey sKey; /**< Configuration key for the tour list */
+    string strOutput; /**< String to store the serialized tour list configuration */
 
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	leveldb::WriteOptions writeOptions;
+    leveldb::WriteOptions writeOptions; /**< Write options for the database update */
+    leveldb::Slice sysKey((char *)&sKey, sizeof(sKey)); /**< Creates a leveldb slice for the configuration key */
 
-	leveldb::Slice sysKey((char *)&sKey, sizeof(sKey));
+    // Serializes the tour list configuration data into a string
+    if (pData.SerializeToString(&strOutput) != true) {
+        return false; /**< Returns false if serialization fails */
+    }
 
-	string strOutput;
-	if (pData.SerializeToString(&strOutput) != true)
-	{
-		return false;
-	}
-	leveldb::Slice sysValue(strOutput);
+    leveldb::Slice sysValue(strOutput); /**< Creates a leveldb slice for the serialized configuration data */
 
-	m_pDb->Put(writeOptions, sysKey, sysValue);
+    // Updates the tour list configuration in the database
+    m_pDb->Put(writeOptions, sysKey, sysValue);
 
-	return true;
+    return true; /**< Returns true indicating successful update */
 }
 
+/**
+ * \brief Retrieves the details of a specific tour from the client configuration database.
+ * 
+ * This function retrieves the details of a specific tour with the given ID from the client
+ * configuration database. It locks the database using a mutex to ensure thread safety during
+ * the retrieval operation.
+ * 
+ * \param strId The ID of the tour to retrieve.
+ * \param pTour Reference to the VidTour object where the details of the retrieved tour will be stored.
+ * \return true if the tour with the specified ID is successfully retrieved, false otherwise.
+ */
 bool ClientConfDB::GetTourConf(string strId, VidTour &pTour)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidTourList tourList;
-	GetTourListConf(tourList);
-	int tourSize = tourList.cvidtour_size();
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	for (int i = 0; i < tourList.cvidtour_size(); i ++)
-	{
-		const VidTour &tour = tourList.cvidtour(i);
-		if (tour.strid() == strId)
-		{
-			pTour = tour;
-			return true;
-		}
-	}
-
-	return false;
+    VidTourList tourList; /**< List of tours from the database */
+    GetTourListConf(tourList); /**< Retrieves the list of tours from the database */
+    // Iterates through the tour list to find the tour with the specified ID
+    for (int i = 0; i < tourList.cvidtour_size(); i ++) {
+        const VidTour &tour = tourList.cvidtour(i); /**< Current tour in the iteration */
+        // Checks if the ID of the current tour matches the specified tour ID
+        if (tour.strid() == strId) {
+            pTour = tour; /**< Copies the details of the retrieved tour */
+            return true; /**< Returns true indicating successful retrieval */
+        }
+    }
+    return false; /**< Returns false indicating failure to find the tour */
 }
 
+/**
+ * \brief Checks if a group with the specified ID exists in the client configuration database.
+ * 
+ * This function checks if a group with the specified ID exists in the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the search operation.
+ * 
+ * \param strGroupId The ID of the group to search for.
+ * \return true if a group with the specified ID is found in the database, false otherwise.
+ * 
+ */
 bool ClientConfDB::FindGroup(string strGroupId)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidGroupList groupList;
-	GetGroupListConf(groupList);
-	int groupSize = groupList.cvidgroup_size();
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	for (int i = 0; i < groupList.cvidgroup_size(); i ++)
-	{
-		const VidGroup &group = groupList.cvidgroup(i);
-		if (group.strid() == strGroupId)
-		{
-			return true;
-		}
-	}
+    VidGroupList groupList; /**< List of groups from the database */
+    GetGroupListConf(groupList); /**< Retrieves the list of groups from the database */
 
-	return false;
+    // Iterates through the group list to find the group with the specified ID
+    for (int i = 0; i < groupList.cvidgroup_size(); i ++) {
+        const VidGroup &group = groupList.cvidgroup(i); /**< Current group in the iteration */
+        // Checks if the ID of the current group matches the specified group ID
+        if (group.strid() == strGroupId) {
+            return true; /**< Returns true if the group is found */
+        }
+    }
+    return false; /**< Returns false if the group is not found */
 }
+
+/**
+ * \brief Deletes a group with the specified ID from the client configuration database.
+ * 
+ * This function deletes a group with the specified ID from the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the deletion operation.
+ * 
+ * \param strGroupId The ID of the group to delete.
+ * \return true if the group with the specified ID is successfully deleted, false otherwise.
+ */
 bool ClientConfDB::DeleteGroup(string strGroupId)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	VidGroupList groupList;
-	VidGroupList groupListNew;
-	GetGroupListConf(groupList);
-	int groupSize = groupList.cvidgroup_size();
+    VidGroupList groupList; /**< List of groups from the database */
+    VidGroupList groupListNew; /**< Updated list of groups after deletion */
 
-	for (int i = 0; i < groupList.cvidgroup_size(); i ++)
-	{
-		const VidGroup &group = groupList.cvidgroup(i);
-		if (group.strid() != strGroupId)
-		{
-			VidGroup *pAddGroup = groupListNew.add_cvidgroup();
-			*pAddGroup = group;
-		}
-	}
+    GetGroupListConf(groupList); /**< Retrieves the list of groups from the database */
 
-	UpdateGroupListConf(groupListNew);
-	return true;
+    // Iterates through the group list to filter out the group to be deleted
+    for (int i = 0; i < groupList.cvidgroup_size(); i ++) {
+        const VidGroup &group = groupList.cvidgroup(i); /**< Current group in the iteration */
+        // Checks if the ID of the current group matches the specified group ID
+        if (group.strid() != strGroupId) {
+            VidGroup *pAddGroup = groupListNew.add_cvidgroup(); /**< Adds the group to the new group list if its ID does not match the specified group ID */
+            *pAddGroup = group; /**< Copies the group to the new group list */
+        }
+    }
+
+    UpdateGroupListConf(groupListNew); /**< Updates the client configuration database with the new group list */
+
+    return true; /**< Returns true indicating successful deletion */
 }
+
+/**
+ * \brief Adds a new group to the client configuration database.
+ * 
+ * This function adds a new group to the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the addition operation.
+ * 
+ * \param pGroup A reference to the VidGroup object representing the group to be added.
+ * \return true if the group is successfully added to the database, false otherwise.
+ * 
+ */
 bool ClientConfDB::AddGroup(VidGroup &pGroup)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidGroupList groupList;
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	GetGroupListConf(groupList);
-	
-	VidGroup *pAddGroup = groupList.add_cvidgroup();
-	*pAddGroup = pGroup;
-	UpdateGroupListConf(groupList);
+    VidGroupList groupList; /**< List of groups from the database */
 
-	return true;
+    GetGroupListConf(groupList); /**< Retrieves the list of groups from the database */
+
+    VidGroup *pAddGroup = groupList.add_cvidgroup(); /**< Adds a new group entry to the group list */
+    *pAddGroup = pGroup; /**< Copies the provided group object to the newly added group entry */
+
+    UpdateGroupListConf(groupList); /**< Updates the client configuration database with the modified group list */
+
+    return true; /**< Returns true indicating successful addition */
 }
 
-
-
+/**
+ * \brief Retrieves the group list configuration from the client configuration database.
+ * 
+ * This function retrieves the group list configuration from the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the retrieval operation.
+ * 
+ * \param pData Reference to the VidGroupList object where the group list configuration will be stored.
+ * \return true if the group list configuration is successfully retrieved, false otherwise.
+ * 
+ */
 bool ClientConfDB::GetGroupListConf(VidGroupList &pData)
 {
-	VSCConfVGroupKey sKey;
-	string strValue;
-	
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    VSCConfVGroupKey sKey; /**< Configuration key for the group list */
+    string strValue; /**< String to store the retrieved group list configuration */
 
-	leveldb::Slice key((char *)&sKey, sizeof(sKey));
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	leveldb::Status s = m_pDb->Get(leveldb::ReadOptions(), 
-					key,  &strValue);
-	if (s.ok() == false)
-	{
-		strValue = "fake";
-	}
+    leveldb::Slice key((char *)&sKey, sizeof(sKey)); /**< Creates a leveldb slice for the configuration key */
 
-	if (pData.ParseFromString(strValue) == false)
-	{
-		VidGroupList listDefault;
-		pData = listDefault;
-		//VDC_DEBUG( "Group List Config is not init\n");
-		return true;
-	}
+    // Retrieves the group list configuration from the database
+    leveldb::Status Status = m_pDb->Get(leveldb::ReadOptions(), key, &strValue);
+    if (Status.ok() == false) {
+        strValue = "fake"; /**< Sets a default value if the retrieval fails */
+    }
 
-	return true;
-
+    // Parses the retrieved string into a VidGroupList object
+    if (pData.ParseFromString(strValue) == false) {
+        VidGroupList listDefault; /**< Default group list configuration */
+        pData = listDefault; /**< Assigns the default group list configuration if parsing fails */
+        VDC_DEBUG("Group List Config is not init\n"); /**< Debug message indicating that group list configuration is not initialized */
+        return false; /**< Returns false indicating failure */
+    }
+    return true; /**< Returns true indicating success */
 }
+
+/**
+ * \brief Updates the group list configuration in the client configuration database.
+ * 
+ * This function updates the group list configuration in the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the update operation.
+ * 
+ * \param pData Reference to the VidGroupList object containing the updated group list configuration.
+ * \return true if the group list configuration is successfully updated, false otherwise.
+ */
 bool ClientConfDB::UpdateGroupListConf(VidGroupList &pData)
 {
-	VSCConfVGroupKey sKey;
+    VSCConfVGroupKey sKey; /**< Configuration key for the group list */
+    string strOutput; /**< String to store the serialized group list configuration */
 
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	leveldb::WriteOptions writeOptions;
+    leveldb::WriteOptions writeOptions; /**< Write options for the database update */
+    leveldb::Slice sysKey((char *)&sKey, sizeof(sKey)); /**< Creates a leveldb slice for the configuration key */
 
-	leveldb::Slice sysKey((char *)&sKey, sizeof(sKey));
+    // Serializes the group list configuration data into a string
+    if (pData.SerializeToString(&strOutput) != true) {
+        return false; /**< Returns false if serialization fails */
+    }
 
-	string strOutput;
-	if (pData.SerializeToString(&strOutput) != true)
-	{
-		return false;
-	}
-	leveldb::Slice sysValue(strOutput);
+    leveldb::Slice sysValue(strOutput); /**< Creates a leveldb slice for the serialized configuration data */
 
-	m_pDb->Put(writeOptions, sysKey, sysValue);
+    // Updates the group list configuration in the database
+    m_pDb->Put(writeOptions, sysKey, sysValue);
 
-	return true;
+    return true; /**< Returns true indicating successful update */
 }
 
+/**
+ * \brief Retrieves the details of a specific group from the client configuration database.
+ * 
+ * This function retrieves the details of a specific group with the given ID from the client
+ * configuration database. It locks the database using a mutex to ensure thread safety during
+ * the retrieval operation.
+ * 
+ * \param strId The ID of the group to retrieve.
+ * \param pGroup Reference to the VidGroup object where the details of the retrieved group will be stored.
+ * \return true if the group with the specified ID is successfully retrieved, false otherwise.
+ * 
+ */
 bool ClientConfDB::GetGroupConf(string strId, VidGroup &pGroup)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidGroupList groupList;
-	GetGroupListConf(groupList);
-	int groupSize = groupList.cvidgroup_size();
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	for (int i = 0; i < groupList.cvidgroup_size(); i ++)
-	{
-		const VidGroup &group = groupList.cvidgroup(i);
-		if (group.strid() == strId)
-		{
-			pGroup = group;
-			return true;
-		}
-	}
+    VidGroupList groupList; /**< List of groups from the database */
+    GetGroupListConf(groupList); /**< Retrieves the list of groups from the database */
 
-	return false;
+    // Iterates through the group list to find the group with the specified ID
+    for (int i = 0; i < groupList.cvidgroup_size(); i ++) {
+        const VidGroup &group = groupList.cvidgroup(i); /**< Current group in the iteration */
+        // Checks if the ID of the current group matches the specified group ID
+        if (group.strid() == strId) {
+            pGroup = group; /**< Copies the details of the retrieved group */
+            return true; /**< Returns true indicating successful retrieval */
+        }
+    }
+    return false; /**< Returns false indicating failure to find the group */
 }
 
+/**
+ * \brief Checks if an Emap with the specified ID exists in the client configuration database.
+ * 
+ * This function checks if an Emap with the specified ID exists in the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the search operation.
+ * 
+ * \param strEmapId The ID of the Emap to search for.
+ * \return true if an Emap with the specified ID is found in the database, false otherwise.
+ * 
+ */
 bool ClientConfDB::FindEmap(string strEmapId)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidEmapList emapList;
-	GetEmapListConf(emapList);
-	int emapSize = emapList.cvidemap_size();
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	for (int i = 0; i < emapList.cvidemap_size(); i ++)
-	{
-		const VidEmap &emap = emapList.cvidemap(i);
-		if (emap.strid() == strEmapId)
-		{
-			return true;
-		}
-	}
+    VidEmapList emapList; /**< List of Emaps from the database */
+    GetEmapListConf(emapList); /**< Retrieves the list of Emaps from the database */
 
-	return false;
+    // Iterates through the Emap list to find the Emap with the specified ID
+    for (int i = 0; i < emapList.cvidemap_size(); i ++) {
+        const VidEmap &emap = emapList.cvidemap(i); /**< Current Emap in the iteration */
+        // Checks if the ID of the current Emap matches the specified Emap ID
+        if (emap.strid() == strEmapId) {
+            return true; /**< Returns true if the Emap is found */
+        }
+    }
+    return false; /**< Returns false if the Emap is not found */
 }
+
+/**
+ * \brief Deletes an Emap with the specified ID from the client configuration database.
+ * 
+ * This function deletes an Emap with the specified ID from the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the deletion operation.
+ * 
+ * \param strEmapId The ID of the Emap to delete.
+ * \return true if the Emap with the specified ID is successfully deleted, false otherwise.
+ * 
+ */
 bool ClientConfDB::DeleteEmap(string strEmapId)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	VidEmapList emapList;
-	VidEmapList emapListNew;
-	GetEmapListConf(emapList);
-	int emapSize = emapList.cvidemap_size();
+    VidEmapList emapList; /**< List of Emaps from the database */
+    VidEmapList emapListNew; /**< Updated list of Emaps after deletion */
 
-	for (int i = 0; i < emapList.cvidemap_size(); i ++)
-	{
-		const VidEmap &emap = emapList.cvidemap(i);
-		if (emap.strid() != strEmapId)
-		{
-			VidEmap *pAddEmap = emapListNew.add_cvidemap();
-			*pAddEmap = emap;
-		}
-	}
+    GetEmapListConf(emapList); /**< Retrieves the list of Emaps from the database */
 
-	UpdateEmapListConf(emapListNew);
-	return true;
+    // Iterates through the Emap list to filter out the Emap to be deleted
+    for (int i = 0; i < emapList.cvidemap_size(); i ++) {
+        const VidEmap &emap = emapList.cvidemap(i); /**< Current Emap in the iteration */
+        // Checks if the ID of the current Emap matches the specified Emap ID
+        if (emap.strid() != strEmapId) {
+            VidEmap *pAddEmap = emapListNew.add_cvidemap(); /**< Adds the Emap to the new Emap list if its ID does not match the specified Emap ID */
+            *pAddEmap = emap; /**< Copies the Emap to the new Emap list */
+        }
+    }
+
+    UpdateEmapListConf(emapListNew); /**< Updates the client configuration database with the new Emap list */
+    return true; /**< Returns true indicating successful deletion */
 }
+
+/**
+ * \brief Adds an Emap to the client configuration database.
+ * 
+ * This function adds an Emap to the client configuration database. It locks the database using a mutex
+ * to ensure thread safety during the addition operation.
+ * 
+ * \param pEmap Reference to the VidEmap object representing the Emap to add.
+ * \return true if the Emap is successfully added to the database, false otherwise.
+ * 
+ */
 bool ClientConfDB::AddEmap(VidEmap &pEmap)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidEmapList emapList;
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	GetEmapListConf(emapList);
-	
-	VidEmap *pAddEmap = emapList.add_cvidemap();
-	*pAddEmap = pEmap;
-	UpdateEmapListConf(emapList);
+    VidEmapList emapList; /**< List of Emaps from the database */
+    GetEmapListConf(emapList); /**< Retrieves the list of Emaps from the database */
 
-	return true;
+    VidEmap *pAddEmap = emapList.add_cvidemap(); /**< Adds a new Emap to the Emap list */
+    *pAddEmap = pEmap; /**< Copies the provided Emap data to the newly added Emap */
+
+    UpdateEmapListConf(emapList); /**< Updates the client configuration database with the updated Emap list */
+
+    return true; /**< Returns true indicating successful addition */
 }
 
-
-
+/**
+ * \brief Retrieves the Emap list configuration from the client configuration database.
+ * 
+ * This function retrieves the Emap list configuration from the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the retrieval operation.
+ * 
+ * \param pData Reference to the VidEmapList object where the Emap list configuration will be stored.
+ * \return true if the Emap list configuration is successfully retrieved, false otherwise.
+ * 
+ */
 bool ClientConfDB::GetEmapListConf(VidEmapList &pData)
 {
-	VSCConfEmapKey sKey;
-	string strValue;
-	
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    VSCConfEmapKey sKey; /**< Configuration key for the Emap list */
+    string strValue; /**< String to store the retrieved Emap list configuration */
 
-	leveldb::Slice key((char *)&sKey, sizeof(sKey));
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	leveldb::Status s = m_pDb->Get(leveldb::ReadOptions(), 
-					key,  &strValue);
-	if (s.ok() == false)
-	{
-		strValue = "fake";
-	}
+    leveldb::Slice key((char *)&sKey, sizeof(sKey)); /**< Creates a leveldb slice for the configuration key */
 
-	if (pData.ParseFromString(strValue) == false)
-	{
-		VidEmapList listDefault;
-		pData = listDefault;
-		//VDC_DEBUG( "Emap List Config is not init\n");
-		return true;
-	}
+    // Retrieves the Emap list configuration from the database
+    leveldb::Status Status = m_pDb->Get(leveldb::ReadOptions(), key, &strValue);
+    if (Status.ok() == false) {
+        strValue = "fake"; /**< Sets a default value if the retrieval fails */
+    }
 
-	return true;
+    // Parses the retrieved string into a VidEmapList object
+    if (pData.ParseFromString(strValue) == false) {
+        VidEmapList listDefault; /**< Default Emap list configuration */
+        pData = listDefault; /**< Assigns the default Emap list configuration if parsing fails */
+        VDC_DEBUG("Emap List Config is not init\n"); /**< Debug message indicating that Emap list configuration is not initialized */
+        return false; /**< Returns false indicating failure */
+    }
 
+    return true; /**< Returns true indicating success */
 }
+
+/**
+ * \brief Updates the Emap list configuration in the client configuration database.
+ * 
+ * This function updates the Emap list configuration in the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the update operation.
+ * 
+ * \param pData Reference to the VidEmapList object containing the updated Emap list configuration.
+ * \return true if the Emap list configuration is successfully updated, false otherwise.
+ * 
+ */
 bool ClientConfDB::UpdateEmapListConf(VidEmapList &pData)
 {
-	VSCConfEmapKey sKey;
+    VSCConfEmapKey sKey; /**< Configuration key for the Emap list */
+    string strOutput; /**< String to store the serialized Emap list configuration */
 
-	std::lock_guard<std::mutex> lock(m_cMutex);
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	leveldb::WriteOptions writeOptions;
+    leveldb::WriteOptions writeOptions; /**< Write options for the database update */
+    leveldb::Slice sysKey((char *)&sKey, sizeof(sKey)); /**< Creates a leveldb slice for the configuration key */
 
-	leveldb::Slice sysKey((char *)&sKey, sizeof(sKey));
+    // Serializes the Emap list configuration data into a string
+    if (pData.SerializeToString(&strOutput) != true) {
+        return false; /**< Returns false if serialization fails */
+    }
 
-	string strOutput;
-	if (pData.SerializeToString(&strOutput) != true)
-	{
-		return false;
-	}
-	leveldb::Slice sysValue(strOutput);
+    leveldb::Slice sysValue(strOutput); /**< Creates a leveldb slice for the serialized configuration data */
 
-	m_pDb->Put(writeOptions, sysKey, sysValue);
+    // Updates the Emap list configuration in the database
+    m_pDb->Put(writeOptions, sysKey, sysValue);
 
-	return true;
+    return true; /**< Returns true indicating successful update */
 }
 
+/**
+ * \brief Retrieves the configuration of an Emap with the specified ID from the client configuration database.
+ * 
+ * This function retrieves the configuration of an Emap with the specified ID from the client configuration database.
+ * It locks the database using a mutex to ensure thread safety during the retrieval operation.
+ * 
+ * \param strId The ID of the Emap to retrieve.
+ * \param pEmap Reference to the VidEmap object where the retrieved Emap configuration will be stored.
+ * \return true if the Emap configuration is successfully retrieved, false otherwise.
+ * 
+ */
 bool ClientConfDB::GetEmapConf(string strId, VidEmap &pEmap)
 {
-	std::lock_guard<std::mutex> lock(m_cMutex);
-	
-	VidEmapList emapList;
-	GetEmapListConf(emapList);
-	int emapSize = emapList.cvidemap_size();
+    std::lock_guard<std::mutex> lock(m_cMutex); /**< Locks the client configuration database */
 
-	for (int i = 0; i < emapList.cvidemap_size(); i ++)
-	{
-		const VidEmap &emap = emapList.cvidemap(i);
-		if (emap.strid() == strId)
-		{
-			pEmap = emap;
-			return true;
-		}
-	}
+    VidEmapList emapList; /**< List of Emaps from the database */
+    GetEmapListConf(emapList); /**< Retrieves the list of Emaps from the database */
 
-	return false;
+    // Iterates through the Emap list to find the Emap with the specified ID
+    for (int i = 0; i < emapList.cvidemap_size(); i ++) {
+        const VidEmap &emap = emapList.cvidemap(i); /**< Current Emap in the iteration */
+        // Checks if the ID of the current Emap matches the specified Emap ID
+        if (emap.strid() == strId) {
+            pEmap = emap; /**< Copies the found Emap configuration to the output parameter */
+            return true; /**< Returns true indicating successful retrieval */
+        }
+    }
+    return false; /**< Returns false if the Emap with the specified ID is not found */
 }
 
