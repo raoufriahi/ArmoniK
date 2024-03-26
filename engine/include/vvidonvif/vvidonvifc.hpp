@@ -11,8 +11,8 @@
 #ifndef __V_VID_ONVIF_CLIENT__
 #define __V_VID_ONVIF_CLIENT__
 
-#include "utility.hpp"
-#include "debug.hpp"
+#include "utility/utility.hpp"
+#include "utility/debug.hpp"
 
 typedef enum
 {
