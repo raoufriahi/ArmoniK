@@ -139,8 +139,7 @@ public:
 			};
 
 			std::size_t maxLength = 0;
-			for (size_t i = 0; i<sizeof(properties) / sizeof(properties[0]); ++i)
-			{
+			for (size_t i = 0; i<sizeof(properties) / sizeof(properties[0]); ++i) {
 				std::size_t len = std::string(properties[i]).length();
 				maxLength = (maxLength < len) ? len : maxLength;
 			}
@@ -171,16 +170,11 @@ public:
 				, "system.tempDir"
 				, "system.dateTime"
 				, "system.pid"
-		#if defined(POCO_OS_FAMILY_WINDOWS)
-				, "system.env.HOMEPATH"
-		#else
 				, "system.env.HOME"
-		#endif
 			};
 
 			std::size_t maxLength = 0;
-			for (size_t i = 0; i<sizeof(properties) / sizeof(properties[0]); ++i)
-			{
+			for (size_t i = 0; i<sizeof(properties) / sizeof(properties[0]); ++i) {
 				std::size_t len = std::string(properties[i]).length();
 				maxLength = (maxLength < len) ? len : maxLength;
 			}
@@ -205,8 +199,8 @@ public:
 private:
 	//Poco::Util::Application *m_app;
 	Poco::Util::SystemConfiguration *m_sys;
-	astring m_appdir;
-	astring m_syshomedir;
+	string m_appdir;
+	string m_syshomedir;
 };
 
 typedef VidEnv* LPVidEnv;
