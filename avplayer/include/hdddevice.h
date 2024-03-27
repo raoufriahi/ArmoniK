@@ -11,10 +11,10 @@
 #pragma once
 
 #include "define.h"
-#include "utility.hpp"
+#include "utility/utility.hpp"
 #include "leveldb/db.h"
 #include "config/conf.hpp"
-#include "debug.hpp"
+#include "utility/debug.hpp"
 
 using namespace UtilityLib;
 

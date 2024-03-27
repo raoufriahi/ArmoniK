@@ -9,7 +9,7 @@
  * which the programs have been supplied.
  */
 
-#include "server/eventserver.h"
+#include "eventserver.h"
 
 VEventServerCallbackTask::VEventServerCallbackTask(Factory &pFactory)
 :m_Factory(pFactory)
@@ -432,9 +432,10 @@ BOOL VEventServer::HandleEvent(string strId)
 
 BOOL VEventServer::Init()
 {
-	m_DbTask.start();
-	m_CallbackTask.start();
-	m_SearchTask.start();
-
+	/* RRI 
+	       m_DbTask.start();
+	       m_CallbackTask.start();
+	       m_SearchTask.start();
+    */
 	return TRUE;
 }

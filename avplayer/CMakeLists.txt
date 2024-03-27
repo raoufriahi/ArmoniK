@@ -5,6 +5,7 @@ file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADER "include/*.h")
 
 include_directories(
+    ..
     ./include
     ../include   
     ../xcmnlib/include  
@@ -13,6 +14,8 @@ include_directories(
     ../3rdparty/protobuf/src/
     ../3rdparty/poco/Data/include/
     ../3rdparty/poco/Foundation/include/
+    ../3rdparty/poco/Util/include/
+    ../3rdparty/poco/Data/SQLite/include/
     ../velib/include
     ../engine/include/
     ../avconfig/include/

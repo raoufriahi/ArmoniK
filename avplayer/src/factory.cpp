@@ -8,7 +8,7 @@
  * terms and conditions stipulated in the agreement/contract under
  * which the programs have been supplied.
  */
-#include "server/factory.hpp"
+#include "factory.h"
 
 
 FactoryHddTask::FactoryHddTask(Factory &pFactory)
@@ -25,6 +25,8 @@ FactoryHddTask::~FactoryHddTask()
 
   void FactoryHddTask::run()
 {
+//RRI	
+#if 0
 	VDBDiskMap mapDisk;
 	VDBDiskStatus mapStatus;
 	while(1)
@@ -60,6 +62,7 @@ FactoryHddTask::~FactoryHddTask()
 		m_Factory.UpdateDiskStatusMap(mapStatus);
 		ve_sleep(2000);
 	}
+#endif
 }
 
 void OnvifLog(char * str)
@@ -165,7 +168,7 @@ BOOL Factory::Init()
 
 	//start();
 	m_HddTask = new FactoryHddTask(*this);
-	m_HddTask->start();
+	//raouf m_HddTask->start();
 
 	/* Init export path */
 	astring strExportPath;
@@ -313,6 +316,7 @@ BOOL Factory::InitLicense()
 
 bool Factory::AuthUser(astring &strUser, astring &strPasswd)
 {
+#if 0
 	/* Admin is a Super User */
 	if (strUser == "admin")
 	{
@@ -328,7 +332,7 @@ bool Factory::AuthUser(astring &strUser, astring &strPasswd)
 			return false;
 		}
 	}
-
+#endif
 	return false;
 }
 bool Factory::GetAdminPasswd(astring &strPasswd)
