@@ -135,42 +135,42 @@ public:
     /**
      * \brief Updates the URL of the camera.
      *
-     * \return TRUE if the update is successful, FALSE otherwise.
+     * \return true if the update is successful, false otherwise.
      */
-    BOOL UpdateUrl();
+    bool UpdateUrl();
 
     /**
      * \brief Updates the URL using ONVIF protocol.
      *
-     * \return TRUE if the update is successful, FALSE otherwise.
+     * \return true if the update is successful, false otherwise.
      */
-    BOOL UpdateUrlOnvif();
+    bool UpdateUrlOnvif();
 
     /**
      * \brief Checks the online status of the camera.
      *
-     * \return TRUE if the camera is online, FALSE otherwise.
+     * \return true if the camera is online, false otherwise.
      */
-    BOOL CheckOnline();
+    bool CheckOnline();
 
     /**
      * \brief Updates the default URL of the camera.
      *
-     * \return TRUE if the update is successful, FALSE otherwise.
+     * \return true if the update is successful, false otherwise.
      */
-    BOOL UpdateDefaultUrl();
+    bool UpdateDefaultUrl();
 
     VidCamera m_Conf;            ///< Configuration settings for the camera.
-    BOOL m_bOnvifUrlGetted;      ///< Flag indicating if the ONVIF URL has been obtained.
+    bool m_bOnvifUrlGetted;      ///< Flag indicating if the ONVIF URL has been obtained.
     astring m_strUrl;            ///< URL of the camera.
     astring m_strUrlSubStream;   ///< URL of the camera's substream.
-    BOOL m_bHasSubStream;        ///< Flag indicating if the camera has a substream.
+    bool m_bHasSubStream;        ///< Flag indicating if the camera has a substream.
 
-    BOOL m_Online;               ///< Flag indicating if the camera is online.
-    BOOL m_OnlineUrl;            ///< Flag indicating if the camera's URL is online.
+    bool m_Online;               ///< Flag indicating if the camera is online.
+    bool m_OnlineUrl;            ///< Flag indicating if the camera's URL is online.
 
-    BOOL m_wipOnline;            ///< Backend status: Flag indicating if the camera is online.
-    BOOL m_wipOnlineUrl;         ///< Backend status: Flag indicating if the camera's URL is online.
+    bool m_wipOnline;            ///< Backend status: Flag indicating if the camera is online.
+    bool m_wipOnlineUrl;         ///< Backend status: Flag indicating if the camera's URL is online.
     VidStreamList m_cStreamList; ///< List of video streams associated with the camera.
 };
 
@@ -211,43 +211,43 @@ public:
      * \brief Retrieves the camera parameters.
      *
      * \param pParam Reference to the CameraParam object to store the parameters.
-     * \return TRUE if successful, FALSE otherwise.
+     * \return true if successful, false otherwise.
      */
-    BOOL GetCameraParam(CameraParam &pParam);
+    bool GetCameraParam(CameraParam &pParam);
 	
 	/**
      * \brief Starts data streaming from the camera.
      *
-     * \return TRUE if successful, FALSE otherwise.
+     * \return true if successful, false otherwise.
      */
-	BOOL StartData();
+	bool StartData();
 	
 	/**
      * \brief Stops data streaming from the camera.
      *
-     * \return TRUE if successful, FALSE otherwise.
+     * \return true if successful, false otherwise.
      */
-	BOOL StopData();
+	bool StopData();
 	
 	/**
      * \brief Starts substream data streaming from the camera.
      *
-     * \return TRUE if successful, FALSE otherwise.
+     * \return true if successful, false otherwise.
      */
-	BOOL StartSubData();
+	bool StartSubData();
 
 	/**
      * \brief Stops substream data streaming from the camera.
      *
-     * \return TRUE if successful, FALSE otherwise.
+     * \return true if successful, false otherwise.
      */
-	BOOL StopSubData();
+	bool StopSubData();
 
 	/**
      * \brief Updates the recording schedule for the camera.
      *
      * \param pCam The VidCamera object containing updated schedule information.
-     * \return TRUE if successful, FALSE otherwise.
+     * \return true if successful, false otherwise.
      */
 	bool UpdateRecSched(VidCamera &pCam);
 	
@@ -264,7 +264,7 @@ public:
      * \return The CameraStatus indicating the status of the camera.
      */
 	CameraStatus CheckCamera(astring strUrl, astring strUrlSubStream, 
-		BOOL bHasSubStream, BOOL bOnline, BOOL bOnlineUrl, 
+		bool bHasSubStream, bool bOnline, bool bOnlineUrl, 
 		VidStreamList cStreamlist);
 
 	/* Data  */
@@ -274,38 +274,38 @@ public:
      *
      * \param pData Pointer to data associated with the camera.
      * \param frame Reference to the VideoFrame object containing video frame information.
-     * \return TRUE if the data handling is successful, FALSE otherwise.
+     * \return true if the data handling is successful, false otherwise.
      * 
      * \note This is a static member function.
      */
-	static BOOL DataHandler(void* pData, VideoFrame& frame);
+	static bool DataHandler(void* pData, VideoFrame& frame);
 
 	/**
      * \brief Handles substream data for the camera.
      *
      * \param pData Pointer to data associated with the camera.
      * \param frame Reference to the VideoFrame object containing substream video frame information.
-     * \return TRUE if the substream data handling is successful, FALSE otherwise.
+     * \return true if the substream data handling is successful, false otherwise.
      * 
      * \note This is a static member function.
      */
-	static BOOL SubDataHandler(void* pData, VideoFrame& frame);
+	static bool SubDataHandler(void* pData, VideoFrame& frame);
 
     /**
      * \brief Handles data for the camera.
      *
      * \param frame Reference to the VideoFrame object containing video frame information.
-     * \return TRUE if the data handling is successful, FALSE otherwise.
+     * \return true if the data handling is successful, false otherwise.
      */
-	BOOL DataHandler1(VideoFrame& frame);
+	bool DataHandler1(VideoFrame& frame);
 	
 	/**
      * \brief Handles substream data for the camera.
      *
      * \param frame Reference to the VideoFrame object containing substream video frame information.
-     * \return TRUE if the substream data handling is successful, FALSE otherwise.
+     * \return true if the substream data handling is successful, false otherwise.
      */
-	BOOL SubDataHandler1(VideoFrame& frame);
+	bool SubDataHandler1(VideoFrame& frame);
 
    /**
     * \brief Acquires the main lock for thread synchronization.
@@ -344,9 +344,9 @@ public:
      *
      * \param pCallback Pointer to the CameraDataCallbackFunction callback function.
      * \param pParam Pointer to the user-defined parameter to be passed to the callback function.
-     * \return TRUE if the callback registration is successful, FALSE otherwise.
+     * \return true if the callback registration is successful, false otherwise.
      */
-	BOOL RegDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam);
+	bool RegDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam);
 
 	/**
      * \brief Unregisters a callback function for handling main data events.
@@ -355,74 +355,74 @@ public:
      * for main data events.
      *
      * \param pParam Pointer to the user-defined parameter associated with the callback function.
-     * \return TRUE if the callback unregistration is successful, FALSE otherwise.
+     * \return true if the callback unregistration is successful, false otherwise.
      */
-	BOOL UnRegDataCallback(void * pParam);
+	bool UnRegDataCallback(void * pParam);
 
 	/**
      * \brief Registers a callback function for handling substream data events.
      *
      * \param pCallback Pointer to the CameraDataCallbackFunction callback function.
      * \param pParam Pointer to the user-defined parameter to be passed to the callback function.
-     * \return TRUE if the callback registration is successful, FALSE otherwise.
+     * \return true if the callback registration is successful, false otherwise.
      */
-	BOOL RegSubDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam);
+	bool RegSubDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam);
 
 	/**
      * \brief Unregisters a callback function for handling substream data events.
      *
      * \param pParam Pointer to the user-defined parameter associated with the callback function.
-     * \return TRUE if the callback unregistration is successful, FALSE otherwise.
+     * \return true if the callback unregistration is successful, false otherwise.
      */
-	BOOL UnRegSubDataCallback(void * pParam);
+	bool UnRegSubDataCallback(void * pParam);
 	
 	/**
      * \brief Registers a callback function for handling camera deletion events.
      *
      * \param pCallback Pointer to the CameraDelCallbackFunction callback function.
      * \param pParam Pointer to the user-defined parameter to be passed to the callback function.
-     * \return TRUE if the callback registration is successful, FALSE otherwise.
+     * \return true if the callback registration is successful, false otherwise.
      */
-	BOOL RegDelCallback(CameraDelCallbackFunctionPtr pCallback, void * pParam);
+	bool RegDelCallback(CameraDelCallbackFunctionPtr pCallback, void * pParam);
 
     /**
      * \brief Unregisters a callback function for handling camera deletion events.
      *
      * \param pParam Pointer to the user-defined parameter associated with the callback function.
-     * \return TRUE if the callback unregistration is successful, FALSE otherwise.
+     * \return true if the callback unregistration is successful, false otherwise.
      */
-	BOOL UnRegDelCallback(void * pParam);
+	bool UnRegDelCallback(void * pParam);
 	
 	/**
      * \brief Retrieves information about the camera's main video frame.
      *
      * \param pFrame Reference to the InfoFrame object to store the main video frame information.
-     * \return TRUE if the information frame is successfully retrieved, FALSE otherwise.
+     * \return true if the information frame is successfully retrieved, false otherwise.
      */
-	BOOL GetInfoFrame(InfoFrame &pFrame);
+	bool GetInfoFrame(InfoFrame &pFrame);
 
 	/**
      * \brief Retrieves the current video frame from the camera.
      *
      * \param frame Reference to the VideoFrame object to store the video frame.
-     * \return TRUE if the video frame is successfully retrieved, FALSE otherwise.
+     * \return true if the video frame is successfully retrieved, false otherwise.
      */
-	BOOL GetiFrame(VideoFrame& frame);
+	bool GetiFrame(VideoFrame& frame);
 
 	/**
      * \brief Retrieves information about the camera's substream video frame.
      *
      * \param pFrame Reference to the InfoFrame object to store the substream video frame information.
-     * \return TRUE if the substream information frame is successfully retrieved, FALSE otherwise.
+     * \return true if the substream information frame is successfully retrieved, false otherwise.
      */
-	BOOL GetSubInfoFrame(InfoFrame &pFrame);
+	bool GetSubInfoFrame(InfoFrame &pFrame);
 
 	/**
      * \brief Checks if the camera is online.
      *
-     * \return TRUE if the camera is online, FALSE otherwise.
+     * \return true if the camera is online, false otherwise.
      */
-	BOOL GetCameraOnline();
+	bool GetCameraOnline();
 	
 	/**
      * \brief Attaches the camera player to a specified window.
@@ -430,9 +430,9 @@ public:
      * \param hWnd Handle to the window to which the camera player should be attached.
      * \param w Width of the window.
      * \param h Height of the window.
-     * \return TRUE if the player is successfully attached to the window, FALSE otherwise.
+     * \return true if the player is successfully attached to the window, false otherwise.
      */
-	BOOL AttachPlayer(HWND hWnd, int w, int h);
+	bool AttachPlayer(HWND hWnd, int w, int h);
 
 	/**
      * \brief Updates the dimensions of the camera player widget.
@@ -440,57 +440,57 @@ public:
      * \param hWnd Handle to the window containing the camera player.
      * \param w New width of the player widget.
      * \param h New height of the player widget.
-     * \return TRUE if the player widget is successfully updated, FALSE otherwise.
+     * \return true if the player widget is successfully updated, false otherwise.
      */
-	BOOL UpdateWidget(HWND hWnd, int w, int h);
+	bool UpdateWidget(HWND hWnd, int w, int h);
 
 	/**
      * \brief Detaches the camera player from a specified window.
      *
      * \param hWnd Handle to the window from which the camera player should be detached.
-     * \return TRUE if the player is successfully detached from the window, FALSE otherwise.
+     * \return true if the player is successfully detached from the window, false otherwise.
      */
-	BOOL DetachPlayer(HWND hWnd);
+	bool DetachPlayer(HWND hWnd);
 
 	/**
      * \brief Retrieves information about the video stream.
      *
      * \param pInfo Reference to the VideoStreamInfo object to store the stream information.
-     * \return TRUE if the stream information is successfully retrieved, FALSE otherwise.
+     * \return true if the stream information is successfully retrieved, false otherwise.
      */
-	BOOL GetStreamInfo(VideoStreamInfo &pInfo);
+	bool GetStreamInfo(VideoStreamInfo &pInfo);
 
 	/**
      * \brief Retrieves the list of video streams associated with the camera.
      *
      * \param pList Reference to the VidStreamList object to store the list of video streams.
-     * \return TRUE if the stream list is successfully retrieved, FALSE otherwise.
+     * \return true if the stream list is successfully retrieved, false otherwise.
      */
-	BOOL GetCamStreamList(VidStreamList &pList);
+	bool GetCamStreamList(VidStreamList &pList);
 
     /**
      * \brief Displays an alarm on the specified window.
      *
      * \param hWnd Handle to the window where the alarm should be displayed.
-     * \return TRUE if the alarm is successfully shown, FALSE otherwise.
+     * \return true if the alarm is successfully shown, false otherwise.
      */
-	BOOL ShowAlarm(HWND hWnd);
+	bool ShowAlarm(HWND hWnd);
 
 	/**
      * \brief Performs a PTZ (Pan-Tilt-Zoom) action on the camera.
      *
      * \param action The PTZ action to be performed.
      * \param speed The speed at which the PTZ action should be executed.
-     * \return TRUE if the PTZ action is successfully executed, FALSE otherwise.
+     * \return true if the PTZ action is successfully executed, false otherwise.
      */
-	BOOL PtzAction(FPtzAction action, float speed);
+	bool PtzAction(FPtzAction action, float speed);
 
 	/**
      * \brief Updates the PTZ (Pan-Tilt-Zoom) configuration for the camera.
      *
-     * \return TRUE if the PTZ configuration is successfully updated, FALSE otherwise.
+     * \return true if the PTZ configuration is successfully updated, false otherwise.
      */
-	BOOL UpdatePTZConf();
+	bool UpdatePTZConf();
 
 	/**
      * \brief Triggers an alarm starting from the specified time.
@@ -498,9 +498,9 @@ public:
      * This function is used to initiate an alarm event that occurred at a specific time.
      *
      * \param nStartTime The start time of the alarm event.
-     * \return TRUE if the alarm is successfully triggered, FALSE otherwise.
+     * \return true if the alarm is successfully triggered, false otherwise.
      */
-	BOOL FireAlarm(long nStartTime);
+	bool FireAlarm(long nStartTime);
 
 private:
 	VPlay *m_pvPlay;             ///< Pointer to the main video player object.
@@ -525,11 +525,11 @@ private:
     ConfDB &m_pConfDB;               ///< Reference to the configuration database object.
 
 
-	BOOL m_ptzInited;        ///< indicating whether PTZ (Pan-Tilt-Zoom) control is initialized.
-    BOOL m_bGotInfoData;     ///< Flag indicating whether information data is successfully obtained.
-	BOOL m_bGotInfoSubData;  ///< Flag indicating whether substream information data is successfully obtained.
-    BOOL m_bStarted;         ///< Flag indicating whether the camera data streaming is started.
-	BOOL m_bSubStarted;      ///< Flag indicating whether the substream data streaming is started.
+	bool m_ptzInited;        ///< indicating whether PTZ (Pan-Tilt-Zoom) control is initialized.
+    bool m_bGotInfoData;     ///< Flag indicating whether information data is successfully obtained.
+	bool m_bGotInfoSubData;  ///< Flag indicating whether substream information data is successfully obtained.
+    bool m_bStarted;         ///< Flag indicating whether the camera data streaming is started.
+	bool m_bSubStarted;      ///< Flag indicating whether the substream data streaming is started.
 	
 	InfoFrame m_infoData;     ///< Information frame for main video data.
 	InfoFrame m_infoSubData;  ///< Information frame for substream video data.

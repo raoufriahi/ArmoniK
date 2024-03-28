@@ -58,7 +58,7 @@ CameraParam::CameraParam()
 
 }
 
-BOOL CameraParam::UpdateDefaultUrl()
+bool CameraParam::UpdateDefaultUrl()
 {
     // Use std::ostringstream to construct URLs more efficiently
     std::ostringstream streamUrl, subStreamUrl;
@@ -74,7 +74,7 @@ BOOL CameraParam::UpdateDefaultUrl()
     subStreamUrl << "rtsp://" << IP << ":554/Streaming";
     m_strUrlSubStream = subStreamUrl.str();
 
-    return TRUE;
+    return true;
 }
 
 
@@ -85,10 +85,10 @@ CameraParam::CameraParam(VidCamera &pData)
     m_Conf = pData;
 
     // Initialize flags and variables
-    m_bOnvifUrlGetted = FALSE;
-    m_bHasSubStream = FALSE;
-    m_Online = FALSE;
-    m_OnlineUrl = FALSE;
+    m_bOnvifUrlGetted = false;
+    m_bHasSubStream = false;
+    m_Online = false;
+    m_OnlineUrl = false;
 }
 
 std::string Replace(std::string &str, const char *string_to_replace, const char *new_string)
@@ -106,13 +106,13 @@ std::string Replace(std::string &str, const char *string_to_replace, const char 
   return str;
 }
 
-BOOL CameraParam::CheckOnline()
+bool CameraParam::CheckOnline()
 {
     if (m_Conf.ntype()== VID_FILE 
 		|| m_Conf.ntype() == VID_RTSP 
 		|| m_Conf.ntype() == VID_MJPEG )
     {
-    	return TRUE;
+    	return true;
     }
     string IP = m_Conf.strip();
     string Port = m_Conf.strport();
@@ -137,9 +137,9 @@ BOOL CameraParam::CheckOnline()
     return false;
 }
 
-BOOL CameraParam::UpdateUrlOnvif()
+bool CameraParam::UpdateUrlOnvif()
 {
-	BOOL bGotUrl = FALSE;
+	bool bGotUrl = false;
 	string IP = m_Conf.strip();
 	string Port = m_Conf.strport();
 	string User = m_Conf.struser();
@@ -184,7 +184,7 @@ BOOL CameraParam::UpdateUrlOnvif()
 				m_strUrl = (*it).second.strRtspUrl;
 				if (m_strUrl.size() > 0)
 				{
-					bGotUrl = TRUE;
+					bGotUrl = true;
 				}
 			}
 		}
@@ -215,8 +215,8 @@ BOOL CameraParam::UpdateUrlOnvif()
 				m_strUrlSubStream = (*it).second.strRtspUrl;
 				if (m_strUrlSubStream.size() > 0)
 				{
-					bGotUrl = TRUE;
-					m_bHasSubStream = TRUE;
+					bGotUrl = true;
+					m_bHasSubStream = true;
 				}
 			}
 		}
@@ -239,20 +239,20 @@ BOOL CameraParam::UpdateUrlOnvif()
 
 	if (bGotUrl == true)
 	{
-		m_bOnvifUrlGetted = TRUE;
+		m_bOnvifUrlGetted = true;
 	}
 	
 	return bGotUrl;
 }
 
-BOOL CameraParam::UpdateUrl()
+bool CameraParam::UpdateUrl()
 {
 #if 0	
     //TODO RTSP ONVIF call onvif sdk to get a Stream URL
     if (m_Conf.ntype()== VID_FILE )
     {
         m_strUrl = m_Conf.strfile();
-	 m_bHasSubStream = FALSE;
+	 m_bHasSubStream = false;
     }
 
     if (m_Conf.ntype()== VID_RTSP
@@ -266,7 +266,7 @@ BOOL CameraParam::UpdateUrl()
 	}
 
 	m_strUrl = strRtsp;
-	m_bHasSubStream = FALSE;
+	m_bHasSubStream = false;
 
     }
 
@@ -276,7 +276,7 @@ BOOL CameraParam::UpdateUrl()
     }
     VDC_DEBUG( "%s url %s\n",__FUNCTION__, m_strUrl.c_str());
 #endif
-    return TRUE;
+    return true;
 }
 
 CameraParam::CameraParam(const CameraParam &pParam)
@@ -296,10 +296,10 @@ CameraParam::~CameraParam()
 
 Camera::Camera(ConfDB &pConfDB, VDB &pVdb, VHdfsDB &pVHdfsdb, 
 	const CameraParam &pParam, RecChangeFunctionPtr pCallback, void *pCallbackParam)
-:m_bStarted(FALSE), m_param(pParam),
+:m_bStarted(false), m_param(pParam),
 m_pVdb(pVdb), 
-m_ptzInited(FALSE), 
-m_bGotInfoData(FALSE), m_nDataRef(0), m_bGotInfoSubData(FALSE),
+m_ptzInited(false), 
+m_bGotInfoData(false), m_nDataRef(0), m_bGotInfoSubData(false),
 m_nSubDataRef(0), 
 m_pvPlay(new VPlay), m_pvPlaySubStream(new VPlay), 
 m_vPlay(*m_pvPlay), m_vPlaySubStream(*m_pvPlaySubStream), 
@@ -370,27 +370,27 @@ bool Camera::UpdateRecSched(VidCamera &pCam)
 }
 
 
-BOOL Camera::GetCameraParam(CameraParam &pParam)
+bool Camera::GetCameraParam(CameraParam &pParam)
 {
 	pParam = m_param;
-	return TRUE;
+	return true;
 }
 
 CameraStatus Camera::CheckCamera(string strUrl, string strUrlSubStream, 
-		BOOL bHasSubStream, BOOL bOnline, 
-		BOOL bOnlineUrl, VidStreamList cStreamlist)
+		bool bHasSubStream, bool bOnline, 
+		bool bOnlineUrl, VidStreamList cStreamlist)
 {
-    if (bOnline == TRUE)
+    if (bOnline == true)
     {
         /* Camera from offline to online */
-        if (m_param.m_OnlineUrl == FALSE)
+        if (m_param.m_OnlineUrl == false)
         {
-        	BOOL HWAccel = FALSE;
-		if (m_param.m_Conf.bhwaccel()== TRUE)
+        	bool HWAccel = false;
+		if (m_param.m_Conf.bhwaccel()== true)
 		{
-			HWAccel = TRUE;
+			HWAccel = true;
 		}
-		if (bOnlineUrl == FALSE)
+		if (bOnlineUrl == false)
 		{
 		    return  DEV_NO_CHANGE;
 		}
@@ -409,13 +409,13 @@ CameraStatus Camera::CheckCamera(string strUrl, string strUrlSubStream,
 		}
 		else
 		{
-			m_vPlay.Init(TRUE, m_param.m_strUrl, m_param.m_Conf.struser(),
+			m_vPlay.Init(true, m_param.m_strUrl, m_param.m_Conf.struser(),
 				m_param.m_Conf.strpasswd(), HWAccel, 
 				(VSCConnectType)(m_param.m_Conf.nconnecttype()));
 			VDC_DEBUG( "%s url %s\n",__FUNCTION__, m_param.m_strUrl.c_str());
-			if (m_param.m_bHasSubStream == TRUE)
+			if (m_param.m_bHasSubStream == true)
 			{
-				m_vPlaySubStream.Init(TRUE, m_param.m_strUrlSubStream, m_param.m_Conf.struser(),
+				m_vPlaySubStream.Init(true, m_param.m_strUrlSubStream, m_param.m_Conf.struser(),
 					m_param.m_Conf.strpasswd(), HWAccel,
 					(VSCConnectType)(m_param.m_Conf.nconnecttype()));
 				VDC_DEBUG( "%s url %s\n",__FUNCTION__, m_param.m_strUrlSubStream.c_str());
@@ -423,22 +423,22 @@ CameraStatus Camera::CheckCamera(string strUrl, string strUrlSubStream,
 		}
 		VDC_DEBUG( "%s url %s\n",__FUNCTION__, m_param.m_strUrl.c_str());
 		
-		m_param.m_OnlineUrl = TRUE;
+		m_param.m_OnlineUrl = true;
 		UpdatePTZConf();
 		m_param.m_cStreamList = cStreamlist;
 		/* Always start data */
 		StartData();
         }
-        if (m_param.m_Online == FALSE)
+        if (m_param.m_Online == false)
         {
-            m_param.m_Online = TRUE;
+            m_param.m_Online = true;
             return DEV_OFF2ON;
         }
     }else
     {
-        if (m_param.m_Online == TRUE)
+        if (m_param.m_Online == true)
         {
-            m_param.m_Online = FALSE;
+            m_param.m_Online = false;
             return DEV_ON2OFF;
         }
     }
@@ -447,11 +447,11 @@ CameraStatus Camera::CheckCamera(string strUrl, string strUrlSubStream,
     
 }
 
- BOOL Camera::UpdatePTZConf()
+ bool Camera::UpdatePTZConf()
 {
 	if (m_param.m_Conf.ntype()!= VID_ONVIF_S)
 	{
-		return TRUE;
+		return true;
 	}
 
 	string IP = m_param.m_Conf.strip();
@@ -464,113 +464,114 @@ CameraStatus Camera::CheckCamera(string strUrl, string strUrlSubStream,
 
 	m_ptz.Init(User, Password, OnvifCameraService);
 
-	m_ptzInited = TRUE;
+	m_ptzInited = true;
+	return true;
 }
 
- BOOL Camera::PtzAction(FPtzAction action, float speed)
+ bool Camera::PtzAction(FPtzAction action, float speed)
 {
-	if (m_param.m_Online == FALSE || m_ptzInited == FALSE) {
+	if (m_param.m_Online == false || m_ptzInited == false) {
 		VDC_DEBUG( "%s PTZ Camera is Offline\n",__FUNCTION__);
-		return TRUE;
+		return true;
 	}
 	m_ptz.PtzAction((VVidOnvifCPtzAct)action, speed);
 
 	return true;
 }
 
-BOOL Camera::FireAlarm(long nStartTime)
+bool Camera::FireAlarm(long nStartTime)
 {	
 	return m_cRecordWrapper.FireAlarm(nStartTime);
 }
 
-BOOL Camera::GetInfoFrame(InfoFrame &pFrame)
+bool Camera::GetInfoFrame(InfoFrame &pFrame)
 {
 	Lock();
-	if (m_bGotInfoData == TRUE) {
+	if (m_bGotInfoData == true) {
 		memcpy(&pFrame, &m_infoData, sizeof(InfoFrame));
 		UnLock();
-		return TRUE;
+		return true;
 	}
 	UnLock();
-	return FALSE;
+	return false;
 }
-BOOL Camera::GetSubInfoFrame(InfoFrame &pFrame)
+bool Camera::GetSubInfoFrame(InfoFrame &pFrame)
 {
 	Lock();
-	if (m_bGotInfoSubData == TRUE) {
+	if (m_bGotInfoSubData == true) {
 		memcpy(&pFrame, &m_infoSubData, sizeof(InfoFrame));
 		UnLock();
-		return TRUE;
+		return true;
 	}
 	UnLock();
-	return FALSE;
+	return false;
 }
 
- BOOL Camera::RegDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam)
+ bool Camera::RegDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam)
 {
 	Lock();
 	m_DataMap[pParam] = pCallback;
 	UnLock();
 	StartData();
-	return TRUE;
+	return true;
 }
 
-BOOL Camera::UnRegDataCallback(void * pParam)
+bool Camera::UnRegDataCallback(void * pParam)
 {
 	Lock(); // Acquire lock for thread safety
 	m_DataMap.erase(pParam);  // Remove callback associated with pParam from the map
 	UnLock(); // Release lock
 	StopData(); // Stop data streaming if there are no remaining registered callbacks
-	return TRUE;
+	return true;
 }
 
-BOOL Camera::RegSubDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam)
+bool Camera::RegSubDataCallback(CameraDataCallbackFunctionPtr pCallback, void * pParam)
 {
 	Lock(); // Acquire lock for thread safety
     m_SubDataMap[pParam] = pCallback; // Register the callback associated with pParam
     UnLock(); // Release lock
     // Start data streaming based on the presence of a substream
-    if (m_param.m_bHasSubStream == FALSE) {
+    if (m_param.m_bHasSubStream == false) {
         StartData();
     } else {
         StartSubData();
     }
-    return TRUE;
+    return true;
 }
 
-BOOL Camera::UnRegSubDataCallback(void * pParam)
+bool Camera::UnRegSubDataCallback(void * pParam)
 {
 	Lock();
 	m_SubDataMap.erase(pParam);
 	UnLock();
-	if (m_param.m_bHasSubStream == FALSE) {
+	if (m_param.m_bHasSubStream == false) {
 		StopData();
 	}else
 	{
 		StopSubData();
 	}
-	return TRUE;
+	return true;
 }
 
-BOOL Camera::RegDelCallback(CameraDelCallbackFunctionPtr pCallback, void * pParam)
+bool Camera::RegDelCallback(CameraDelCallbackFunctionPtr pCallback, void * pParam)
 {
 	Lock();
 	m_DelMap[pParam] = pCallback;
 	UnLock();
-	return TRUE;
+	return true;
 }
-BOOL Camera::UnRegDelCallback(void * pParam)
+bool Camera::UnRegDelCallback(void * pParam)
 {
 	Lock();
 	m_DelMap.erase(pParam);
 	UnLock();
-	return TRUE;
+	return true;
 }
 
-BOOL Camera::StartData()
+bool Camera::StartData()
 {
 	Lock();
-	if (m_param.m_OnlineUrl == TRUE) {
+	if (m_param.m_OnlineUrl == true) {
 		if (m_nDataRef == 0) {
 			m_vPlay.StartGetData(this, (VPlayDataHandler)Camera::DataHandler);
 		}
@@ -578,9 +579,9 @@ BOOL Camera::StartData()
 		printf("%s m_nDataRef %d\n", __FUNCTION__, m_nDataRef);
 	}
 	UnLock();
-	return TRUE;
+	return true;
 }
-BOOL Camera::StopData()
+bool Camera::StopData()
 {
 	Lock();
 	m_nDataRef --;
@@ -591,22 +592,22 @@ BOOL Camera::StopData()
 	}
 
 	UnLock();
-	return TRUE;
+	return true;
 }
 
- BOOL Camera::StartSubData()
+ bool Camera::StartSubData()
 {
 	Lock();
-	if (m_param.m_OnlineUrl == TRUE) {
+	if (m_param.m_OnlineUrl == true) {
 		if (m_nSubDataRef == 0) {
 			m_vPlaySubStream.StartGetData(this, (VPlayDataHandler)Camera::SubDataHandler);
 		}
 		m_nSubDataRef ++;
  	}
 	UnLock();
-	return TRUE;
+	return true;
 }
- BOOL Camera::StopSubData()
+ bool Camera::StopSubData()
 {
 	Lock();
 	m_nSubDataRef --;
@@ -616,20 +617,21 @@ BOOL Camera::StopData()
 	}
 
 	UnLock();
-	return TRUE;
+	return true;
 }
 
-BOOL Camera::DataHandler(void* pData, VideoFrame& frame)
+bool Camera::DataHandler(void* pData, VideoFrame& frame)
 {
     LPCamera pThread = (LPCamera)pData;
     if (pThread) {
         return pThread->DataHandler1(frame);
     }
+	return false;
 }
 
 
 /* the frame buffer is alloc here, need free by the application */
-BOOL Camera::GetiFrame(VideoFrame& frame)
+bool Camera::GetiFrame(VideoFrame& frame)
 {
 	Lock();
 	if (m_iFrameCache.dataBuf == NULL) {
@@ -652,14 +654,14 @@ BOOL Camera::GetiFrame(VideoFrame& frame)
 	return true;
 }
 
-BOOL Camera::DataHandler1(VideoFrame& frame)
+bool Camera::DataHandler1(VideoFrame& frame)
 {
 	//VDC_DEBUG( "%s  %d\n",__FUNCTION__, frame.dataLen);
 	Lock();
 	/* Frist cache the info frame */
 	if (frame.streamType == VIDEO_STREAM_INFO) {
 		memcpy(&m_infoData, frame.dataBuf, sizeof(InfoFrame));
-		m_bGotInfoData = TRUE;
+		m_bGotInfoData = true;
 	}
 
 	/* Cache all the I frame */
@@ -694,29 +696,30 @@ BOOL Camera::DataHandler1(VideoFrame& frame)
 	m_cRecordWrapper.PushAFrame(frame);
 
 	/* Call the Sub DataHandler if there has no sub stream */
-	if (m_param.m_bHasSubStream == FALSE) {
+	if (m_param.m_bHasSubStream == false) {
 		SubDataHandler1(frame);
 	}
 	UnLock();
-	return TRUE;
+	return true;
 }
 
-BOOL Camera::SubDataHandler(void* pData, VideoFrame& frame)
+bool Camera::SubDataHandler(void* pData, VideoFrame& frame)
 {
     LPCamera pThread = (LPCamera)pData;
 
     if (pThread){
         return pThread->SubDataHandler1(frame);
     }
+	return false;
 }
 
-BOOL Camera::SubDataHandler1(VideoFrame& frame)
+bool Camera::SubDataHandler1(VideoFrame& frame)
 {
 	SubLock();
 	/* Frist cache the info frame */
 	if (frame.streamType == VIDEO_STREAM_INFO) {
 		memcpy(&m_infoSubData, frame.dataBuf, sizeof(InfoFrame));
-		m_bGotInfoSubData = TRUE;
+		m_bGotInfoSubData = true;
 	}
 	
 	/* 1. Send to client */
@@ -732,53 +735,53 @@ BOOL Camera::SubDataHandler1(VideoFrame& frame)
 	}
 
 	SubUnLock();
-	return TRUE;
+	return true;
 }
 
-BOOL Camera::GetCameraOnline()
+bool Camera::GetCameraOnline()
 {
   	return m_param.m_Online;
 }
 
-BOOL Camera::GetStreamInfo(VideoStreamInfo &pInfo)
+bool Camera::GetStreamInfo(VideoStreamInfo &pInfo)
 {
     m_vPlay.GetStreamInfo(pInfo);
 
-    return TRUE;
+    return true;
 }
 
 
-BOOL Camera::GetCamStreamList(VidStreamList &pList)
+bool Camera::GetCamStreamList(VidStreamList &pList)
 {
 	pList =  m_param.m_cStreamList;
-	return TRUE;
+	return true;
 }
 		
 
 
-BOOL Camera::AttachPlayer(HWND hWnd, int w, int h)
+bool Camera::AttachPlayer(HWND hWnd, int w, int h)
 {
     m_vPlay.AttachWidget(hWnd, w, h);
 
-    return TRUE;
+    return true;
 }
 
-BOOL Camera::UpdateWidget(HWND hWnd, int w, int h)
+bool Camera::UpdateWidget(HWND hWnd, int w, int h)
 {
     m_vPlay.UpdateWidget(hWnd, w, h);
 
-    return TRUE;
+    return true;
 }
 
-BOOL Camera::DetachPlayer(HWND hWnd)
+bool Camera::DetachPlayer(HWND hWnd)
 {
     m_vPlay.DetachWidget(hWnd);
     
-    return TRUE;
+    return true;
 }
 
-BOOL Camera::ShowAlarm(HWND hWnd)
+bool Camera::ShowAlarm(HWND hWnd)
 {
 	m_vPlay.ShowAlarm(hWnd);
-	return TRUE;
+	return true;
 }
