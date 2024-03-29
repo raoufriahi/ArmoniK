@@ -10,9 +10,9 @@
  */
 #pragma once
 
-#include "utility.hpp"
+#include "utility/utility.hpp"
 #include "config/conf.hpp"
-#include "debug.hpp"
+#include "utility/debug.hpp"
 
 #include "XSDK/XMutex.h"
 #include "XSDK/XGuard.h"

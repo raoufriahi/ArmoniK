@@ -11,6 +11,7 @@ include_directories(
     ../3rdparty/leveldb/include
     ../3rdparty/spdlog/include/
     ../3rdparty/protobuf/src/
+    ../3rdparty/poco/Foundation/include/
     ../velib/include
     )
 add_definitions(-DLINUX_OS=1)

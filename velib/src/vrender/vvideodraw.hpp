@@ -10,8 +10,8 @@
  */
 #ifndef __V_VIDEO_DRAW_HPP__
 #define __V_VIDEO_DRAW_HPP__
-#include "utility.hpp"
-#include "debug.hpp"
+#include "utility/utility.hpp"
+#include "utility/debug.hpp"
 #include "utility/videotype.hpp"
 #include "video_render.h"
 

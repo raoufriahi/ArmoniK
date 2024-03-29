@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "debug.hpp"
+#include "utility/debug.hpp"
 #include "recordsession.hpp"
 #include "indexdb.hpp"
 

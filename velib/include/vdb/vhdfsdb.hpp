@@ -9,8 +9,8 @@
  * which the programs have been supplied.
  */
 #pragma once
-#include "utility.hpp"
-#include "debug.hpp"
+#include "utility/utility.hpp"
+#include "utility/debug.hpp"
 #include "utility/videotype.hpp"
 
 using namespace UtilityLib;

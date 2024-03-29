@@ -9,7 +9,7 @@
  * which the programs have been supplied.
  */
 
-#include "utility.hpp"
+#include "utility/utility.hpp"
 #include "Poco/Data/Session.h"
 #include "utility/videotype.hpp"
 

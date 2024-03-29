@@ -15,7 +15,7 @@
 #include "vdb/vdb.hpp"
 #include "vdb/hdfsrecsession.hpp"
 #include "vdb/recordwrapper.hpp"
-#include "vplay/vplay.hpp"
+#include "vplay.h"
 #include "Poco/UUIDGenerator.h"
 #include "vvidonvif/vvidonvifc.hpp"
 #include "config/vidconf.pb.h"

@@ -12,11 +12,11 @@
 #define SDL_RENDER_H
 
 #include "video_render.h"
-#include "utility.hpp"
-#include "debug.hpp"
+#include "utility/utility.hpp"
+#include "utility/debug.hpp"
 #include "ffmpeg_scale.hpp"
 #include "SDL.h"
-#include "vplay/vsmotalgo.hpp"
+#include "vsmotalgo.h"
 #include "vvideodraw.hpp"
 
 #ifdef WIN32

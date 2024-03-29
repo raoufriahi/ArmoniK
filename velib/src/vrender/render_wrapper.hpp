@@ -11,9 +11,9 @@
 #ifndef __RENDER_WRAPPER_H_
 #define __RENDER_WRAPPER_H_
 
-#include "utility.hpp"
-#include "debug.hpp"
-#include "vplay.hpp"
+#include "utility/utility.hpp"
+#include "utility/debug.hpp"
+#include "vplay.h"
 
 #ifndef ARM_LINUX
 #include "SDL.h"

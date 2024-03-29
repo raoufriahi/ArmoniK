@@ -16,9 +16,13 @@ include_directories(
     ../3rdparty/poco/Foundation/include/
     ../3rdparty/poco/Util/include/
     ../3rdparty/poco/Data/SQLite/include/
+    ../3rdparty/ffmpeg/
     ../velib/include
     ../engine/include/
     ../avconfig/include/
+    ../libyuv/include/
+    ../velib/src/vrender/
+    ../velib/3rdparty/SDL2/include/
     )
 add_definitions(-DLINUX_OS=1)
 ADD_LIBRARY( ${PROJECT_NAME} SHARED

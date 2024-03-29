@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "vdb/vdb.hpp"
 #include "vdb/vhdfsdb.hpp"
-#include "vplay/vplay.hpp"
+#include "vplay.h"
 #include "avconfig/include/sysdb.h"
 #include "hdddevice.h"
 #include "Poco/Path.h"

@@ -11,8 +11,8 @@
 #ifndef __VE_HW_CMD_H_
 #define __VE_HW_CMD_H_
 
-#include "utility.hpp"
-#include "debug.hpp"
+#include "utility/utility.hpp"
+#include "utility/debug.hpp"
 
 #undef DLL_SYMBOL
 #define DLL_SYMBOL              //__declspec(dllexport)
