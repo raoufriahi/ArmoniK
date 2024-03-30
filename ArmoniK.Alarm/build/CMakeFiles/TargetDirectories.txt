@@ -1,7 +1,0 @@
-/workspaces/ArmoniK/avalarm/build/CMakeFiles/install/strip.dir
-/workspaces/ArmoniK/avalarm/build/CMakeFiles/install/local.dir
-/workspaces/ArmoniK/avalarm/build/CMakeFiles/install.dir
-/workspaces/ArmoniK/avalarm/build/CMakeFiles/list_install_components.dir
-/workspaces/ArmoniK/avalarm/build/CMakeFiles/rebuild_cache.dir
-/workspaces/ArmoniK/avalarm/build/CMakeFiles/edit_cache.dir
-/workspaces/ArmoniK/avalarm/build/CMakeFiles/avalarm.dir
