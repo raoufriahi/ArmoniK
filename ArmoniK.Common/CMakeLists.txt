@@ -6,6 +6,9 @@ file(GLOB HEADER "include/*.h")
 
 include_directories(
     ./header
+    ./header/config
+    ./header/utility
+    ./header/vdb
     ../include   
     ../xcmnlib/include  
     ../3rdparty/leveldb/include
