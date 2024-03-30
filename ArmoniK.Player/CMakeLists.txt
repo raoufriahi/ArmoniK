@@ -17,10 +17,11 @@ include_directories(
     ../3rdparty/poco/Util/include/
     ../3rdparty/poco/Data/SQLite/include/
     ../3rdparty/ffmpeg/
+    ../3rdparty/libyuv/include/
     ../velib/include
     ../engine/include/
-    ../avconfig/include/
-    ../libyuv/include/
+    ../ArmoniK.Common/header/
+    
     ../velib/src/vrender/
     ../velib/3rdparty/SDL2/include/
     )

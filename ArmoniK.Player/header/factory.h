@@ -11,18 +11,18 @@
 
 #pragma once
 #include "define.h"
-#include "avconfig/include/confdb.h"
+#include "confdb.h"
 #include "camera.h"
 #include "vdb/vdb.hpp"
 #include "vdb/vhdfsdb.hpp"
 #include "vplay.h"
-#include "avconfig/include/sysdb.h"
+#include "sysdb.h"
 #include "hdddevice.h"
 #include "Poco/Path.h"
 #include "Poco/File.h"
 #include "config/vidconf.pb.h"
 #include "XSDK/TimeUtils.h"
-#include "avconfig/include/videnv.h"
+#include "videnv.h"
 
 using namespace XSDK;
 class Factory;

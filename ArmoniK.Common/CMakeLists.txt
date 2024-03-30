@@ -5,7 +5,7 @@ file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADER "include/*.h")
 
 include_directories(
-    ./include
+    ./header
     ../include   
     ../xcmnlib/include  
     ../3rdparty/leveldb/include

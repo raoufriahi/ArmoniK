@@ -10,12 +10,12 @@
  */
 
 #pragma once
-#include "avconfig/include/confdb.h"
+#include "confdb.h"
 #include "camera.h"
 #include "vdb/vdb.hpp"
 #include "vdb/vhdfsdb.hpp"
 #include "vplay.h"
-#include "avconfig/include/sysdb.h"
+#include "sysdb.h"
 #include "factory.h"
 #include "Poco/Path.h"
 #include "Poco/File.h"
