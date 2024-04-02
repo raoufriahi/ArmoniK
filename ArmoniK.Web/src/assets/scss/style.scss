@@ -1,0 +1,198 @@
+// If you want to override variables do it here
+@import "variables";
+
+// Import styles with default layout.
+@import "~@coreui/coreui-pro/scss/coreui";
+
+// If you want to add something do it here
+@import "custom";
+@import "blue";
+//全局按钮
+button:focus{
+    outline: none !important;
+}
+input:focus{
+    outline: none !important;
+}
+.btn:focus, .btn.focus {
+    box-shadow: none;
+}
+
+/* 自制图标 为啦显示禁用的图标*/
+.camera{
+    text-decoration:line-through
+}
+/* (新)自制图标 为啦显示禁用的图标 */
+.el-tree-camera{
+    color: #9a9a9a;
+}
+/* (新)自制图标 为啦显示正在播放的图标 */
+.el-tree-camera-play{
+    color: #30d158;
+}
+.c-app{
+    background-color: #F2F1F1;
+}
+a{
+    color: none;
+    text-decoration:none;
+}
+// 顶部高
+.c-header-nav{
+    min-height: 40px;
+    height: 40px;
+}
+.c-header-brand{
+    min-height: 40px;
+    height: 40px;
+}
+//顶部下拉原生组件
+.dropdown-menu{
+    min-width: 100px;
+    .dropdown-item{
+        min-width: 100px;
+    }
+}
+.button_table{
+    button:nth-last-child(1){
+        background:#3ABBFE;
+        border-radius:2px;
+        padding: 8px 16px;
+        font-size:12px;
+        font-family:PingFang SC;
+        font-weight:600;
+        color:rgba(255,255,255,1);
+        margin-right: 20px;
+        border-color: none;
+    }
+    button:nth-last-child(2){
+        background:rgba(55,62,72,1);
+        border:1px solid #3ABBFE;
+        padding: 8px 16px;
+        font-size:12px;
+        font-family:PingFang SC;
+        font-weight:600;
+        color:rgba(255,255,255,1);
+        box-sizing: border-box;
+    }
+}
+.button_edi{
+    margin-bottom: 10px;
+    .form_butt{
+        background:#3ABBFE;
+        border-radius:2px;
+        padding: 2px 16px;
+        font-size:12px;
+        font-family:PingFang SC;
+        font-weight:600;
+        color:rgba(255,255,255,1);
+        margin-right: 20px;
+        border-color: none;
+    }
+    .form_butt1{
+        background:rgba(55,62,72,1);
+        border:1px solid #3ABBFE;
+        padding: 2px 16px;
+        font-size:12px;
+        font-family:PingFang SC;
+        font-weight:600;
+        color:rgba(255,255,255,1);
+        box-sizing: border-box;
+    }
+    
+}
+.dialog-footer{
+    .form_butt{
+        background:#3ABBFE;
+        border-radius:2px;
+        padding: 8px 16px;
+        font-size:12px;
+        font-family:PingFang SC;
+        font-weight:600;
+        color:rgba(255,255,255,1);
+        margin-right: 20px;
+        border-color: none;
+    }
+    .form_butt1{
+        background:rgba(55,62,72,1);
+        border:1px solid #3ABBFE;
+        padding: 8px 16px;
+        font-size:12px;
+        font-family:PingFang SC;
+        font-weight:600;
+        color:rgba(255,255,255,1);
+        box-sizing: border-box;
+    }
+  
+}
+.addChannelSloganTable{
+    min-height: 0vh  !important;
+  background: none;
+  border: none;
+}
+.BlackClass{
+    .el-dialog{
+        background: #252526;
+        .el-dialog__title,.el-dialog__close,.box_left{
+            color: #fff;
+        }
+        .el-input__inner{
+            background-color: #333;
+            border-color: #333;
+        }
+    }
+}
+.BlueClass{
+    .el-dialog{
+        background: #383F61;
+        .el-dialog__title,.el-dialog__close,.box_left{
+            color: #fff;
+        }
+        .el-input__inner{
+            color: #fff;
+            background-color: #293050 ;
+            border-color: #293050 ;
+        }
+    }
+}
+.c-app .ai_redio{
+    .el-table {
+        min-height: 57vh !important;
+        .has-gutter .el-table__cell{
+            background-color: #2D2D2D !important;
+        }
+        .el-table__cell{
+            padding: 8px 0 8px 20px;
+        }
+        .el-table__body-wrapper{
+            border-bottom: none;
+            overflow: auto;
+            cursor:pointer;
+            .el-table__cell{
+                padding: 5px 0;
+            }
+            .current-row>td.el-table__cell{
+                background-color: #202020 !important;
+                color: red;
+            }
+            &::-webkit-scrollbar {/*滚动条整体样式*/
+                width: 8px;     /*高宽分别对应横竖滚动条的尺寸*/
+                height: 8px;
+                scrollbar-arrow-color:red;
+            }
+            &::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+                border-radius: 5px;
+                -webkit-box-shadow: inset 0 0 5px rgba(218, 218, 218,0.2);
+                box-shadow: inset 0 0 5px rgba(218, 218, 218,0.2);
+                background: rgba(218, 218, 218,0.2);
+                scrollbar-arrow-color:red;
+            }
+            &::-webkit-scrollbar-track {/*滚动条里面轨道*/
+                -webkit-box-shadow: inset 0 0 5px rgba(218, 218, 218,0.2);
+                box-shadow: inset 0 0 5px rgba(218, 218, 218,0.2);
+                border-radius: 0;
+                background: rgba(218, 218, 218,0.1);
+            }
+        }
+    }
+}

@@ -1,0 +1,71 @@
+
+@font-face {
+    font-family: my-icons;
+    src: url("my-icons.eot");src: url("my-icons.eot?5c9f1282#iefix") format("embedded-opentype"),
+             url("my-icons.woff2?5c9f1282") format("woff2"),
+             url("my-icons.woff?5c9f1282") format("woff"),
+             url("my-icons.ttf?5c9f1282") format("truetype"),
+             url("my-icons.svg?5c9f1282#my-icons") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.fonts {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+.icon-android-colours::before {
+    position:relative;
+content: "\ea01";
+}
+
+.icon-basicnetwork::before {
+    position:relative;
+content: "\ea02";
+}
+
+.icon-containerimagelibrary::before {
+    position:relative;
+content: "\ea03";
+}
+
+.icon-deepin::before {
+    position:relative;
+content: "\ea04";
+}
+
+.icon-fedora::before {
+    position:relative;
+content: "\ea05";
+}
+
+.icon-home-Workorder::before {
+    position:relative;
+content: "\ea06";
+}
+
+.icon-macos::before {
+    position:relative;
+content: "\ea07";
+}
+
+.icon-redhat::before {
+    position:relative;
+content: "\ea08";
+}
+
+.icon-speed::before {
+    position:relative;
+content: "\ea09";
+}
+
+.icon-wraning-colours::before {
+    position:relative;
+content: "\ea0a";
+}
+

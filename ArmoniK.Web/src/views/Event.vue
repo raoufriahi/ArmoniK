@@ -1,0 +1,89 @@
+<template>
+    <div class="top_el_menu">
+        <el-menu
+            router
+            :default-active="activeIndex" 
+            class="el-menu-demo" 
+            mode="horizontal"
+            :background-color="color1"
+            :text-color="($store.state.darkMode) ? '#B7B7B7' : '#000'"
+            :active-text-color="($store.state.darkMode) ?'#FFFFFF':'#000000'">
+            <el-menu-item index="RealTimeEvent" v-show="H5SExtention">{{$t("message.event.RealTimeEvent")}}</el-menu-item>
+            <el-menu-item index="EventSearch" v-show="H5SExtention">{{$t("message.event.EventSearch")}}</el-menu-item>
+            <el-menu-item index="EventDebug">{{$t("message.event.EventDebug")}}</el-menu-item>
+            <el-menu-item index="EventVQD" v-show="H5SExtention">{{$t("message.event.EventVQD")}}</el-menu-item>
+            <el-menu-item index="EventAI" v-show="H5SExtention">{{$t("message.event.EventAI")}}</el-menu-item>
+        </el-menu>
+        <div>
+            <router-view></router-view>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    name:'Event',
+    data(){
+        return {
+            activeIndex:'RealTimeEvent',
+            H5SExtention:false,
+            color1:'',
+        }
+    },
+    beforeUpdate(){
+        this.menuList();
+    },
+    mounted(){
+        if (this.$store.state.darkMode == 'blue') {
+			this.color1 = '#0C1637';
+			this.color2 = '#0C1637';
+		}else if(this.$store.state.darkMode == 'c-dark-theme'){
+			this.color1 = '#0c0c0c'
+		}else{
+			this.color1 = '#f5f5f5'
+		}
+        let url = this.$store.state.IPPORT + "/api/v1/GetAdvSystemInfo?session="+ this.$store.state.token;
+        console.log(url);
+        this.$http.get(url).then(result=>{
+        if (result.status == 200){
+            console.log(result.data.bExtSupport);
+            this.H5SExtention= result.data.bExtSupport;
+            if (this.H5SExtention == false) {
+                console.log(this.$route.path);
+                this.$router.push("/Event/EventDebug")
+            }
+        } 
+        }).catch((err) =>{
+        console.log('GetSrc failed', err);
+        });
+        this.menuList();
+    },
+     watch:{
+		contractFile(data){
+		if (data == 'blue') {
+			this.color1 = '#0C1637'
+		}else if(data == 'c-dark-theme'){
+			this.color1 = '#0c0c0c'
+		}else{
+			this.color1 = '#f5f5f5'
+		}
+		}
+	},
+	computed: {
+		contractFile() {
+			return this.$store.state.darkMode
+		}
+	},
+    methods:{
+        menuList(){ 
+			let path = this.$route.meta.title
+			console.log(this.$route)
+            this.activeIndex = path
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+
+</style>
