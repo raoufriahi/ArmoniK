@@ -24,8 +24,12 @@ add_definitions( -fPIC                  -DUSE_WEBSOCKET             -DLINUX_OS
                  -DLINUX 
                  )      
 #add_definitions(-DENABLE_RTMP2RTSP -DENABLE_RTSP2RTMP -DENABLE_HLS)
-# add_subdirectory(xcmnlib)
-# add_subdirectory(onvif)
-# add_subdirectory(velib)
-add_subdirectory(vecvr)
-# add_subdirectory(veuilib)
+add_subdirectory(ArmoniK.Alarm)
+add_subdirectory(ArmoniK.Analytics)
+add_subdirectory(ArmoniK.Bus)
+add_subdirectory(ArmoniK.Common)
+add_subdirectory(ArmoniK.Engine)
+add_subdirectory(ArmoniK.Onvif)
+add_subdirectory(ArmoniK.Player)
+add_subdirectory(ArmoniK.Worker)
+
