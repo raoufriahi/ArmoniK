@@ -1,21 +1,25 @@
 cmake_minimum_required(VERSION 3.15)
-project(avconfig)
+project(ArmoniK.Common)
 
-file(GLOB SOURCES "src/*.cpp")
-file(GLOB HEADER "include/*.h")
+
+file(GLOB HEADER  "header/cppkit/*.h" 
+                   "header/AVKit/*.h"
+                  "header/MediaParser/*.h"
+                  "header/Webby/*.h"
+                  "header/XSDK/*.h"
+                  )
+                  
+file(GLOB SOURCES "src/AVKit/*.cpp"
+                  "src/MediaParser/*.cpp"
+                  "src/Webby/*.cpp"
+                  "src/XSDK/*.cpp"
+                  "src/cppkit/*.cpp"
+                  )
+
 
 include_directories(
     ./header
-    ./header/config
-    ./header/utility
-    ./header/vdb
-    ../include   
-    ../xcmnlib/include  
-    ../3rdparty/leveldb/include
-    ../3rdparty/spdlog/include/
-    ../3rdparty/protobuf/src/
-    ../3rdparty/poco/Foundation/include/
-    ../velib/include
+    ../3rdparty/ffmpeg/
     )
 add_definitions(-DLINUX_OS=1)
 ADD_LIBRARY( ${PROJECT_NAME} SHARED
